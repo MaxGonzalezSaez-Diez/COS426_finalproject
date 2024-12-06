@@ -18,7 +18,7 @@ const renderer = new WebGLRenderer({ antialias: true });
 
 // Set up camera
 camera.position.set(0, 15, -30);
-camera.lookAt(new Vector3(0, 0, 0)); 
+// camera.lookAt(new Vector3(0, 0, 0)); 
 
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -45,6 +45,17 @@ const onAnimationFrameHandler = (timeStamp) => {
     controls.update();
     renderer.render(scene, camera);
     scene.update && scene.update(timeStamp);
+    controls.object.position.set(
+        scene.state.cameraPos.x,
+        scene.state.cameraPos.y,
+        scene.state.cameraPos.z,
+    );
+    controls.target = new Vector3(
+        scene.state.studentPos.x,
+        scene.state.studentPos.y,
+        scene.state.studentPos.z,
+    ); 
+
     window.requestAnimationFrame(onAnimationFrameHandler);
 };
 window.requestAnimationFrame(onAnimationFrameHandler);

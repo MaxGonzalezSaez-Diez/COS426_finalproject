@@ -1,5 +1,5 @@
 import * as Dat from 'dat.gui';
-import { Scene, Color } from 'three';
+import { Scene, Color, Vector3} from 'three';
 import { Flower, Land, Road, Student} from 'objects';
 import { BasicLights } from 'lights';
 
@@ -15,7 +15,8 @@ class SeedScene extends Scene {
             updateList: [],
             roadLength: 1000,  
             totalLength: 5000, 
-            studentPosition: 0,
+            cameraPos: new Vector3(0, 0, 0),
+            studentPos: new Vector3(0, 0, 0),
         };
 
         // Set background to a nice color
@@ -34,7 +35,18 @@ class SeedScene extends Scene {
 
     update(timeStamp) {
         const { updateList } = this.state;
-       
+        const stPos = this.student.state.position;
+        this.state.studentPos.set(
+            stPos.x,
+            stPos.y, 
+            stPos.z
+        )
+        this.state.cameraPos.set(
+            stPos.x,
+            stPos.y + 9, 
+            stPos.z - 20
+        );
+
         for (const obj of updateList) {
             obj.update(timeStamp);
         }
