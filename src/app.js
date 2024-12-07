@@ -45,16 +45,16 @@ const onAnimationFrameHandler = (timeStamp) => {
     controls.update();
     renderer.render(scene, camera);
     scene.update && scene.update(timeStamp);
-    // controls.object.position.set(
-    //     scene.state.cameraPos.x,
-    //     scene.state.cameraPos.y,
-    //     scene.state.cameraPos.z,
-    // );
-    // controls.target = new Vector3(
-    //     scene.state.studentPos.x,
-    //     scene.state.studentPos.y,
-    //     scene.state.studentPos.z,
-    // ); 
+    controls.object.position.set(
+        scene.state.cameraPos.x,
+        scene.state.cameraPos.y,
+        scene.state.cameraPos.z,
+    );
+    controls.target = new Vector3(
+        scene.state.studentPos.x,
+        scene.state.studentPos.y,
+        scene.state.studentPos.z,
+    ); 
 
     window.requestAnimationFrame(onAnimationFrameHandler);
 };

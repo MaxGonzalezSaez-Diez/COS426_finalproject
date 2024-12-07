@@ -49,7 +49,12 @@ class SeedScene extends Scene {
         );
 
         for (const obj of updateList) {
-            obj.update(timeStamp);
+            if (obj.constructor.name === 'ProceduralRoad') {
+                obj.update(timeStamp, this.student);
+                // console.log('Updating ProceduralRoad');
+            } else {
+                obj.update(timeStamp);
+            }
         }
     }
 }
