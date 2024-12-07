@@ -50,7 +50,7 @@ class Student extends Group {
         }
         this.state.now = timeStamp;
 
-        const deltaTime = (this.state.now - this.state.prev) * 0.001;
+        const deltaTime = (this.state.now - this.state.prev) * 0.00001;
 
         if (this.state.mixer) {
             this.state.mixer.update(this.state.level * deltaTime); 

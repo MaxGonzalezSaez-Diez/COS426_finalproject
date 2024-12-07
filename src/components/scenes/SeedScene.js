@@ -1,7 +1,8 @@
 import * as Dat from 'dat.gui';
 import { Scene, Color, Vector3} from 'three';
-import { Flower, Land, Road, Student} from 'objects';
+import { RoadChunk, Student} from 'objects';
 import { BasicLights } from 'lights';
+import ProceduralRoad from '../objects/ProceduralRoad/ProceduralRoad';
 
 class SeedScene extends Scene {
     constructor() {
@@ -23,10 +24,10 @@ class SeedScene extends Scene {
         this.background = new Color(0xaaaaee);
 
         // Add meshes to scene
-        this.road = new Road(this);
+        this.RoadChunk = new ProceduralRoad(this);
         this.student = new Student(this);
         const lights = new BasicLights();
-        this.add(lights, this.road, this.student);
+        this.add(lights, this.RoadChunk, this.student);
     }
 
     addToUpdateList(object) {
