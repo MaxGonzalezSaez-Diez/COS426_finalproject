@@ -3,9 +3,12 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODEL from './student.glb';
 
 class Student extends Group {
-    constructor(parent) {
+    constructor(parent, {roadWidth = 20} = {}) {
         // Call parent Group() constructor
         super();
+
+        const laneCount = 5;
+        const laneWidth = (roadWidth / (laneCount-1));
 
         this.state = {
             parent: parent,
@@ -26,6 +29,10 @@ class Student extends Group {
             currentSegment: null,
             nextSegment: null,
             roadType: null,
+            roadWidth: roadWidth,
+            currentLane: 0,
+            laneCount: laneCount,
+            laneWidth: laneWidth
         }
 
         
@@ -49,17 +56,51 @@ class Student extends Group {
         });
     }
 
-    turn (angle) {
+    turn (turn_direction) {
+        const turnEdge = Math.round((this.state.laneCount-1)/2);
+        let moveSign = 0;
+        if (turn_direction === 'left' && this.state.currentLane > -turnEdge) {
+            moveSign = 1;
+            this.state.currentLane-=1;
+        } else if (turn_direction === 'right' && this.state.currentLane < turnEdge) {
+            moveSign = -1;
+            this.state.currentLane+=1;
+        }
+
+        const currentSegment = this.state.currentSegment;
+        const curDir = this.state.direction;
+        const offsetDir = new Vector3(curDir.z, 0, -curDir.x).normalize();
+        // let moveDir = currentDirection.clone().applyAxisAngle(this.state.rotAxis, -Math.PI/2)
+
+        // left: Math.PI/2
+        // right: -Math.PI/2
+        // const moveDir = this.state.direction.clone().applyAxisAngle(this.state.rotAxis, angle)
+        offsetDir.set(
+            Math.round(offsetDir.x),
+            Math.round(offsetDir.y),
+            Math.round(offsetDir.z)
+        );
+
         if (this.state.roadType === "corner") {
             this.state.direction = this.state.direction.clone().applyAxisAngle(this.state.rotAxis, angle);
             this.state.model.rotation.y += angle;
         } else {
-            const moveDir = this.state.direction.clone().applyAxisAngle(this.state.rotAxis, angle)
-            if (Math.sign(angle) > 0) {
-                this.state.position.add(moveDir.clone().multiplyScalar(5)); 
-            } else {
-                this.state.position.sub(moveDir.clone().multiplyScalar(-5)); 
-            }
+            const centerLane = offsetDir.clone().multiply(currentSegment.position.clone());
+            const pushOfSegment = offsetDir.clone().multiplyScalar(moveSign*this.state.laneWidth)
+            this.state.position.add(centerLane.clone().add(pushOfSegment));
+
+            // const step = moveDir.clone().add(this.state.currentLane * this.state.laneWidth);
+            // const pushOfSegment = currentSegment.position.clone().multiply(step);
+            // this.state.position = this.state.position.add(pushOfSegment);
+
+            // if ("left") {
+            //     // this.state.position.add(moveDir.clone().multiplyScalar(5)); 
+            //     const step = moveDir.clone().multiplyScalar(this.state.currentLane * this.state.laneWidth);
+            //     const pushOfSegment = currentSegment.position.clone().add(step);
+            //     this.state.position = this.state.position.add(pushOfSegment);
+            // } else {
+            //     this.state.position.sub(moveDir.clone().multiplyScalar(-5)); 
+            // }
         }
         
     };
@@ -68,11 +109,11 @@ class Student extends Group {
         switch(event.key.toLowerCase()) {
             case 'a':
             case 'arrowleft':
-                this.turn(Math.PI/2); 
+                this.turn("left"); 
                 break;
             case 'd':
             case 'arrowright':
-                this.turn(-Math.PI/2); 
+                this.turn("right"); 
                 break;
         }
     }

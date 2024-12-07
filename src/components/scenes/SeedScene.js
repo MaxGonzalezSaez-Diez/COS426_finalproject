@@ -19,6 +19,7 @@ class SeedScene extends Scene {
             student: null, 
             roadChunk: null, 
             lights: null, 
+            roadWidth: 20,
             // cameraPos: new Vector3(),
             studentPos: new Vector3(),
         };
@@ -28,7 +29,7 @@ class SeedScene extends Scene {
 
         // Add meshes to scene
         this.state.roadChunk = new ProceduralRoad(this);
-        this.state.student = new Student(this);
+        this.state.student = new Student(this, {roadWidth: this.state.roadWidth});
         this.state.lights = new BasicLights();
         this.add(this.state.lights, this.state.roadChunk, this.state.student);
     }
