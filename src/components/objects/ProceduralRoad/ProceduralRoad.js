@@ -4,8 +4,8 @@ import RoadChunk from '../RoadChunk/RoadChunk.js';
 class ProceduralRoad extends Group {
     constructor(parent, {
         segmentWidth = 20,
-        segmentLength = 100,
-        startSegments = 2,
+        segmentLength = 40,
+        startSegments = 5,
         fracTurns = 1,
     } = {}) {
         super();
@@ -28,7 +28,11 @@ class ProceduralRoad extends Group {
     generateInitialRoad() {
         // Generate first few segments
         for (let i = 0; i < this.state.startSegments; i++) {
-            this.generateNextRoadSegment(false);
+            if (i < 1) {
+                this.generateNextRoadSegment(true);
+            } else {
+                this.generateNextRoadSegment(false);
+            }
         }
     }
 
@@ -41,32 +45,35 @@ class ProceduralRoad extends Group {
                 ? (Math.random() < 0.5 ? 'turn-left' : 'turn-right') 
                 : 'straight';
         }
-        let lastCenterX = 0;
-        let lastCenterZ = 0;
         let newCenter = new Vector3();
         let newDirection = new Vector3(0, 0, 1);
         let nrCurSeg = this.state.roadSegments.length;
         if (nrCurSeg > 0) {
             const lastPiece = this.state.roadSegments[nrCurSeg - 1];
-            lastCenterX = lastPiece.state.centerPieceX;
-            lastCenterZ = lastPiece.state.centerPieceZ;
-            let oldCenter = new Vector3(lastCenterX, 0, lastCenterZ);
-            let oldDirection = lastPiece.state.direction.clone();
-            newCenter = oldCenter.clone().add(oldDirection.clone().multiplyScalar(this.state.segmentLength).clone());
+            const oldCenter = lastPiece.state.center;
+            const oldDirection = lastPiece.state.direction.clone();
             
             const axis = new Vector3(0, 1, 0);
 
             if (segmentType === 'straight') {
+                newCenter = oldCenter.clone().add(oldDirection.clone().multiplyScalar(this.state.segmentLength/2).clone());
+
                 newDirection = oldDirection.clone();
-            } else if (segmentType === 'turn-left') {
-                const angle = Math.PI / 2;
+
+                newCenter = newCenter.clone().add(newDirection.clone().multiplyScalar(this.state.segmentLength/2).clone()).clone()
+            } else { 
+                let angle = -Math.PI / 2;
+                if (segmentType === 'turn-left') {
+                    angle = Math.PI / 2;
+                } 
+                newCenter = oldCenter.clone().add(oldDirection.clone().multiplyScalar(this.state.segmentLength*0.5 + this.state.segmentWidth*1/2).clone());
+
                 newDirection = oldDirection.clone().applyAxisAngle(axis, angle);
-            } else if (segmentType === 'turn-right') {
-                const angle = -Math.PI / 2;
-                newDirection = oldDirection.clone().applyAxisAngle(axis, angle);
+
+                newCenter = newCenter.clone().add(newDirection.clone().multiplyScalar(this.state.segmentLength/2 + this.state.segmentWidth*1/2).clone()).clone()
             }
 
-            newCenter = oldCenter.clone().add(newDirection.clone().multiplyScalar(this.state.segmentLength).clone()).clone()
+
         }
 
 
@@ -74,9 +81,8 @@ class ProceduralRoad extends Group {
         const roadSegment = new RoadChunk(this.state.parent, {
             segmentWidth: this.state.segmentWidth,
             segmentLength: this.state.segmentLength,
-            centerPieceX: newCenter.x,
-            centerPieceZ: newCenter.z,
-            direction: newDirection.clone()
+            center: newCenter.clone(),
+            direction: newDirection.clone().normalize()
         });
 
         // Update current state

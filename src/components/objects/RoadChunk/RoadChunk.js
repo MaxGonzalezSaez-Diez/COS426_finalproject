@@ -5,10 +5,7 @@ class RoadChunk extends Group {
     constructor(parent, {
         segmentWidth = 20, 
         segmentLength = 100,
-        textureRepeatX = 2,
-        textureRepeatY = 100,
-        centerPieceX = 0,
-        centerPieceZ = 0,
+        center = new Vector3(),
         direction = new Vector3(0, 0, 1)
     } = {}) {
         super();
@@ -17,9 +14,8 @@ class RoadChunk extends Group {
             gui: parent.state.gui,
             segmentWidth: segmentWidth, 
             segmentLength: segmentLength,
-            centerPieceX: centerPieceX,
-            centerPieceZ: centerPieceZ,
-            direction: direction
+            center: center,
+            direction: direction.clone().normalize()
         };
 
         // Create road geometry 
@@ -30,11 +26,11 @@ class RoadChunk extends Group {
         const roadTexture = textureLoader.load(texture); 
         roadTexture.wrapS = RepeatWrapping;
         roadTexture.wrapT = RepeatWrapping;
-        roadTexture.repeat.set(textureRepeatX, textureRepeatY);
+        roadTexture.repeat.set(segmentWidth/10, segmentLength/10);
 
         // Create road material
         const material = new MeshBasicMaterial({ 
-            color: Math.random() * 0xffffff, // Generate a random hex color
+            // color: Math.random() * 0xffffff, // Generate a random hex color
             map: roadTexture 
         });
 
@@ -43,9 +39,13 @@ class RoadChunk extends Group {
 
         // Rotate road to be horizontal
         roadMesh.rotation.x = -Math.PI / 2;
+        
+        if (Math.abs(direction.z) < 1e-5) {
+            roadMesh.rotation.z = Math.PI/2;
+        }
 
         // Position road based on type
-        roadMesh.position.set(centerPieceX, 0, centerPieceZ);
+        roadMesh.position.copy(center);
         
         // Add to the group
         this.add(roadMesh);
