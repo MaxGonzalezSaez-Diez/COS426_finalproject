@@ -17,22 +17,21 @@ class Student extends Group {
             now: null,
             mixer: null,
             action: null,
-            level: 1, 
             position: new Vector3(0, 0, 0),
             direction: new Vector3(0, 0, 1),
             rotAxis: new Vector3(0, 1, 0),
-            acceleration: 10,
-            jumpStrength: 10,
             isJumping: false,
-            gravity: -30,
-            groundLevel: 0,
+            speed: 1,
+            spf: 2.5,
+            jumpStrength: 10, 
             currentSegment: null,
             nextSegment: null,
             roadType: null,
             roadWidth: roadWidth,
             currentLane: 0,
             laneCount: laneCount,
-            laneWidth: laneWidth
+            laneWidth: laneWidth,
+            count: 0,
         }
 
         
@@ -45,11 +44,12 @@ class Student extends Group {
     addStudent() {
         const loader = new GLTFLoader();
         loader.load(MODEL, (gltf) => {
+            this.state.gltf = gltf;
             this.state.model = gltf.scene;
             this.state.model.position.set(0, 0, 0);
             this.state.model.scale.set(1, 1, 1);
             this.state.mixer = new AnimationMixer(this.state.model);
-            const runningAnimation = gltf.animations[0];
+            const runningAnimation = this.state.gltf.animations[0];
             this.state.action = this.state.mixer.clipAction(runningAnimation); 
             this.state.action.play();
             this.add(this.state.model);
@@ -57,6 +57,9 @@ class Student extends Group {
     }
 
     turn (turn_direction) {
+        // if (this.state.isJumping) {
+        //     return
+        // }
         const { currentSeg, roadType } = this.findCurrentSegment(this.state.parent.state.roadChunk.state);
         
         // if (currentSeg == null || roadType == null) {
@@ -177,25 +180,76 @@ class Student extends Group {
             case 'arrowright':
                 this.turn("right"); 
                 break;
+            case 'w':
+            case 'arrowup':
+                this.jump(); 
+                break;
+        }
+    }
+
+    jump() {
+        // Only allow jumping if not already jumping
+        if (!this.state.isJumping) {
+            this.state.isJumping = true;
+            this.state.initialY = this.state.position.y;
+            this.state.jumpTime = 0;
+
+            // this.state.mixer = new AnimationMixer(this.state.model);
+            this.state.action.stop();
+            const jumpingAnimation = this.state.gltf.animations[3];
+            this.state.action = this.state.mixer.clipAction(jumpingAnimation); 
+            this.state.action.play();
+            this.state.action.timeScale = 0;
         }
     }
 
     update(timeStamp) {
+        this.state.count += 1;
+
         if (this.state.prev == null) {
             this.state.prev = timeStamp;
         }
         this.state.now = timeStamp;
 
-        const deltaTime = (this.state.now - this.state.prev) * 0.01;
+        const deltaTime = (this.state.now - this.state.prev);
 
         if (this.state.mixer) {
-            this.state.mixer.update(this.state.level * deltaTime); 
+            this.state.mixer.update(0.1*Math.log10(this.state.spf * this.state.speed + 15)); 
         }
 
-        this.state.position.add(this.state.direction.clone().multiplyScalar(this.state.acceleration * deltaTime));
+        if (this.state.isJumping) {
+            this.state.jumpTime += deltaTime * 0.001;
+            // Jumping calculation with smooth easing
+            const jumpHeight = this.state.jumpStrength;
+            const jumpDuration = 0.8; // Total jump duration
+
+            // Normalize jump time (0 to 1 range)
+            const normalizedTime = this.state.jumpTime / jumpDuration;
+            const easingFactor = Math.sin(Math.PI * normalizedTime); 
+            this.state.position.y = this.state.initialY + jumpHeight * easingFactor;
+            
+            // Check if jump is complete
+            if (this.state.jumpTime >= jumpDuration) {
+                this.state.isJumping = false;
+                this.state.position.y = this.state.initialY;
+                // this.state.mixer = new AnimationMixer(this.state.model);
+                this.state.action.stop();
+                const runningAnimation = this.state.gltf.animations[0];
+                this.state.action = this.state.mixer.clipAction(runningAnimation); 
+                this.state.action.play();
+                this.state.action.timeScale = 0.1*Math.log10(this.state.spf * this.state.speed + 15);
+            }
+        } else {
+            if (this.state.count > 8) {
+                this.state.action.timeScale = 0.1*Math.log10(this.state.spf * this.state.speed + 15);
+            }
+        }
+
+        this.state.position.add(this.state.direction.clone().multiplyScalar(0.25*this.state.speed));
         
         this.position.copy(this.state.position);
         this.state.prev = timeStamp;
+        
     }
 
     findCurrentSegment(roadState) {
