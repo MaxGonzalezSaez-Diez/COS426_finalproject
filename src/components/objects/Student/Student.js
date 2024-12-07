@@ -22,7 +22,10 @@ class Student extends Group {
             jumpStrength: 10,
             isJumping: false,
             gravity: -30,
-            groundLevel: 0
+            groundLevel: 0,
+            currentSegment: null,
+            nextSegment: null,
+            roadType: null,
         }
 
         
@@ -64,23 +67,105 @@ class Student extends Group {
         }
     }
 
-    update(timeStamp) {
+    update(timeStamp, roadState) {
         if (this.state.prev == null) {
             this.state.prev = timeStamp;
         }
         this.state.now = timeStamp;
 
-        const deltaTime = (this.state.now - this.state.prev) * 0.001;
+        const deltaTime = (this.state.now - this.state.prev) * 0.01;
 
         if (this.state.mixer) {
             this.state.mixer.update(this.state.level * deltaTime); 
         }
 
-        console.log(this.state.direction)
+        const { currentSeg, roadType } = this.findCurrentSegment(roadState);
+        
+        this.state.currentSegment = currentSeg;
+        this.state.roadType = roadType;
+
         this.state.position.add(this.state.direction.clone().multiplyScalar(this.state.acceleration * deltaTime));
         
         this.position.copy(this.state.position);
         this.state.prev = timeStamp;
+    }
+
+    findCurrentSegment(roadState) {
+        const roadSegments = roadState.roadSegments;
+        const cornerSegments = roadState.cornerSegments;
+    
+        let currentSegment = null;
+        let currentSegmentType = null;
+        let currentIndex = -1;
+    
+        // First, find the current segment
+        if (roadSegments.length > 0) {
+            for (let i = 0; i < roadSegments.length; i++) {
+                if (this.isOnSegment(roadSegments[i])) {
+                    currentSegment = roadSegments[i];
+                    currentSegmentType = 'road';
+                    currentIndex = i;
+                    break;
+                }
+            }
+        }
+    
+        // If no road segment found, check corners
+        if (!currentSegment && cornerSegments.length > 0) {
+            for (let i = 0; i < cornerSegments.length; i++) {
+                if (this.isOnSegment(cornerSegments[i])) {
+                    currentSegment = cornerSegments[i];
+                    currentSegmentType = 'corner';
+                    currentIndex = i;
+                    break;
+                }
+            }
+        }
+    
+        // If no current segment found, return null
+        if (!currentSegment) {
+            return {
+                currentSeg: null,
+                // nextSeg: nextSegment,
+                roadType: null
+            };
+        }
+    
+        // Find the next segment based on current segment type
+        // let nextSegment = null;
+        // if (currentSegmentType === 'road') {
+        //     if (cornerSegments.length > 0) {
+        //         nextSegment = cornerSegments[(currentIndex) % cornerSegments.length];
+        //     }
+        // } else if (currentSegmentType === 'corner') {
+        //     if (roadSegments.length > 0) {
+        //         nextSegment = roadSegments[(currentIndex + 1) % roadSegments.length];
+        //     }
+        // }
+    
+        return {
+            currentSeg: currentSegment,
+            // nextSeg: nextSegment,
+            roadType: currentSegmentType
+        };
+    }
+
+    isOnSegment(segment) {
+        const segmentCenter = segment.state.center;
+        const segmentWidth = segment.state.segmentWidth;
+        const segmentLength = segment.state.segmentLength;
+    
+        const studentPos = this.state.position;
+    
+        // Calculate the segment's bounds
+        const halfWidth = segmentWidth / 2;
+        const halfLength = segmentLength / 2;
+    
+        // Check if student is within the segment's bounds
+        const inXBounds = Math.abs(studentPos.x - segmentCenter.x) <= halfWidth;
+        const inZBounds = Math.abs(studentPos.z - segmentCenter.z) <= halfLength;
+    
+        return inXBounds && inZBounds;
     }
 }
 

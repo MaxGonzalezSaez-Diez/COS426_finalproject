@@ -30,7 +30,7 @@ class RoadChunk extends Group {
 
         // Create road material
         const material = new MeshBasicMaterial({ 
-            // color: Math.random() * 0xffffff, // Generate a random hex color
+            color: Math.random() * 0xffffff, // Generate a random hex color
             map: roadTexture 
         });
 

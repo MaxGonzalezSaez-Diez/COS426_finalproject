@@ -5,7 +5,7 @@ import RoadCorner from '../RoadCorner/RoadCorner.js';
 class ProceduralRoad extends Group {
     constructor(parent, {
         segmentWidth = 20,
-        segmentLength = 40,
+        segmentLength = 100,
         startSegments = 10,
         fracTurns = 0.1,
     } = {}) {
@@ -57,11 +57,12 @@ class ProceduralRoad extends Group {
 
             if (segmentType === 'straight') {
 
-                newCenter = oldCenter.clone().add(oldDirection.clone().multiplyScalar(this.state.segmentLength/2 + this.state.segmentWidth*1/2).clone());
+                // newCenter = oldCenter.clone().add(oldDirection.clone().multiplyScalar(this.state.segmentLength/2 + this.state.segmentWidth*1/2).clone());
+                newCenter = oldCenter.clone().add(oldDirection.clone().multiplyScalar(this.state.segmentLength/2).clone());
 
                 newDirection = oldDirection.clone();
 
-                newCenter = newCenter.clone().add(newDirection.clone().multiplyScalar(this.state.segmentLength/2 + this.state.segmentWidth*1/2).clone()).clone()
+                newCenter = newCenter.clone().add(newDirection.clone().multiplyScalar(this.state.segmentLength/2).clone()).clone()
             } else { 
                 let angle = -Math.PI / 2;
                 if (segmentType === 'turn-left') {
@@ -88,6 +89,9 @@ class ProceduralRoad extends Group {
         // Add to scene and tracking
         this.add(roadSegment);
         this.state.roadSegments.push(roadSegment);
+        if (segmentType === 'straight') {
+            return roadSegment;
+        }
 
         if (nrCurSeg > 0) {
             const roadCorner = new RoadCorner(this.state.parent, {

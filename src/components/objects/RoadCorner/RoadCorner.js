@@ -12,6 +12,7 @@ class RoadCorner extends Group {
             gui: parent.state.gui,
             parent: parent,
             segmentWidth: segmentWidth, 
+            segmentLength: segmentWidth,
             center: center,
         };
 
