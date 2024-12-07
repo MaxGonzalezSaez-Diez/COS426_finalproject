@@ -16,7 +16,8 @@ class Student extends Group {
             action: null,
             level: 1, 
             position: new Vector3(0, 0, 0),
-            velocity: new Vector3(0, 0, 0),
+            direction: new Vector3(0, 0, 1),
+            rotAxis: new Vector3(0, 1, 0),
             acceleration: 10,
             jumpStrength: 10,
             isJumping: false,
@@ -28,6 +29,7 @@ class Student extends Group {
         this.name = 'student';
         this.addStudent();
         parent.addToUpdateList(this);
+        window.addEventListener('keydown', this.handleKeyDown.bind(this));
     }
 
     addStudent() {
@@ -44,20 +46,39 @@ class Student extends Group {
         });
     }
 
+    handleKeyDown(event) {
+        const turn = (angle) => {
+            this.state.direction = this.state.direction.clone().applyAxisAngle(this.state.rotAxis, angle);
+            this.state.model.rotation.y += angle;
+        };
+    
+        switch(event.key.toLowerCase()) {
+            case 'a':
+            case 'arrowleft':
+                turn(Math.PI/2); 
+                break;
+            case 'd':
+            case 'arrowright':
+                turn(-Math.PI/2); 
+                break;
+        }
+    }
+
     update(timeStamp) {
         if (this.state.prev == null) {
             this.state.prev = timeStamp;
         }
         this.state.now = timeStamp;
 
-        const deltaTime = (this.state.now - this.state.prev) * 0.01;
+        const deltaTime = (this.state.now - this.state.prev) * 0.001;
 
         if (this.state.mixer) {
             this.state.mixer.update(this.state.level * deltaTime); 
         }
 
-        this.state.position.z += this.state.acceleration * deltaTime;
-
+        console.log(this.state.direction)
+        this.state.position.add(this.state.direction.clone().multiplyScalar(this.state.acceleration * deltaTime));
+        
         this.position.copy(this.state.position);
         this.state.prev = timeStamp;
     }

@@ -11,6 +11,13 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene } from 'scenes';
 import { AxesHelper } from 'three';
 
+// ---------------------------------------------
+// Global Vars
+// ---------------------------------------------
+const cameraOffset = -20; 
+const heightOffset = 9;  
+// ---------------------------------------------
+
 // Initialize core ThreeJS components
 const scene = new SeedScene();
 const camera = new PerspectiveCamera();
@@ -18,7 +25,6 @@ const renderer = new WebGLRenderer({ antialias: true });
 
 // Set up camera
 camera.position.set(0, 15, -30);
-// camera.lookAt(new Vector3(0, 0, 0)); 
 
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -45,16 +51,35 @@ const onAnimationFrameHandler = (timeStamp) => {
     controls.update();
     renderer.render(scene, camera);
     scene.update && scene.update(timeStamp);
-    controls.object.position.set(
-        scene.state.cameraPos.x,
-        scene.state.cameraPos.y,
-        scene.state.cameraPos.z,
+
+    const studentPosition = scene.state.student.state.position;
+    const studentDirection = scene.state.student.state.direction;
+
+    const cameraPosition = studentPosition.clone().add(
+        studentDirection.clone().normalize().multiplyScalar(cameraOffset)
     );
-    controls.target = new Vector3(
-        scene.state.studentPos.x,
-        scene.state.studentPos.y,
-        scene.state.studentPos.z,
-    ); 
+    cameraPosition.y += heightOffset;
+
+    // Smooth camera interpolation
+    // TODO: adapt lerp to speed
+    const smoothFactor = 0.25; 
+    controls.object.position.lerp(
+        new Vector3(
+            cameraPosition.x,
+            cameraPosition.y,
+            cameraPosition.z
+        ), 
+        smoothFactor
+    );
+
+    controls.target.lerp(
+        new Vector3(
+            studentPosition.x,
+            studentPosition.y,
+            studentPosition.z
+        ), 
+        smoothFactor
+    );
 
     window.requestAnimationFrame(onAnimationFrameHandler);
 };
