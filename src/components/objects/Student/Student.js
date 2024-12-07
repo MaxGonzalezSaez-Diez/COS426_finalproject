@@ -70,33 +70,102 @@ class Student extends Group {
         let angle = 0;
         if (turn_direction === 'left' && this.state.currentLane > -turnEdge) {
             moveSign = 1;
-            this.state.currentLane-=1;
             angle = Math.PI/2;
+
+            if (roadType !== "corner") {
+                this.state.currentLane-=1;
+            }
         } else if (turn_direction === 'right' && this.state.currentLane < turnEdge) {
             moveSign = -1;
-            this.state.currentLane+=1;
             angle = -Math.PI/2;
+            if (roadType !== "corner") {
+                this.state.currentLane+=1;
+            }
         }
 
-        const curDir = this.state.direction;
-        const offsetDir = new Vector3(curDir.z, 0, -curDir.x).normalize();
-
-        offsetDir.set(
-            Math.round(offsetDir.x),
-            Math.round(offsetDir.y),
-            Math.round(offsetDir.z)
-        );
-
         if (roadType === "corner") {
-            this.state.direction = this.state.direction.clone().applyAxisAngle(this.state.rotAxis, angle);
+
+            const {newLane, closestCenter} = this.findClosestSubSquareCenter(
+                this.state.position,
+                currentSeg.state.center.clone(),
+                currentSeg.state.segmentWidth,
+                this.state.laneCount,
+                this.state.currentLane,
+                this.state.direction.clone(), 
+                turn_direction
+            );
+
+            const newDirection = this.state.direction.clone().applyAxisAngle(this.state.rotAxis, angle);
+            this.state.direction = newDirection.clone();
             this.state.model.rotation.y += angle;
+
+            this.state.position = closestCenter;
+            this.state.currentLane = newLane;
+
         } else {
+            const curDir = this.state.direction;
+            const offsetDir = new Vector3(curDir.z, 0, -curDir.x).normalize();
+    
+            offsetDir.set(
+                Math.round(offsetDir.x),
+                Math.round(offsetDir.y),
+                Math.round(offsetDir.z)
+            );
+
             const centerLane = offsetDir.clone().multiply(currentSeg.position.clone());
             const pushOfSegment = offsetDir.clone().multiplyScalar(moveSign*this.state.laneWidth)
             this.state.position.add(centerLane.clone().add(pushOfSegment));
         }
 
     };
+
+    findClosestSubSquareCenter(position, center, segmentWidth, laneCount, currentLane, direction, turn_direction) {
+        const sectionSize = segmentWidth / laneCount;
+        const localPosition = position.clone().sub(center);
+    
+        const halfLaneCount = Math.floor(laneCount / 2);
+        const xIndex = Math.round(localPosition.x / sectionSize);
+        const zIndex = Math.round(localPosition.z / sectionSize);
+    
+        const clampedXIndex = Math.max(-halfLaneCount, Math.min(halfLaneCount, xIndex));
+        const clampedZIndex = Math.max(-halfLaneCount, Math.min(halfLaneCount, zIndex));
+    
+        // Calculate the center of the closest small square
+        const closestCenter = center.clone().add(new Vector3(
+            clampedXIndex * sectionSize,
+            0,
+            clampedZIndex * sectionSize
+        ));
+
+        let newLane = null;
+        if (Math.round(direction.z) === 1) {
+            if (turn_direction == "right") {
+                newLane = -clampedZIndex;
+            } else {
+                newLane = clampedZIndex;
+            }
+        } else if (Math.round(direction.z) === -1) {
+            if (turn_direction == "right") {
+                newLane = clampedZIndex;
+            } else {
+                newLane = -clampedZIndex;
+            }
+        } else if (Math.round(direction.x) === 1) {
+            if (turn_direction == "right") {
+                newLane = -clampedXIndex;
+            } else {
+                newLane = clampedXIndex;
+            }
+        } else if (Math.round(direction.x) === -1) {
+            if (turn_direction == "right") {
+                newLane = clampedXIndex;
+            } else {
+                newLane = -clampedXIndex;
+            }
+        }
+    
+        return {newLane, closestCenter};
+    }
 
     handleKeyDown(event) {
         switch(event.key.toLowerCase()) {

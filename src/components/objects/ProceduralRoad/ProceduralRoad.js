@@ -7,7 +7,7 @@ class ProceduralRoad extends Group {
         segmentWidth = 25,
         segmentLength = 100,
         startSegments = 2,
-        fracTurns = 0.2,
+        fracTurns = 0.3,
     } = {}) {
         super();
 
