@@ -4,9 +4,9 @@ import RoadCorner from '../RoadCorner/RoadCorner.js';
 
 class ProceduralRoad extends Group {
     constructor(parent, {
-        segmentWidth = 20,
+        segmentWidth = 25,
         segmentLength = 100,
-        startSegments = 10,
+        startSegments = 2,
         fracTurns = 0.1,
     } = {}) {
         super();

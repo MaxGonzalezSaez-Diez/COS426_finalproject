@@ -49,20 +49,30 @@ class Student extends Group {
         });
     }
 
-    handleKeyDown(event) {
-        const turn = (angle) => {
+    turn (angle) {
+        if (this.state.roadType === "corner") {
             this.state.direction = this.state.direction.clone().applyAxisAngle(this.state.rotAxis, angle);
             this.state.model.rotation.y += angle;
-        };
-    
+        } else {
+            const moveDir = this.state.direction.clone().applyAxisAngle(this.state.rotAxis, angle)
+            if (Math.sign(angle) > 0) {
+                this.state.position.add(moveDir.clone().multiplyScalar(5)); 
+            } else {
+                this.state.position.sub(moveDir.clone().multiplyScalar(-5)); 
+            }
+        }
+        
+    };
+
+    handleKeyDown(event) {
         switch(event.key.toLowerCase()) {
             case 'a':
             case 'arrowleft':
-                turn(Math.PI/2); 
+                this.turn(Math.PI/2); 
                 break;
             case 'd':
             case 'arrowright':
-                turn(-Math.PI/2); 
+                this.turn(-Math.PI/2); 
                 break;
         }
     }
