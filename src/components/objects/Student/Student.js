@@ -57,52 +57,45 @@ class Student extends Group {
     }
 
     turn (turn_direction) {
+        const { currentSeg, roadType } = this.findCurrentSegment(this.state.parent.state.roadChunk.state);
+        
+        // if (currentSeg == null || roadType == null) {
+        //     return;
+        // }
+        // this.state.currentSegment = currentSeg;
+        // this.state.roadType = roadType;
+
         const turnEdge = Math.round((this.state.laneCount-1)/2);
         let moveSign = 0;
+        let angle = 0;
         if (turn_direction === 'left' && this.state.currentLane > -turnEdge) {
             moveSign = 1;
             this.state.currentLane-=1;
+            angle = Math.PI/2;
         } else if (turn_direction === 'right' && this.state.currentLane < turnEdge) {
             moveSign = -1;
             this.state.currentLane+=1;
+            angle = -Math.PI/2;
         }
 
-        const currentSegment = this.state.currentSegment;
         const curDir = this.state.direction;
         const offsetDir = new Vector3(curDir.z, 0, -curDir.x).normalize();
-        // let moveDir = currentDirection.clone().applyAxisAngle(this.state.rotAxis, -Math.PI/2)
 
-        // left: Math.PI/2
-        // right: -Math.PI/2
-        // const moveDir = this.state.direction.clone().applyAxisAngle(this.state.rotAxis, angle)
         offsetDir.set(
             Math.round(offsetDir.x),
             Math.round(offsetDir.y),
             Math.round(offsetDir.z)
         );
 
-        if (this.state.roadType === "corner") {
+        if (roadType === "corner") {
             this.state.direction = this.state.direction.clone().applyAxisAngle(this.state.rotAxis, angle);
             this.state.model.rotation.y += angle;
         } else {
-            const centerLane = offsetDir.clone().multiply(currentSegment.position.clone());
+            const centerLane = offsetDir.clone().multiply(currentSeg.position.clone());
             const pushOfSegment = offsetDir.clone().multiplyScalar(moveSign*this.state.laneWidth)
             this.state.position.add(centerLane.clone().add(pushOfSegment));
-
-            // const step = moveDir.clone().add(this.state.currentLane * this.state.laneWidth);
-            // const pushOfSegment = currentSegment.position.clone().multiply(step);
-            // this.state.position = this.state.position.add(pushOfSegment);
-
-            // if ("left") {
-            //     // this.state.position.add(moveDir.clone().multiplyScalar(5)); 
-            //     const step = moveDir.clone().multiplyScalar(this.state.currentLane * this.state.laneWidth);
-            //     const pushOfSegment = currentSegment.position.clone().add(step);
-            //     this.state.position = this.state.position.add(pushOfSegment);
-            // } else {
-            //     this.state.position.sub(moveDir.clone().multiplyScalar(-5)); 
-            // }
         }
-        
+
     };
 
     handleKeyDown(event) {
@@ -118,7 +111,7 @@ class Student extends Group {
         }
     }
 
-    update(timeStamp, roadState) {
+    update(timeStamp) {
         if (this.state.prev == null) {
             this.state.prev = timeStamp;
         }
@@ -129,11 +122,6 @@ class Student extends Group {
         if (this.state.mixer) {
             this.state.mixer.update(this.state.level * deltaTime); 
         }
-
-        const { currentSeg, roadType } = this.findCurrentSegment(roadState);
-        
-        this.state.currentSegment = currentSeg;
-        this.state.roadType = roadType;
 
         this.state.position.add(this.state.direction.clone().multiplyScalar(this.state.acceleration * deltaTime));
         
@@ -182,18 +170,6 @@ class Student extends Group {
             };
         }
     
-        // Find the next segment based on current segment type
-        // let nextSegment = null;
-        // if (currentSegmentType === 'road') {
-        //     if (cornerSegments.length > 0) {
-        //         nextSegment = cornerSegments[(currentIndex) % cornerSegments.length];
-        //     }
-        // } else if (currentSegmentType === 'corner') {
-        //     if (roadSegments.length > 0) {
-        //         nextSegment = roadSegments[(currentIndex + 1) % roadSegments.length];
-        //     }
-        // }
-    
         return {
             currentSeg: currentSegment,
             // nextSeg: nextSegment,
@@ -207,11 +183,27 @@ class Student extends Group {
         const segmentLength = segment.state.segmentLength;
     
         const studentPos = this.state.position;
-    
-        // Calculate the segment's bounds
-        const halfWidth = segmentWidth / 2;
-        const halfLength = segmentLength / 2;
-    
+
+        const curDir = this.state.direction.clone().normalize();
+        curDir.set(
+            Math.round(curDir.x),
+            Math.round(curDir.y),
+            Math.round(curDir.z)
+        );
+            
+        let halfWidth = 0;
+        let halfLength = 0;
+
+        if (Math.abs(curDir.z) === 1) {
+            // Calculate the segment's bounds
+            halfWidth = segmentWidth / 2;
+            halfLength = segmentLength / 2;
+        } else {
+            // Calculate the segment's bounds
+            halfWidth = segmentLength / 2;
+            halfLength = segmentWidth / 2;
+        }
+
         // Check if student is within the segment's bounds
         const inXBounds = Math.abs(studentPos.x - segmentCenter.x) <= halfWidth;
         const inZBounds = Math.abs(studentPos.z - segmentCenter.z) <= halfLength;

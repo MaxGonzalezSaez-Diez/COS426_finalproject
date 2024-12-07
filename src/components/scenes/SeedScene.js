@@ -56,8 +56,6 @@ class SeedScene extends Scene {
             if (obj.constructor.name === 'ProceduralRoad') {
                 obj.update(timeStamp, this.state.student);
                 // console.log('Updating ProceduralRoad');
-            } else if (obj.constructor.name === 'Student') {
-                obj.update(timeStamp, this.state.roadChunk.state);
             } else {
                 obj.update(timeStamp);
             }
