@@ -6,6 +6,7 @@ class Student extends Group {
     constructor(parent, { laneCount = 5, roadWidth = 20, laneWidth = 4 } = {}) {
         // Call parent Group() constructor
         super();
+        const startSpeed = 1
 
         this.state = {
             parent: parent,
@@ -18,7 +19,8 @@ class Student extends Group {
             direction: new Vector3(0, 0, 1),
             rotAxis: new Vector3(0, 1, 0),
             isJumping: false,
-            speed: 0.5, // todo: pick good speed
+            startSpeed: startSpeed,
+            speed: startSpeed, // todo: pick good speed
             spf: 2.5,
             jumpStrength: 10,
             currentSegment: null,
@@ -38,7 +40,6 @@ class Student extends Group {
         parent.addToUpdateList(this);
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
     }
-    
 
     addStudent() {
         const loader = new GLTFLoader();
@@ -236,7 +237,6 @@ class Student extends Group {
     }
 
     update(timeStamp) {
-
         this.state.count += 1;
 
         if (this.state.prev == null) {
@@ -292,6 +292,8 @@ class Student extends Group {
         this.state.prev = timeStamp;
 
         this.updateBoundingBox();
+        this.state.speed =
+        this.state.startSpeed * (Math.log2(this.parent.state.timeElapsed + 4));
     }
 
     findCurrentSegment(roadState) {
