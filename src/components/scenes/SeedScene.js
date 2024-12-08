@@ -32,7 +32,8 @@ class SeedScene extends Scene {
         // Set background to a nice color
         this.background = new Color(0xaaaaee);
 
-        this.state.laneWidth = roadWidth / (laneCount - 1);
+        this.state.laneWidth =
+            this.state.roadWidth / (this.state.laneCount - 1);
 
         // Add meshes to scene
         this.state.roadChunk = new ProceduralRoad(this, {
@@ -42,18 +43,16 @@ class SeedScene extends Scene {
         });
 
         this.state.student = new Student(this, {
+            laneCount: this.state.laneCount,
             roadWidth: this.state.roadWidth,
+            laneWidth: this.state.laneWidth,
         });
-        // this.state.obstacle = new Obstacle(this, {
-        //     roadWidth: this.state.roadWidth,
-        // });
 
         this.state.lights = new BasicLights();
         this.add(
             this.state.lights,
             this.state.roadChunk,
             this.state.student,
-            this.state.obstacle
         );
     }
 
@@ -64,14 +63,11 @@ class SeedScene extends Scene {
     update(timeStamp) {
         const { updateList } = this.state;
         const stPos = this.state.student.state.position;
-        const obsPos = this.state.obstacle.state.position;
         this.state.studentPos.set(stPos.x, stPos.y, stPos.z);
-        this.state.obstaclePos.set(obsPos.x, obsPos.y, obsPos.z);
 
         for (const obj of updateList) {
             if (obj.constructor.name === 'ProceduralRoad') {
                 obj.update(timeStamp, this.state.student);
-                // console.log('Updating ProceduralRoad');
             } else {
                 obj.update(timeStamp);
             }

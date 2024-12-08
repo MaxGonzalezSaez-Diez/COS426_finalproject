@@ -10,8 +10,11 @@ class ProceduralRoad extends Group {
             segmentWidth = 25,
             segmentLength = 100,
             startSegments = 2,
-            fracTurns = 0.3,
+            fracTurns = 0.1,
             obstacleSpawnProbability = 1,
+            laneCount = 5,
+            roadWidth = 20,
+            laneWidth = 4,
         } = {}
     ) {
         super();
@@ -27,6 +30,9 @@ class ProceduralRoad extends Group {
             currentDirection: new Vector3(0, 0, 1),
             currentPosition: new Vector3(0, 0, 0),
             obstacleSpawnProbability: obstacleSpawnProbability,
+            roadWidth: roadWidth,
+            laneCount: laneCount,
+            laneWidth: laneWidth,
         };
 
         this.generateInitialRoad();
@@ -43,6 +49,7 @@ class ProceduralRoad extends Group {
         }
     }
 
+    // BUG: Roads overlap sometimes. Somehow we need to keep track of that
     generateNextRoadSegment({
         forceStraight = false,
         disableObstacles = false,
@@ -136,6 +143,9 @@ class ProceduralRoad extends Group {
             center: newCenter.clone(),
             direction: newDirection.clone().normalize(),
             disableObstacles: disableObstacles,
+            // roadWidth: roadWidth,
+            // laneCount: laneCount,
+            // laneWidth: laneWidth,
         });
 
         // Add to scene and tracking
@@ -185,7 +195,8 @@ class ProceduralRoad extends Group {
         }
         let distance = runnerPos.manhattanDistanceTo(lastPieceCenter);
 
-        if (distance < 700) {
+        // TODO: we need something here that updates as a function of number of turns
+        if (distance < 1500) {
             this.generateNextRoadSegment();
         }
     }

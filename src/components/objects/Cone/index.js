@@ -1,1 +1,1 @@
-export { default as Obstacle } from './Obstacle.js';
+export { default as Cone } from './Cone.js';

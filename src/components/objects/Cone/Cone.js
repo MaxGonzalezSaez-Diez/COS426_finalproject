@@ -3,46 +3,47 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODELCONE from './cone.glb';
 
 class Cone extends Group {
-    constructor(parent, { position = new Vector3(), roadWidth = 20 }) {
+    constructor(parent, { position = new Vector3() }) {
         super();
-
-        const laneCount = 5;
 
         this.state = {
             parent: parent,
             model: null,
             position: position,
-            roadWidth: roadWidth,
-            laneCount: laneCount,
+            roadWidth: parent.state.roadWidth,
+            laneCount: parent.state.laneCount,
+            laneWidth: parent.state.laneWidth,
         };
 
-        const laneWidth = roadWidth / (laneCount - 1);
-        const randomLane = Math.floor(Math.random() * this.state.laneCount) - 2;
-
         this.name = 'cone';
-        this.addCone(randomLane, laneWidth);
+        this.addCone();
         parent.addToUpdateList(this);
     }
 
-    addCone(randomLane, laneWidth) {
+    addCone() {
         const loader = new GLTFLoader();
         loader.load(MODELCONE, (gltf) => {
             this.state.gltf = gltf;
             this.state.model = gltf.scene;
 
-            this.state.model.scale.set(25, 25, 25);
+            this.state.model.scale.set(2.5, 2.5, 2.5);
 
             // Position the obstacle
             this.state.model.position.set(
-                this.state.position.x + randomLane * laneWidth,
-                0,
-                this.state.position.z
+                this.state.position.x,
+                this.state.position.y,
+                this.state.position.z,
             );
 
             // Add the obstacle to the parent (scene or group)
             this.add(this.state.model);
-            // this.state.parent.add(this.state.model);
+            this.state.parent.add(this.state.model);
         });
+    }
+
+    update(timeStamp) {
+        // Optional update method if you want any animations
+        // Currently left empty
     }
 }
 

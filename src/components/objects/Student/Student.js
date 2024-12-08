@@ -18,16 +18,16 @@ class Student extends Group {
             direction: new Vector3(0, 0, 1),
             rotAxis: new Vector3(0, 1, 0),
             isJumping: false,
-            speed: 1,
+            speed: 5,
             spf: 2.5,
             jumpStrength: 10,
             currentSegment: null,
             nextSegment: null,
             roadType: null,
             roadWidth: roadWidth,
-            currentLane: 0,
             laneCount: laneCount,
             laneWidth: laneWidth,
+            currentLane: 0,
             count: 0,
         };
 
