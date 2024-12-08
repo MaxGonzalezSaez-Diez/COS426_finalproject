@@ -1,4 +1,4 @@
-import { Group, Vector3, AnimationMixer, THREE } from 'three';
+import { Group, Vector3, AnimationMixer, THREE, BoxHelper } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODELCONE from './cone.glb';
 
@@ -10,6 +10,7 @@ class Cone extends Group {
             parent: parent,
             model: null,
             position: position,
+            boundingBox: null,
             roadWidth: parent.state.roadWidth,
             laneCount: parent.state.laneCount,
             laneWidth: parent.state.laneWidth,
@@ -32,8 +33,21 @@ class Cone extends Group {
             this.state.model.position.set(
                 this.state.position.x,
                 this.state.position.y,
-                this.state.position.z,
+                this.state.position.z
             );
+
+            requestAnimationFrame(() => {
+                this.state.boundingBox = new BoxHelper(
+                    this.state.model,
+                    0xff0000
+                );
+
+                this.state.boundingBox.material.transparent = true;
+                this.state.boundingBox.material.opacity = 0;
+                
+                this.add(this.state.boundingBox);
+                this.state.parent.add(this.state.boundingBox);
+            });
 
             // Add the obstacle to the parent (scene or group)
             this.add(this.state.model);
