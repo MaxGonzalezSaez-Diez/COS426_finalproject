@@ -3,12 +3,9 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODEL from './runnerv2.glb';
 
 class Student extends Group {
-    constructor(parent, { roadWidth = 20 } = {}) {
+    constructor(parent, { laneCount = 5, roadWidth = 20, laneWidth = 4 } = {}) {
         // Call parent Group() constructor
         super();
-
-        const laneCount = 5;
-        const laneWidth = roadWidth / (laneCount - 1);
 
         this.state = {
             parent: parent,

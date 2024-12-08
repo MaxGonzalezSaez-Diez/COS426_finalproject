@@ -3,7 +3,7 @@ import { Scene, Color, Vector3 } from 'three';
 import { RoadChunk, Student } from 'objects';
 import { BasicLights } from 'lights';
 import ProceduralRoad from '../objects/ProceduralRoad/ProceduralRoad';
-import Obstacle from '../objects/Obstacle/Obstacle';
+import Obstacle from '../objects/Cone/Cone';
 
 class SeedScene extends Scene {
     constructor() {
@@ -17,6 +17,8 @@ class SeedScene extends Scene {
             updateList: [],
             roadLength: 1000,
             totalLength: 5000,
+            laneCount: 5,
+            roadWidth: 20,
             student: null,
             obstacle: null,
             roadChunk: null,
@@ -30,14 +32,21 @@ class SeedScene extends Scene {
         // Set background to a nice color
         this.background = new Color(0xaaaaee);
 
+        this.state.laneWidth = roadWidth / (laneCount - 1);
+
         // Add meshes to scene
-        this.state.roadChunk = new ProceduralRoad(this);
+        this.state.roadChunk = new ProceduralRoad(this, {
+            laneCount: this.state.laneCount,
+            roadWidth: this.state.roadWidth,
+            laneWidth: this.state.laneWidth,
+        });
+
         this.state.student = new Student(this, {
             roadWidth: this.state.roadWidth,
         });
-        this.state.obstacle = new Obstacle(this, {
-            roadWidth: this.state.roadWidth,
-        });
+        // this.state.obstacle = new Obstacle(this, {
+        //     roadWidth: this.state.roadWidth,
+        // });
 
         this.state.lights = new BasicLights();
         this.add(
@@ -58,17 +67,10 @@ class SeedScene extends Scene {
         const obsPos = this.state.obstacle.state.position;
         this.state.studentPos.set(stPos.x, stPos.y, stPos.z);
         this.state.obstaclePos.set(obsPos.x, obsPos.y, obsPos.z);
-        // this.state.cameraPos.set(
-        //     stPos.x,
-        //     stPos.y + 9,
-        //     stPos.z - 20
-        // );
 
         for (const obj of updateList) {
             if (obj.constructor.name === 'ProceduralRoad') {
                 obj.update(timeStamp, this.state.student);
-                obj.update(timeStamp, this.state.obstacle);
-
                 // console.log('Updating ProceduralRoad');
             } else {
                 obj.update(timeStamp);

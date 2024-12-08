@@ -2,7 +2,6 @@ import { Group, Vector3 } from 'three';
 //import * as THREE from 'three';
 import RoadChunk from '../RoadChunk/RoadChunk.js';
 import RoadCorner from '../RoadCorner/RoadCorner.js';
-import Obstacle from '../Obstacle/Obstacle.js';
 
 class ProceduralRoad extends Group {
     constructor(
@@ -37,13 +36,19 @@ class ProceduralRoad extends Group {
     generateInitialRoad() {
         // Generate first few segments
         for (let i = 0; i < this.state.startSegments; i++) {
-            this.generateNextRoadSegment(true);
+            this.generateNextRoadSegment({
+                forceStraight: true,
+                disableObstacles: true,
+            });
         }
     }
 
-    generateNextRoadSegment(forceStraint = false) {
+    generateNextRoadSegment({
+        forceStraight = false,
+        disableObstacles = false,
+    } = {}) {
         let segmentType = 'straight';
-        if (!forceStraint) {
+        if (!forceStraight) {
             const shouldTurn = Math.random() < this.state.fracTurns;
             segmentType = shouldTurn
                 ? Math.random() < 0.5
@@ -130,19 +135,18 @@ class ProceduralRoad extends Group {
             segmentLength: this.state.segmentLength,
             center: newCenter.clone(),
             direction: newDirection.clone().normalize(),
+            disableObstacles: disableObstacles,
         });
 
         // Add to scene and tracking
         this.add(roadSegment);
         this.state.roadSegments.push(roadSegment);
 
-        // spawn obstacles along this segment
-        this.spawnObstacles(newCenter, this.state.segmentWidth);
-
         if (segmentType === 'straight') {
             return roadSegment;
         }
 
+        // TODO: clean this up! delete past road segments
         if (nrCurSeg > 0) {
             const roadCorner = new RoadCorner(this.state.parent, {
                 segmentWidth: this.state.segmentWidth,
@@ -161,16 +165,6 @@ class ProceduralRoad extends Group {
 
         // TODO: make sure this is clean and returns both
         return roadSegment;
-    }
-
-    //todo: need to account for turns
-    spawnObstacles(roadCenter, roadWidth) {
-        const obstaclePosition = new Vector3(
-            roadCenter.x,
-            roadCenter.y + 2,
-            roadCenter.z
-        ); // Position above the road
-        new Obstacle(this.state.parent, obstaclePosition, roadWidth);
     }
 
     update(timeStamp, student) {
