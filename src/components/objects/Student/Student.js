@@ -1,4 +1,4 @@
-import { Group, Vector3, AnimationMixer } from 'three';
+import { Group, Vector3, AnimationMixer, Box3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODEL from './runnerv2.glb';
 
@@ -18,7 +18,7 @@ class Student extends Group {
             direction: new Vector3(0, 0, 1),
             rotAxis: new Vector3(0, 1, 0),
             isJumping: false,
-            speed: 5,
+            speed: 0.5, // todo: pick good speed
             spf: 2.5,
             jumpStrength: 10,
             currentSegment: null,
@@ -31,11 +31,14 @@ class Student extends Group {
             count: 0,
         };
 
+        this.boundingBox = new Box3();
+
         this.name = 'student';
         this.addStudent();
         parent.addToUpdateList(this);
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
     }
+    
 
     addStudent() {
         const loader = new GLTFLoader();
@@ -50,6 +53,13 @@ class Student extends Group {
             this.state.action.play();
             this.add(this.state.model);
         });
+    }
+
+    updateBoundingBox() {
+        // Update the bounding box based on the current position of the model
+        if (this.state.model) {
+            this.boundingBox.setFromObject(this.state.model);
+        }
     }
 
     turn(turn_direction) {
@@ -226,6 +236,7 @@ class Student extends Group {
     }
 
     update(timeStamp) {
+
         this.state.count += 1;
 
         if (this.state.prev == null) {
@@ -279,6 +290,8 @@ class Student extends Group {
 
         this.position.copy(this.state.position);
         this.state.prev = timeStamp;
+
+        this.updateBoundingBox();
     }
 
     findCurrentSegment(roadState) {

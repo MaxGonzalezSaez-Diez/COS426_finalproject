@@ -28,6 +28,7 @@ class RoadChunk extends Group {
                 { cones: 5, probability: 0.75 },
                 { cones: 6, probability: 0.75 },
             ],
+            timeElapsed = 0, // Add timeElapsed here with a default value of 0
         } = {}
     ) {
         super();
@@ -77,7 +78,7 @@ class RoadChunk extends Group {
         roadMesh.position.copy(center);
 
         if (!this.state.disableObstacles) {
-            this.spawnObstacles(center);
+            this.spawnObstacles(center, timeElapsed);
         }
 
         // Add to the group
@@ -88,33 +89,54 @@ class RoadChunk extends Group {
     }
 
     // todo: need to account for turns
-    spawnObstacles(roadCenter) {
-        this.spawnCones(roadCenter);
+    spawnObstacles(roadCenter, timeElapsed = 0) {
+        this.spawnCones(roadCenter, timeElapsed);
 
         // TODO: add other stuff here
     }
 
-    spawnCones(roadCenter) {
-        // Define the probabilities for the number of cones
-        const probabilities = this.state.coneProbabilities;
+    spawnCones(roadCenter, timeElapsed = 0) {
+        // baseProbabilities modified based on the amount of time elapsed
+        // more time = more cones in adjustedProbabilities
+        const baseProbabilities = this.state.coneProbabilities;
+        timeElapsed *= 1000;
 
+        const adjustedProbabilities = baseProbabilities.map((entry) => {
+        if (entry.cones === 0) {
+            return { ...entry, probability: Math.max(80 - timeElapsed, 10) };
+        } else {
+            return {
+                ...entry,
+                probability: Math.min(entry.probability + timeElapsed * 0.1, 50),
+            };
+        }
+        });
+
+        // calculates cumulative and normalized probabilities for cone spawning, 
+        // generates a random value between 0 and 100, and determines the number 
+        // of cones to spawn based on where the random value falls within the 
+        // normalized cumulative probability ranges
         const cumulativeProbabilities = [];
-        probabilities.reduce((acc, item) => {
+        adjustedProbabilities.reduce((acc, item) => {
             acc += item.probability;
             cumulativeProbabilities.push(acc);
             return acc;
         }, 0);
 
+        const totalProbability = cumulativeProbabilities[cumulativeProbabilities.length - 1];
+        const normalizedProbabilities = cumulativeProbabilities.map(
+        (value) => (value / totalProbability) * 100
+    );
         const randomValue = Math.random() * 100;
-        const numCones = probabilities.find(
-            (_, index) => randomValue < cumulativeProbabilities[index]
+        const numCones = adjustedProbabilities.find(
+            (_, index) => randomValue < normalizedProbabilities[index]
         ).cones;
 
-        // Spawn the cones
-        const minFraction = 0.25; // Lower bound (25%)
-        const maxFraction = 0.9; // Upper bound (90%)
-        const range = this.state.segmentLength * (maxFraction - minFraction); // Adjusted range
-        const baseOffset = this.state.segmentLength * minFraction; // Starting point (25%)
+        // spawn the cones
+        const minFraction = 0.25; // lower bound (25%)
+        const maxFraction = 0.9; // upper bound (90%)
+        const range = this.state.segmentLength * (maxFraction - minFraction); // adjusted range
+        const baseOffset = this.state.segmentLength * minFraction; // starting point (25%)
 
         // const range = this.state.segmentLength * 0.8;
         const laneDirection = this.state.direction
@@ -148,6 +170,12 @@ class RoadChunk extends Group {
             });
             this.state.obstacles.push(newCone);
         }
+
+        console.log('Time Elapsed:', timeElapsed);
+        console.log('Adjusted Probabilities:', adjustedProbabilities);
+        console.log('Normalized Probabilities:', normalizedProbabilities);
+        console.log('Random Value:', randomValue);
+        console.log('Number of Cones Spawned:', numCones);
     }
 
     update(timeStamp) {

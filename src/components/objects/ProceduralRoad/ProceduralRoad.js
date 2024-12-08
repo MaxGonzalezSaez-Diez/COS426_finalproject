@@ -45,6 +45,7 @@ class ProceduralRoad extends Group {
             this.generateNextRoadSegment({
                 forceStraight: true,
                 disableObstacles: true,
+                timeElapsed: 0,
             });
         }
     }
@@ -53,7 +54,11 @@ class ProceduralRoad extends Group {
     generateNextRoadSegment({
         forceStraight = false,
         disableObstacles = false,
+        timeElapsed = 0, // Add timeElapsed parameter
     } = {}) {
+
+        console.log('Time Elapsed, generateNextRoadSegement', timeElapsed);
+
         let segmentType = 'straight';
         if (!forceStraight) {
             const shouldTurn = Math.random() < this.state.fracTurns;
@@ -143,6 +148,7 @@ class ProceduralRoad extends Group {
             center: newCenter.clone(),
             direction: newDirection.clone().normalize(),
             disableObstacles: disableObstacles,
+            timeElapsed: timeElapsed, // pass timeElapsed to RoadChunk
             // roadWidth: roadWidth,
             // laneCount: laneCount,
             // laneWidth: laneWidth,
@@ -177,7 +183,8 @@ class ProceduralRoad extends Group {
         return roadSegment;
     }
 
-    update(timeStamp, student) {
+    update(timeStamp, student, timeElapsed) {
+        console.log('Time Elapsed (update, Procedural Road)', timeElapsed);
         // generateNextRoadSegment
         const runnerPos = student.state.position;
         let nrCurSeg = this.state.roadSegments.length;
@@ -197,7 +204,11 @@ class ProceduralRoad extends Group {
 
         // TODO: we need something here that updates as a function of number of turns
         if (distance < 1500) {
-            this.generateNextRoadSegment();
+            this.generateNextRoadSegment({
+                forceStraight: false,
+                disableObstacles: false,
+                timeElapsed: timeElapsed, // Pass timeElapsed to adjust probabilities
+            });
         }
     }
 }

@@ -27,6 +27,7 @@ class SeedScene extends Scene {
             // cameraPos: new Vector3(),
             studentPos: new Vector3(),
             obstaclePos: new Vector3(),
+            startTime: Date.now(), // track the game start time
         };
 
         // Set background to a nice color
@@ -54,7 +55,33 @@ class SeedScene extends Scene {
             this.state.roadChunk,
             this.state.student,
         );
+
+        this.createTimerElement();
     }
+
+    createTimerElement() {
+        const timerElement = document.createElement('div');
+        timerElement.id = 'game-timer';
+        timerElement.style.position = 'absolute';
+        timerElement.style.top = '10px';
+        timerElement.style.right = '10px';
+        timerElement.style.color = 'white';
+        timerElement.style.fontSize = '20px';
+        timerElement.style.fontFamily = 'Arial, sans-serif';
+        timerElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        timerElement.style.padding = '10px';
+        timerElement.style.borderRadius = '5px';
+        timerElement.innerText = 'Time: 0s';
+        document.body.appendChild(timerElement);
+    }
+
+    updateTimerElement(timeElapsed) {
+        const timerElement = document.getElementById('game-timer');
+        if (timerElement) {
+            timerElement.innerText = `Time: ${timeElapsed.toFixed(1)}s`; // Show elapsed time with 1 decimal place
+        }
+    }
+
 
     addToUpdateList(object) {
         this.state.updateList.push(object);
@@ -65,9 +92,17 @@ class SeedScene extends Scene {
         const stPos = this.state.student.state.position;
         this.state.studentPos.set(stPos.x, stPos.y, stPos.z);
 
+        // calculate time elapsed
+        const timeElapsed = (Date.now() - this.state.startTime) / 1000; // time in seconds
+        console.log('Time Elapsed (Update method):', timeElapsed);
+
+
+        // Update the timer display
+        this.updateTimerElement(timeElapsed);
+        
         for (const obj of updateList) {
             if (obj.constructor.name === 'ProceduralRoad') {
-                obj.update(timeStamp, this.state.student);
+                obj.update(timeStamp, this.state.student,timeElapsed);
             } else {
                 obj.update(timeStamp);
             }
