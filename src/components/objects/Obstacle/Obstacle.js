@@ -1,73 +1,76 @@
 import { Group, Vector3, AnimationMixer } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import MODEL from './runnerv2.glb';
+import MODELCONE from './cone.glb';
+import MODELFOX from './fox.glb';
+import * as THREE from 'three';
 
-class Student extends Group {
-    constructor(parent, { roadWidth = 20 } = {}) {
-        // Call parent Group() constructor
+class Obstacle extends Group {
+    constructor(parent, position, roadWidth) {
         super();
 
         const laneCount = 5;
-        const laneWidth = roadWidth / (laneCount - 1);
 
         this.state = {
             parent: parent,
-            model: null,
-            prev: null,
-            now: null,
-            mixer: null,
-            action: null,
-            position: new Vector3(0, 0, 0),
-            direction: new Vector3(0, 0, 1),
-            rotAxis: new Vector3(0, 1, 0),
-            isJumping: false,
-            speed: 1,
-            spf: 2.5,
-            jumpStrength: 10,
-            currentSegment: null,
-            nextSegment: null,
-            roadType: null,
-            roadWidth: roadWidth,
-            currentLane: 0,
+            position: position || new THREE.Vector3(0, 0, 0), // Default to (0, 0, 0)
+            roadWidth: roadWidth || 20,
             laneCount: laneCount,
-            laneWidth: laneWidth,
-            count: 0,
         };
 
-        this.name = 'student';
-        this.addStudent();
-        parent.addToUpdateList(this);
-        window.addEventListener('keydown', this.handleKeyDown.bind(this));
-    }
-
-    addStudent() {
+        const laneWidth = roadWidth / (laneCount - 1);
+        const randomLane = Math.floor(Math.random() * this.state.laneCount) - 2;
         const loader = new GLTFLoader();
-        loader.load(MODEL, (gltf) => {
+        loader.load(MODELCONE, (gltf) => {
             this.state.gltf = gltf;
             this.state.model = gltf.scene;
-            this.state.model.position.set(0, 0, 0);
-            this.state.model.scale.set(1, 1, 1);
-            this.state.mixer = new AnimationMixer(this.state.model);
-            const runningAnimation = this.state.gltf.animations[0];
-            this.state.action = this.state.mixer.clipAction(runningAnimation);
-            this.state.action.play();
-            this.add(this.state.model);
+
+            this.state.model.scale.set(2.5, 2.5, 2.5);
+
+            // Position the obstacle
+            this.state.model.position.set(
+                randomLane * laneWidth,
+                0,
+                position.z
+            );
+
+            // Add the obstacle to the parent (scene or group)
+            this.state.parent.add(this.state.model);
         });
+
+        // this.name = 'obstacle';
+        // parent.addToUpdateList(this);
+        // window.addEventListener('keydown', this.handleKeyDown.bind(this));
     }
 
-    turn(turn_direction) {
-        // if (this.state.isJumping) {
-        //     return
-        // }
+    moveAlongRoad() {
         const { currentSeg, roadType } = this.findCurrentSegment(
             this.state.parent.state.roadChunk.state
         );
 
-        // if (currentSeg == null || roadType == null) {
-        //     return;
-        // }
-        // this.state.currentSegment = currentSeg;
-        // this.state.roadType = roadType;
+        if (currentSeg) {
+            this.state.currentSegment = currentSeg;
+            this.state.roadType = roadType;
+
+            const laneOffset = this.state.currentLane * this.state.laneWidth;
+            const direction = currentSeg.state.direction.clone().normalize();
+
+            this.state.position.add(direction.multiplyScalar(laneOffset));
+
+            if (this.state.model) {
+                this.state.model.rotation.y = Math.atan2(
+                    direction.x,
+                    direction.z
+                );
+            }
+
+            this.position.copy(this.state.position);
+        }
+    }
+
+    turn(turn_direction) {
+        const { currentSeg, roadType } = this.findCurrentSegment(
+            this.state.parent.state.roadChunk.state
+        );
 
         const turnEdge = Math.round((this.state.laneCount - 1) / 2);
         let moveSign = 0;
@@ -127,6 +130,29 @@ class Student extends Group {
                 .multiplyScalar(moveSign * this.state.laneWidth);
             this.state.position.add(centerLane.clone().add(pushOfSegment));
         }
+    }
+
+    // Update the obstacle's position on the road, following the procedural path
+    update(timeStamp) {
+        this.state.count += 1;
+
+        if (this.state.prev == null) {
+            this.state.prev = timeStamp;
+        }
+        this.state.now = timeStamp;
+
+        const deltaTime = this.state.now - this.state.prev;
+
+        if (this.state.mixer) {
+            this.state.mixer.update(
+                0.1 * Math.log10(this.state.spf * this.state.speed + 15)
+            );
+        }
+
+        this.moveAlongRoad(); // Move obstacle along the road
+
+        this.position.copy(this.state.position);
+        this.state.prev = timeStamp;
     }
 
     findClosestSubSquareCenter(
@@ -205,83 +231,11 @@ class Student extends Group {
             case 'arrowright':
                 this.turn('right');
                 break;
-            case 'w':
-            case 'arrowup':
-                this.jump();
-                break;
+            // case 'w':
+            // case 'arrowup':
+            //    this.jump();
+            //     break;
         }
-    }
-
-    jump() {
-        // Only allow jumping if not already jumping
-        if (!this.state.isJumping) {
-            this.state.isJumping = true;
-            this.state.initialY = this.state.position.y;
-            this.state.jumpTime = 0;
-
-            // this.state.mixer = new AnimationMixer(this.state.model);
-            this.state.action.stop();
-            const jumpingAnimation = this.state.gltf.animations[3];
-            this.state.action = this.state.mixer.clipAction(jumpingAnimation);
-            this.state.action.play();
-            this.state.action.timeScale = 0;
-        }
-    }
-
-    update(timeStamp) {
-        this.state.count += 1;
-
-        if (this.state.prev == null) {
-            this.state.prev = timeStamp;
-        }
-        this.state.now = timeStamp;
-
-        const deltaTime = this.state.now - this.state.prev;
-
-        if (this.state.mixer) {
-            this.state.mixer.update(
-                0.1 * Math.log10(this.state.spf * this.state.speed + 15)
-            );
-        }
-
-        if (this.state.isJumping) {
-            this.state.jumpTime += deltaTime * 0.001;
-            // Jumping calculation with smooth easing
-            const jumpHeight = this.state.jumpStrength;
-            const jumpDuration = 0.8; // Total jump duration
-
-            // Normalize jump time (0 to 1 range)
-            const normalizedTime = this.state.jumpTime / jumpDuration;
-            const easingFactor = Math.sin(Math.PI * normalizedTime);
-            this.state.position.y =
-                this.state.initialY + jumpHeight * easingFactor;
-
-            // Check if jump is complete
-            if (this.state.jumpTime >= jumpDuration) {
-                this.state.isJumping = false;
-                this.state.position.y = this.state.initialY;
-                // this.state.mixer = new AnimationMixer(this.state.model);
-                this.state.action.stop();
-                const runningAnimation = this.state.gltf.animations[0];
-                this.state.action =
-                    this.state.mixer.clipAction(runningAnimation);
-                this.state.action.play();
-                this.state.action.timeScale =
-                    0.1 * Math.log10(this.state.spf * this.state.speed + 15);
-            }
-        } else {
-            if (this.state.count > 8) {
-                this.state.action.timeScale =
-                    0.1 * Math.log10(this.state.spf * this.state.speed + 15);
-            }
-        }
-
-        this.state.position.add(
-            this.state.direction.clone().multiplyScalar(0.25 * this.state.speed)
-        );
-
-        this.position.copy(this.state.position);
-        this.state.prev = timeStamp;
     }
 
     findCurrentSegment(roadState) {
@@ -368,4 +322,4 @@ class Student extends Group {
     }
 }
 
-export default Student;
+export default Obstacle;
