@@ -33,6 +33,7 @@ class ProceduralRoad extends Group {
             roadWidth: roadWidth,
             laneCount: laneCount,
             laneWidth: laneWidth,
+            obstacles: [],
         };
 
         this.generateInitialRoad();
@@ -158,6 +159,11 @@ class ProceduralRoad extends Group {
         // Add to scene and tracking
         this.add(roadSegment);
         this.state.roadSegments.push(roadSegment);
+
+        // Aggregate obstacles from this RoadChunk into ProceduralRoad's obstacles array
+        if (roadSegment.state.obstacles && roadSegment.state.obstacles.length > 0) {
+            this.state.obstacles.push(...roadSegment.state.obstacles);
+        }
 
         if (segmentType === 'straight') {
             return roadSegment;
