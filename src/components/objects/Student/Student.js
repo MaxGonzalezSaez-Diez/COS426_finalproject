@@ -55,27 +55,62 @@ class Student extends Group {
             this.state.action.play();
             this.add(this.state.model);
 
-            this.state.model.updateMatrixWorld(true);
-            this.boundingBox.setFromObject(this.state.model, true);
-
-            // Create a helper to visualize the bounding box
+            // Manually define the bounding box dimensions
+            const halfRoadWidth = this.state.roadWidth / 2;
+            const boundingBoxWidth = halfRoadWidth / 16;
+            const boundingBoxHeight = this.state.roadWidth/4;
+            const boundingBoxLength = halfRoadWidth / 16;
+    
+            this.boundingBox.set(
+                new Vector3(
+                    -boundingBoxWidth, // Min X
+                    0,                 // Min Y
+                    -boundingBoxLength // Min Z
+                ),
+                new Vector3(
+                    boundingBoxWidth,  // Max X
+                    boundingBoxHeight, // Max Y
+                    boundingBoxLength  // Max Z
+                )
+            );
+    
+            // Visualize the bounding box
             const boundingBoxHelper = new Box3Helper(this.boundingBox, 0x00ff00);
             this.state.parent.add(boundingBoxHelper);
-            this.state.boundingBoxHelper = boundingBoxHelper;   
+    
+            this.state.boundingBoxHelper = boundingBoxHelper;
         });
     }
 
     updateBoundingBox() {
-        if (this.state.model) {
-            this.state.model.updateMatrixWorld(true);
-            this.boundingBox.setFromObject(this.state.model, true);
-            if (this.state.boundingBoxHelper) {
-                // Update the helper
-                this.state.boundingBoxHelper.box.copy(this.boundingBox);
-                this.state.boundingBoxHelper.updateMatrixWorld(true);
-            }
+    if (this.state.model) {
+        // Update the bounding box position to follow the model
+        const position = this.state.position;
+
+        const halfRoadWidth = this.state.roadWidth / 2;
+        const boundingBoxWidth = halfRoadWidth / 16;
+        const boundingBoxHeight = this.state.roadWidth/4;
+        const boundingBoxLength = halfRoadWidth / 16;
+
+        this.boundingBox.set(
+            new Vector3(
+                position.x - boundingBoxWidth, // Min X
+                position.y,                   // Min Y
+                position.z - boundingBoxLength // Min Z
+            ),
+            new Vector3(
+                position.x + boundingBoxWidth, // Max X
+                position.y + boundingBoxHeight, // Max Y
+                position.z + boundingBoxLength // Max Z
+            )
+        );
+
+        if (this.state.boundingBoxHelper) {
+            this.state.boundingBoxHelper.box.copy(this.boundingBox);
         }
     }
+}
+
 
     turn(turn_direction) {
         // if (this.state.isJumping) {
