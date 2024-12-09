@@ -9,6 +9,8 @@ import {
 } from 'three';
 import texture from './cobblestone.jpeg';
 import Cone from '../Cone/Cone.js';
+import Bush from '../Bush/Bush.js';
+import Oak from '../Oak/Oak.js';
 
 class RoadChunk extends Group {
     constructor(
@@ -28,6 +30,14 @@ class RoadChunk extends Group {
                 { cones: 5, probability: 0.75 },
                 { cones: 6, probability: 0.75 },
             ],
+            bushProbabilities = [
+                { cones: 0, probability: 92 },
+                { cones: 1, probability: 8 },
+            ],
+            oakProbabilities = [
+                { cones: 0, probability: 96 },
+                { cones: 1, probability: 4 },
+            ],
             timeElapsed = 0, // Add timeElapsed here with a default value of 0
         } = {}
     ) {
@@ -42,6 +52,8 @@ class RoadChunk extends Group {
             direction: direction.clone().normalize(),
             disableObstacles: disableObstacles,
             coneProbabilities: coneProbabilities,
+            bushProbabilities: bushProbabilities,
+            oakProbabilities: oakProbabilities,
             obstacles: [],
         };
 
@@ -90,31 +102,48 @@ class RoadChunk extends Group {
 
     // todo: need to account for turns
     spawnObstacles(roadCenter, timeElapsed = 0) {
-        this.spawnCones(roadCenter, timeElapsed);
+        this.createObject('Cone', roadCenter, timeElapsed);
+        this.createObject('Bush', roadCenter, timeElapsed);
+        this.createObject('Oak', roadCenter, timeElapsed);
 
         // TODO: add other stuff here
     }
 
-    spawnCones(roadCenter, timeElapsed = 0) {
+    createObject(objectName, roadCenter, timeElapsed = 0) {
         // baseProbabilities modified based on the amount of time elapsed
         // more time = more cones in adjustedProbabilities
-        const baseProbabilities = this.state.coneProbabilities;
+        let baseProbabilities = null;
+        if (objectName == 'Cone') {
+            baseProbabilities = this.state.coneProbabilities;
+        } else if (objectName == 'Bush') {
+            baseProbabilities = this.state.bushProbabilities;
+        } else if (objectName == 'Oak') {
+            baseProbabilities = this.state.oakProbabilities;
+        }
+
         timeElapsed *= 1000;
 
-        const adjustedProbabilities = baseProbabilities.map((entry) => {
-        if (entry.cones === 0) {
-            return { ...entry, probability: Math.max(80 - timeElapsed, 10) };
-        } else {
-            return {
-                ...entry,
-                probability: Math.min(entry.probability + timeElapsed * 0.1, 50),
-            };
-        }
-        });
+        // const adjustedProbabilities = baseProbabilities.map((entry) => {
+        //     if (entry.cones === 0) {
+        //         return {
+        //             ...entry,
+        //             probability: Math.max(80 - timeElapsed, 10),
+        //         };
+        //     } else {
+        //         return {
+        //             ...entry,
+        //             probability: Math.min(
+        //                 entry.probability + timeElapsed * 0.1,
+        //                 50
+        //             ),
+        //         };
+        //     }
+        // });
 
-        // calculates cumulative and normalized probabilities for cone spawning, 
-        // generates a random value between 0 and 100, and determines the number 
-        // of cones to spawn based on where the random value falls within the 
+        const adjustedProbabilities = baseProbabilities;
+        // calculates cumulative and normalized probabilities for cone spawning,
+        // generates a random value between 0 and 100, and determines the number
+        // of cones to spawn based on where the random value falls within the
         // normalized cumulative probability ranges
         const cumulativeProbabilities = [];
         adjustedProbabilities.reduce((acc, item) => {
@@ -123,12 +152,13 @@ class RoadChunk extends Group {
             return acc;
         }, 0);
 
-        const totalProbability = cumulativeProbabilities[cumulativeProbabilities.length - 1];
+        const totalProbability =
+            cumulativeProbabilities[cumulativeProbabilities.length - 1];
         const normalizedProbabilities = cumulativeProbabilities.map(
-        (value) => (value / totalProbability) * 100
-    );
+            (value) => (value / totalProbability) * 100
+        );
         const randomValue = Math.random() * 100;
-        const numCones = adjustedProbabilities.find(
+        const numObjects = adjustedProbabilities.find(
             (_, index) => randomValue < normalizedProbabilities[index]
         ).cones;
 
@@ -143,7 +173,7 @@ class RoadChunk extends Group {
             .clone()
             .applyAxisAngle(new Vector3(0, 1, 0), -Math.PI / 2);
 
-        for (let i = 0; i < numCones; i++) {
+        for (let i = 0; i < numObjects; i++) {
             const offset =
                 Math.random() * range +
                 baseOffset -
@@ -153,11 +183,11 @@ class RoadChunk extends Group {
             const max = r;
             const lanePush = Math.floor(Math.random() * (max - min + 1)) + min;
 
-            let positionNewCone = roadCenter
+            let positionObject = roadCenter
                 .clone()
                 .add(this.state.direction.clone().multiplyScalar(offset));
 
-            positionNewCone.add(
+            positionObject.add(
                 laneDirection
                     .clone()
                     .multiplyScalar(
@@ -165,17 +195,30 @@ class RoadChunk extends Group {
                     )
             );
 
-            const newCone = new Cone(this.state.parent, {
-                position: positionNewCone,
-            });
-            this.state.obstacles.push(newCone);
+            let object = null;
+            if (objectName == 'Cone') {
+                object = new Cone(this.state.parent, {
+                    position: positionObject,
+                });
+            } else if (objectName == 'Bush') {
+                object = new Bush(this.state.parent, {
+                    position: positionObject,
+                });
+            } else if (objectName == 'Oak') {
+                object = new Oak(this.state.parent, {
+                    position: positionObject,
+                });
+            }
+
+            // this.add(object)
+            this.state.obstacles.push(object);
         }
 
         console.log('Time Elapsed:', timeElapsed);
         console.log('Adjusted Probabilities:', adjustedProbabilities);
         console.log('Normalized Probabilities:', normalizedProbabilities);
         console.log('Random Value:', randomValue);
-        console.log('Number of Cones Spawned:', numCones);
+        console.log('Number of Cones Spawned:', numObjects);
     }
 
     update(timeStamp) {
