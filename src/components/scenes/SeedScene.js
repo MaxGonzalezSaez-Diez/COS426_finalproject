@@ -103,6 +103,8 @@ class SeedScene extends Scene {
                 obj.update(timeStamp);
             }
         }
+
+        this.checkCollisions();
     }
 
         handleCollision() {
@@ -134,6 +136,7 @@ class SeedScene extends Scene {
     
         console.log("Obstacles:", this.state.roadChunk.state.obstacles);
     
+        // iterate through obstacles that are added in 
         for (const obstacle of this.state.roadChunk.state.obstacles) {
             if (obstacle.state.boundingBoxHelper) {
                 obstacle.state.boundingBoxHelper.update();
