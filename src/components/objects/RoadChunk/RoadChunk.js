@@ -1,6 +1,7 @@
 import {
     Group,
     PlaneGeometry,
+    BoxGeometry,
     MeshBasicMaterial,
     Mesh,
     TextureLoader,
@@ -8,6 +9,7 @@ import {
     Vector3,
 } from 'three';
 import texture from './cobblestone.jpeg';
+import sidewalkTexture from './stone2.jpeg';
 import Cone from '../Cone/Cone.js';
 import Bush from '../Bush/Bush.js';
 import Oak from '../Oak/Oak.js';
@@ -72,7 +74,7 @@ class RoadChunk extends Group {
 
         // Create road material
         const material = new MeshBasicMaterial({
-            color: Math.random() * 0xffffff, // Generate a random hex color
+            // color: Math.random() * 0xffffff, // Generate a random hex color
             map: roadTexture,
         });
 
@@ -95,6 +97,72 @@ class RoadChunk extends Group {
 
         // Add to the group
         this.add(roadMesh);
+
+        // Create sidewalks
+        const sidewalkWidth = 2; // Adjust the width of the sidewalk as needed
+        const sidewalkHeight = 1; // Adjust the height of the sidewalk as needed
+
+        // Load sidewalk texture
+        const sidewalkTextureLoader = new TextureLoader();
+        const sidewalkTextureMap = sidewalkTextureLoader.load(sidewalkTexture);
+        const sideTexture = sidewalkTextureLoader.load(sidewalkTexture);
+
+        sidewalkTextureMap.wrapS = RepeatWrapping;
+        sidewalkTextureMap.wrapT = RepeatWrapping;
+        sidewalkTextureMap.repeat.x = 0.1;
+        sideTexture.repeat.y = 0.1;
+
+        const materials = [
+            new MeshBasicMaterial({ map: sideTexture }), // Side faces
+            new MeshBasicMaterial({ map: sideTexture }), // Other side faces
+            new MeshBasicMaterial({ map: sidewalkTextureMap }), // Top face
+            new MeshBasicMaterial({ map: sidewalkTextureMap }), // Bottom face
+            new MeshBasicMaterial({ map: sideTexture }), // Front face
+            new MeshBasicMaterial({ map: sideTexture }), // Back face
+        ];
+
+        const sidewalkGeometry = new BoxGeometry(
+            sidewalkWidth,
+            sidewalkHeight,
+            this.state.segmentLength
+        );
+
+        // Create left sidewalk
+        const offsetDir = new Vector3(direction.z, 0, -direction.x).normalize();
+
+        let leftSidewalk = new Mesh(sidewalkGeometry, materials);
+        if (Math.abs(direction.z) < 1e-5) {
+            leftSidewalk.rotation.y = Math.PI / 2;
+        }
+
+        leftSidewalk.position.set(
+            center.x,
+            center.y + sidewalkHeight / 2, // Raise the sidewalk above the road
+            center.z
+        );
+
+        leftSidewalk.position.add(offsetDir.clone().multiplyScalar(this.state.segmentWidth / 2))
+
+        // - this.state.segmentWidth / 2 - sidewalkWidth / 2
+
+        this.add(leftSidewalk);
+
+        // Create right sidewalk
+        let rightSidewalk = new Mesh(sidewalkGeometry, materials);
+        if (Math.abs(direction.z) < 1e-5) {
+            rightSidewalk.rotation.y = Math.PI / 2;
+        }
+
+        rightSidewalk.position.set(
+            center.x,
+            center.y + sidewalkHeight / 2,
+            center.z
+        );
+
+        rightSidewalk.position.add(offsetDir.clone().multiplyScalar(-this.state.segmentWidth / 2))
+        // + this.state.segmentWidth / 2 + sidewalkWidth / 2
+
+        this.add(rightSidewalk);
 
         // Add self to parent's update list (if needed)
         parent.addToUpdateList(this);

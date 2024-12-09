@@ -1,34 +1,54 @@
-import { Group, PlaneGeometry, MeshBasicMaterial, Mesh, TextureLoader, RepeatWrapping, Vector3 } from 'three';
+import {
+    Group,
+    PlaneGeometry,
+    BoxGeometry,
+    MeshBasicMaterial,
+    Mesh,
+    TextureLoader,
+    RepeatWrapping,
+    Vector3,
+} from 'three';
 import texture from './cobblestone.jpeg';
+import sidewalkTexture from './stone2.jpeg';
 
 class RoadCorner extends Group {
-    constructor(parent, {
-        segmentWidth = 20, 
-        center = new Vector3(),
-    } = {}) {
+    constructor(
+        parent,
+        {
+            segmentWidth = 20,
+            center = new Vector3(),
+            oldDirection = new Vector3(),
+            turn = 'turn-left',
+        } = {}
+    ) {
         super();
 
         this.state = {
             gui: parent.state.gui,
             parent: parent,
-            segmentWidth: segmentWidth, 
+            segmentWidth: segmentWidth,
             segmentLength: segmentWidth,
             center: center,
+            oldDirection: oldDirection,
+            turn: turn,
         };
 
-        // Create road geometry 
-        const geometry = new PlaneGeometry(this.state.segmentWidth, this.state.segmentWidth);
-        
+        // Create road geometry
+        const geometry = new PlaneGeometry(
+            this.state.segmentWidth,
+            this.state.segmentWidth
+        );
+
         // Load and configure road texture
         const textureLoader = new TextureLoader();
-        const roadTexture = textureLoader.load(texture); 
+        const roadTexture = textureLoader.load(texture);
         roadTexture.wrapS = RepeatWrapping;
         roadTexture.wrapT = RepeatWrapping;
-        roadTexture.repeat.set(segmentWidth/10, segmentWidth/10);
+        roadTexture.repeat.set(segmentWidth / 10, segmentWidth / 10);
 
         // Create road material
-        const material = new MeshBasicMaterial({ 
-            map: roadTexture 
+        const material = new MeshBasicMaterial({
+            map: roadTexture,
         });
 
         // Create road mesh
@@ -39,10 +59,126 @@ class RoadCorner extends Group {
 
         // Position road based on type
         roadMesh.position.copy(center);
-        
+
         // Add to the group
         this.add(roadMesh);
 
+        // add corners ]
+        // Create sidewalks
+        const sidewalkWidth = 2; // Adjust the width of the sidewalk as needed
+        const sidewalkHeight = 1; // Adjust the height of the sidewalk as needed
+
+        // Load sidewalk texture
+        const sidewalkTextureLoader = new TextureLoader();
+        const sidewalkTextureMap = sidewalkTextureLoader.load(sidewalkTexture);
+        const sideTexture = sidewalkTextureLoader.load(sidewalkTexture);
+
+        sidewalkTextureMap.wrapS = RepeatWrapping;
+        sidewalkTextureMap.wrapT = RepeatWrapping;
+        sidewalkTextureMap.repeat.x = 0.1;
+        sideTexture.repeat.y = 0.1;
+
+        const materials = [
+            new MeshBasicMaterial({ map: sideTexture }), // Side faces
+            new MeshBasicMaterial({ map: sideTexture }), // Other side faces
+            new MeshBasicMaterial({ map: sidewalkTextureMap }), // Top face
+            new MeshBasicMaterial({ map: sidewalkTextureMap }), // Bottom face
+            new MeshBasicMaterial({ map: sideTexture }), // Front face
+            new MeshBasicMaterial({ map: sideTexture }), // Back face
+        ];
+
+        const sidewalkGeometry = new BoxGeometry(
+            sidewalkWidth,
+            sidewalkHeight,
+            this.state.segmentLength
+        );
+
+        let leftSidewalk = new Mesh(sidewalkGeometry, materials);
+        let rightSidewalk = new Mesh(sidewalkGeometry, materials);
+
+        leftSidewalk.position.set(
+            center.x,
+            center.y + sidewalkHeight / 2,
+            center.z
+        );
+
+        rightSidewalk.position.set(
+            center.x,
+            center.y + sidewalkHeight / 2,
+            center.z
+        );
+
+        const offsetDir = new Vector3(
+            oldDirection.z,
+            0,
+            -oldDirection.x
+        ).normalize();
+        const offsetDirO = new Vector3(
+            oldDirection.x,
+            0,
+            oldDirection.z
+        ).normalize();
+
+        if (oldDirection.x === 1) {
+            let m = 1;
+            if (turn == 'turn-left') {
+                m = -1;
+            }
+            leftSidewalk.position.add(
+                offsetDirO
+                    .clone()
+                    .multiplyScalar((this.state.segmentWidth) / 2)
+            );
+            rightSidewalk.rotation.y = Math.PI / 2;
+            rightSidewalk.position.add(
+                offsetDir.clone().multiplyScalar(m*this.state.segmentWidth / 2)
+            );
+        } else if (oldDirection.x == -1) {
+            let m = 1;
+            if (turn == 'turn-left') {
+                m = -1;
+            }
+            leftSidewalk.position.add(
+                offsetDirO
+                    .clone()
+                    .multiplyScalar((this.state.segmentWidth) / 2)
+            );
+            rightSidewalk.rotation.y = Math.PI / 2;
+            rightSidewalk.position.add(
+                offsetDir.clone().multiplyScalar(m*this.state.segmentWidth / 2)
+            );
+        } else if (oldDirection.z == 1) {
+            let m = 1;
+            if (turn == 'turn-left') {
+                m = -1;
+            }
+            leftSidewalk.position.add(
+                offsetDir
+                    .clone()
+                    .multiplyScalar((m * this.state.segmentWidth) / 2)
+            );
+            rightSidewalk.rotation.y = Math.PI / 2;
+            rightSidewalk.position.add(
+                offsetDirO.clone().multiplyScalar(this.state.segmentWidth / 2)
+            );
+        } else if (oldDirection.z == -1) {
+            let m = 1;
+            if (turn == 'turn-left') {
+                m = -1;
+            }
+            leftSidewalk.position.add(
+                offsetDir
+                    .clone()
+                    .multiplyScalar((m * this.state.segmentWidth) / 2)
+            );
+            rightSidewalk.rotation.y = Math.PI / 2;
+            rightSidewalk.position.add(
+                offsetDirO.clone().multiplyScalar(this.state.segmentWidth / 2)
+            );
+        }
+
+        this.add(leftSidewalk);
+        this.add(rightSidewalk);
         // Add self to parent's update list (if needed)
         parent.addToUpdateList(this);
     }

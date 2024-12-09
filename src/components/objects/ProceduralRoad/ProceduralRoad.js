@@ -9,7 +9,7 @@ class ProceduralRoad extends Group {
         {
             segmentWidth = 25,
             segmentLength = 100,
-            startSegments = 2,
+            startSegments = 1,
             fracTurns = 0.1,
             obstacleSpawnProbability = 1,
             laneCount = 5,
@@ -56,7 +56,6 @@ class ProceduralRoad extends Group {
         disableObstacles = false,
         timeElapsed = 0, // Add timeElapsed parameter
     } = {}) {
-
         console.log('Time Elapsed, generateNextRoadSegement', timeElapsed);
 
         let segmentType = 'straight';
@@ -163,10 +162,15 @@ class ProceduralRoad extends Group {
         }
 
         // TODO: clean this up! delete past road segments
+        const lastPiece = this.state.roadSegments[nrCurSeg - 1];
+        const oldDirection = lastPiece.state.direction.clone();
+
         if (nrCurSeg > 0) {
             const roadCorner = new RoadCorner(this.state.parent, {
                 segmentWidth: this.state.segmentWidth,
                 center: newCorner.clone(),
+                oldDirection: oldDirection.clone().normalize(),
+                turn: segmentType,
             });
 
             this.add(roadCorner);
