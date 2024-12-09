@@ -1,4 +1,4 @@
-import { Group, Vector3, AnimationMixer, THREE, BoxHelper } from 'three';
+import { Group, Vector3, AnimationMixer, THREE, BoxHelper, Box3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODELCONE from './cone.glb';
 
@@ -10,7 +10,7 @@ class Cone extends Group {
             parent: parent,
             model: null,
             position: position,
-            boundingBox: null,
+            boundingBox: new Box3(),
             roadWidth: parent.state.roadWidth,
             laneCount: parent.state.laneCount,
             laneWidth: parent.state.laneWidth,
@@ -49,6 +49,8 @@ class Cone extends Group {
             //     this.state.parent.add(this.state.boundingBox);
             // });
 
+            this.state.boundingBox.setFromObject(this.state.model);
+
             // create and attach a BoxHelper for visualizing the bounding box
             const boundingBoxHelper = new BoxHelper(this.state.model, 0xff0000);
             this.add(boundingBoxHelper);
@@ -61,21 +63,21 @@ class Cone extends Group {
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
 
-            // this.updateBoundingBox();
+            this.updateBoundingBox();
         });
     }
 
-    // updateBoundingBox() {
-    //     if (this.state.model) {
-    //         // compute the bounding box based on the model's current state
-    //         this.state.boundingBox.setFromObject(this.state.model);
+    updateBoundingBox() {
+        if (this.state.model) {
+            // compute the bounding box based on the model's current state
+            this.state.boundingBox.setFromObject(this.state.model);
 
-    //         // update the BoxHelper to match the bounding box
-    //         if (this.state.boundingBoxHelper) {
-    //             this.state.boundingBoxHelper.box.copy(this.state.boundingBox);
-    //         }
-    //     }
-    // }
+            // update the BoxHelper to match the bounding box
+            if (this.state.boundingBoxHelper) {
+                this.state.boundingBoxHelper.update();
+            }
+        }
+    }
 
     update(timeStamp) {
         // Optional update method if you want any animations

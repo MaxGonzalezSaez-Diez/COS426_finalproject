@@ -61,7 +61,7 @@ class Bush extends Group {
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
 
-            // this.updateBoundingBox();
+            this.updateBoundingBox();
         });
     }
 
@@ -70,17 +70,17 @@ class Bush extends Group {
         // Currently left empty
     }
 
-    // updateBoundingBox() {
-    //     if (this.state.model) {
-    //         // find bounding box based on the model's current state
-    //         this.state.boundingBox.setFromObject(this.state.model);
+    updateBoundingBox() {
+        if (this.state.model) {
+            // compute the bounding box based on the model's current state
+            this.state.boundingBox.setFromObject(this.state.model);
 
-    //         // update the BoxHelper to match the bounding box
-    //         if (this.state.boundingBoxHelper) {
-    //             this.state.boundingBoxHelper.box.copy(this.state.boundingBox);
-    //         }
-    //     }
-    // }
+            // update the BoxHelper to match the bounding box
+            if (this.state.boundingBoxHelper) {
+                this.state.boundingBoxHelper.update();
+            }
+        }
+    }
 }
 
 export default Bush;
