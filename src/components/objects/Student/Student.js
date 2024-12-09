@@ -1,4 +1,4 @@
-import { Group, Vector3, AnimationMixer, Box3 } from 'three';
+import { Group, Vector3, AnimationMixer, Box3, Box3Helper } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODEL from './runnerv2.glb';
 
@@ -31,6 +31,7 @@ class Student extends Group {
             laneWidth: laneWidth,
             currentLane: 0,
             count: 0,
+            boundingBoxHelper: null,
         };
 
         this.boundingBox = new Box3();
@@ -53,13 +54,26 @@ class Student extends Group {
             this.state.action = this.state.mixer.clipAction(runningAnimation);
             this.state.action.play();
             this.add(this.state.model);
+
+            this.state.model.updateMatrixWorld(true);
+            this.boundingBox.setFromObject(this.state.model, true);
+
+            // Create a helper to visualize the bounding box
+            const boundingBoxHelper = new Box3Helper(this.boundingBox, 0x00ff00);
+            this.state.parent.add(boundingBoxHelper);
+            this.state.boundingBoxHelper = boundingBoxHelper;   
         });
     }
 
     updateBoundingBox() {
-        // Update the bounding box based on the current position of the model
         if (this.state.model) {
-            this.boundingBox.setFromObject(this.state.model);
+            this.state.model.updateMatrixWorld(true);
+            this.boundingBox.setFromObject(this.state.model, true);
+            if (this.state.boundingBoxHelper) {
+                // Update the helper
+                this.state.boundingBoxHelper.box.copy(this.boundingBox);
+                this.state.boundingBoxHelper.updateMatrixWorld(true);
+            }
         }
     }
 
@@ -238,6 +252,7 @@ class Student extends Group {
 
     update(timeStamp) {
         this.state.count += 1;
+        this.updateBoundingBox();
 
         if (this.state.prev == null) {
             this.state.prev = timeStamp;
