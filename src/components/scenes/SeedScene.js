@@ -1,9 +1,11 @@
 import * as Dat from 'dat.gui';
-import { Scene, Color, Vector3 } from 'three';
+import { Scene, Color, Vector3, TextureLoader, Sprite, SpriteMaterial } from 'three';
 import { RoadChunk, Student } from 'objects';
 import { BasicLights } from 'lights';
 import ProceduralRoad from '../objects/ProceduralRoad/ProceduralRoad';
 import Obstacle from '../objects/Cone/Cone';
+import CLOUD from './cloud.png';
+
 
 class SeedScene extends Scene {
     constructor() {
@@ -34,7 +36,104 @@ class SeedScene extends Scene {
         // Set background to a nice color
         this.background = new Color(0xaaaaee);
 
-        this.state.laneWidth =
+        // add clouds (just at the beginning for now)
+        this.loadClouds();
+
+        // create start screen
+        this.createStartScreen();
+
+        
+    }
+
+    loadClouds() {
+        const loader = new TextureLoader();
+
+        loader.load(CLOUD, (texture) => {
+
+            const cloudMaterial = new SpriteMaterial({
+                map: texture,
+                transparent: true,
+                opacity: 0.8, 
+            });
+
+            // Create cloud sprites and position them in the scene
+            for (let i = 0; i < 20; i++) {
+                const cloud = new Sprite(cloudMaterial);
+
+                cloud.position.set(
+                    Math.random() * 20 - 10,  // left to right
+                    Math.random() * 4 + 3,   // height
+                    Math.random() * -20      // since negative is on top of player at start
+                );
+
+                cloud.scale.set(Math.random() * 5 + 10, Math.random() * 5 + 10, 1);  // Random sizes
+                this.add(cloud);
+
+            }
+        });
+    }
+
+    createStartScreen() {
+        // Create a full-screen overlay for the start screen
+        const startScreen = document.createElement('div');
+        startScreen.id = 'start-screen';
+        startScreen.style.position = 'absolute';
+        startScreen.style.top = '0';
+        startScreen.style.left = '0';
+        startScreen.style.width = '100%';
+        startScreen.style.height = '100%';
+        startScreen.style.backgroundColor = 'rgba(88, 27, 0, 0.7)';
+        startScreen.style.color = 'white';
+        startScreen.style.display = 'flex';
+        startScreen.style.justifyContent = 'center';
+        startScreen.style.alignItems = 'center';
+        startScreen.style.flexDirection = 'column';
+        startScreen.style.zIndex = '10'; 
+        document.body.appendChild(startScreen);
+
+        // Add title text
+        const title = document.createElement('h1');
+        const welcomeText = document.createElement('span');
+        welcomeText.innerHTML = 'WELCOME TO';
+        welcomeText.style.fontFamily = 'Impact, sans-serif';  
+        welcomeText.style.fontSize = '60px';  
+        const princetonText = document.createElement('span');
+        princetonText.innerHTML = '<br><span style="font-size: 120px;color: #FF6600;">PRINCETON RUN</span>';  
+        princetonText.style.fontFamily = 'Impact, sans-serif';  
+        title.appendChild(welcomeText);
+        title.appendChild(princetonText);
+        title.style.textAlign = 'center';  
+        startScreen.appendChild(title);
+
+        // Add instructions (can change to make it more fun later)
+        const instructionText = document.createElement('p');
+        instructionText.innerHTML = 'Use WASD or arrow keys to avoid the obstacles as you run!';
+        instructionText.style.fontFamily = 'Courier New, Courier, monospace';  
+        instructionText.style.fontSize = '35px';  
+        startScreen.appendChild(instructionText);
+
+        // Add start button
+        const startButton = document.createElement('button');
+        startButton.innerText = 'CLICK HERE TO START';
+        startButton.style.padding = '30px';
+        startButton.style.fontSize = '30px';
+        startButton.style.fontFamily = 'Courier New, Courier, monospace'; 
+        startButton.style.fontWeight = 'bold'; 
+        startButton.style.backgroundColor = '##ffffff';
+        startButton.style.border = 'none';
+        startButton.style.cursor = 'pointer';
+        startButton.style.marginTop = '40px';
+        startScreen.appendChild(startButton);
+
+        // click the start button to start the game
+        startButton.addEventListener('click', () => {
+            this.startGame();
+            startScreen.style.display = 'none'; // Hide the start screen when clicked
+        });
+    }
+
+    startGame() {
+    this.state.laneWidth =
             this.state.roadWidth / (this.state.laneCount - 1);
 
         // Add meshes to scene
@@ -54,8 +153,8 @@ class SeedScene extends Scene {
         this.add(this.state.lights, this.state.roadChunk, this.state.student);
 
         this.createTimerElement();
-    }
 
+    }
     createTimerElement() {
         const timerElement = document.createElement('div');
         timerElement.id = 'game-timer';
@@ -85,9 +184,11 @@ class SeedScene extends Scene {
 
     update(timeStamp) {
         const { updateList } = this.state;
+
+        if (this.state.student) {
         const stPos = this.state.student.state.position;
         this.state.studentPos.set(stPos.x, stPos.y, stPos.z);
-
+        }
         // calculate time elapsed
         const timeElapsed = (Date.now() - this.state.startTime) / 1000; // time in seconds
         console.log('Time Elapsed (Update method):', timeElapsed);

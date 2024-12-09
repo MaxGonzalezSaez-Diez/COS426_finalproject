@@ -52,6 +52,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     renderer.render(scene, camera);
     scene.update && scene.update(timeStamp);
 
+    if (scene.state.student) {
     const studentPosition = scene.state.student.state.position;
     const studentDirection = scene.state.student.state.direction;
 
@@ -72,6 +73,7 @@ const onAnimationFrameHandler = (timeStamp) => {
         smoothFactor
     );
 
+
     controls.target.lerp(
         new Vector3(
             studentPosition.x,
@@ -80,6 +82,7 @@ const onAnimationFrameHandler = (timeStamp) => {
         ), 
         smoothFactor
     );
+}
 
     window.requestAnimationFrame(onAnimationFrameHandler);
 };
