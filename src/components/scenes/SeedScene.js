@@ -104,6 +104,54 @@ class SeedScene extends Scene {
             }
         }
     }
+
+        handleCollision() {
+            // set the student's speed to zero
+            this.state.student.state.speed = 0;
+        
+            // display a message or end screen
+            const endMessage = document.createElement('div');
+            endMessage.innerText = "You died!";
+            endMessage.style.position = 'absolute';
+            endMessage.style.top = '50%';
+            endMessage.style.left = '50%';
+            endMessage.style.transform = 'translate(-50%, -50%)';
+            endMessage.style.color = 'white';
+            endMessage.style.fontSize = '48px';
+            endMessage.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+            endMessage.style.padding = '20px';
+            endMessage.style.borderRadius = '10px';
+            document.body.appendChild(endMessage);
+        }
+
+    checkCollisions() {
+        const studentBoundingBox = this.state.student.boundingBox;
+    
+        if (!this.state.roadChunk || !this.state.roadChunk.state.obstacles) {
+            console.warn("No obstacles found!");
+            return;
+        }
+    
+        console.log("Obstacles:", this.state.roadChunk.state.obstacles);
+    
+        for (const obstacle of this.state.roadChunk.state.obstacles) {
+            if (obstacle.state.boundingBoxHelper) {
+                obstacle.state.boundingBoxHelper.update();
+    
+                const boundingBox = new THREE.Box3().setFromObject(obstacle.state.model);
+                if (studentBoundingBox.intersectsBox(boundingBox)) {
+                    console.log("Collision detected");
+                    this.handleCollision();
+                    break;
+                }
+                else {
+                    console.log("No collision detected");
+                }
+            }
+        }
+    }
+
+
 }
 
 export default SeedScene;

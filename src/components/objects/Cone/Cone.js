@@ -36,18 +36,15 @@ class Cone extends Group {
                 this.state.position.z
             );
 
-            this.add(this.state.model);
-            this.state.parent.add(this.state.model);
-
-            // Create and attach a BoxHelper for visualizing the bounding box
+            // create and attach a BoxHelper for visualizing the bounding box
             const boundingBoxHelper = new BoxHelper(this.state.model, 0xff0000);
             this.add(boundingBoxHelper);
             this.state.parent.add(boundingBoxHelper);
 
-            // Store the BoxHelper for updates
+            // store the BoxHelper for updates
             this.state.boundingBoxHelper = boundingBoxHelper;
 
-            // Add the obstacle to the parent (scene or group)
+            // add the obstacle to the parent (scene or group)
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
         });
