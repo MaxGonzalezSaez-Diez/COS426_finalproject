@@ -40,6 +40,8 @@ class RoadChunk extends Group {
                 { cones: 0, probability: 96 },
                 { cones: 1, probability: 4 },
             ],
+            initialsidewalkColor: initialsidewalkColor,
+            initialroadColor: initialroadColor,
             timeElapsed = 0, // Add timeElapsed here with a default value of 0
         } = {}
     ) {
@@ -56,8 +58,20 @@ class RoadChunk extends Group {
             coneProbabilities: coneProbabilities,
             bushProbabilities: bushProbabilities,
             oakProbabilities: oakProbabilities,
+            initialsidewalkColor: initialsidewalkColor,
+            initialroadColor: initialroadColor,
             obstacles: [],
         };
+
+        let currentSideWalkColor = initialsidewalkColor;
+        const currentRoadColor = initialroadColor;
+
+        // parent.state.student.state.speed;
+        if (center.length() > 9) {
+            currentSideWalkColor =
+                initialsidewalkColor +
+                0x0000aaaa * Math.sin(0.1*parent.state.student.state.speed);
+        }
 
         // Create road geometry
         const geometry = new PlaneGeometry(
@@ -75,6 +89,7 @@ class RoadChunk extends Group {
         // Create road material
         const material = new MeshBasicMaterial({
             // color: Math.random() * 0xffffff, // Generate a random hex color
+            color: currentRoadColor,
             map: roadTexture,
         });
 
@@ -113,12 +128,30 @@ class RoadChunk extends Group {
         sideTexture.repeat.y = 0.1;
 
         const materials = [
-            new MeshBasicMaterial({ map: sideTexture }), // Side faces
-            new MeshBasicMaterial({ map: sideTexture }), // Other side faces
-            new MeshBasicMaterial({ map: sidewalkTextureMap }), // Top face
-            new MeshBasicMaterial({ map: sidewalkTextureMap }), // Bottom face
-            new MeshBasicMaterial({ map: sideTexture }), // Front face
-            new MeshBasicMaterial({ map: sideTexture }), // Back face
+            new MeshBasicMaterial({
+                color: currentSideWalkColor,
+                map: sideTexture,
+            }), // Side faces
+            new MeshBasicMaterial({
+                color: currentSideWalkColor,
+                map: sideTexture,
+            }), // Other side faces
+            new MeshBasicMaterial({
+                color: currentSideWalkColor,
+                map: sidewalkTextureMap,
+            }), // Top face
+            new MeshBasicMaterial({
+                color: currentSideWalkColor,
+                map: sidewalkTextureMap,
+            }), // Bottom face
+            new MeshBasicMaterial({
+                color: currentSideWalkColor,
+                map: sideTexture,
+            }), // Front face
+            new MeshBasicMaterial({
+                color: currentSideWalkColor,
+                map: sideTexture,
+            }), // Back face
         ];
 
         const sidewalkGeometry = new BoxGeometry(
@@ -141,7 +174,9 @@ class RoadChunk extends Group {
             center.z
         );
 
-        leftSidewalk.position.add(offsetDir.clone().multiplyScalar(this.state.segmentWidth / 2))
+        leftSidewalk.position.add(
+            offsetDir.clone().multiplyScalar(this.state.segmentWidth / 2)
+        );
 
         // - this.state.segmentWidth / 2 - sidewalkWidth / 2
 
@@ -159,7 +194,9 @@ class RoadChunk extends Group {
             center.z
         );
 
-        rightSidewalk.position.add(offsetDir.clone().multiplyScalar(-this.state.segmentWidth / 2))
+        rightSidewalk.position.add(
+            offsetDir.clone().multiplyScalar(-this.state.segmentWidth / 2)
+        );
         // + this.state.segmentWidth / 2 + sidewalkWidth / 2
 
         this.add(rightSidewalk);

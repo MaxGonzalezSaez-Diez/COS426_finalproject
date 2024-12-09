@@ -1,11 +1,17 @@
 import * as Dat from 'dat.gui';
-import { Scene, Color, Vector3, TextureLoader, Sprite, SpriteMaterial } from 'three';
+import {
+    Scene,
+    Color,
+    Vector3,
+    TextureLoader,
+    Sprite,
+    SpriteMaterial,
+} from 'three';
 import { RoadChunk, Student } from 'objects';
 import { BasicLights } from 'lights';
 import ProceduralRoad from '../objects/ProceduralRoad/ProceduralRoad';
 import Obstacle from '../objects/Cone/Cone';
 import CLOUD from './cloud.png';
-
 
 class SeedScene extends Scene {
     constructor() {
@@ -31,6 +37,8 @@ class SeedScene extends Scene {
             obstaclePos: new Vector3(),
             startTime: Date.now(), // track the game start time
             timeElapsed: 0,
+            roadColor: null,
+            sidewalkColor: 0xa0522d,
         };
 
         // Set background to a nice color
@@ -41,19 +49,16 @@ class SeedScene extends Scene {
 
         // create start screen
         this.createStartScreen();
-
-        
     }
 
     loadClouds() {
         const loader = new TextureLoader();
 
         loader.load(CLOUD, (texture) => {
-
             const cloudMaterial = new SpriteMaterial({
                 map: texture,
                 transparent: true,
-                opacity: 0.8, 
+                opacity: 0.8,
             });
 
             // Create cloud sprites and position them in the scene
@@ -61,14 +66,17 @@ class SeedScene extends Scene {
                 const cloud = new Sprite(cloudMaterial);
 
                 cloud.position.set(
-                    Math.random() * 20 - 10,  // left to right
-                    Math.random() * 4 + 3,   // height
-                    Math.random() * -20      // since negative is on top of player at start
+                    Math.random() * 20 - 10, // left to right
+                    Math.random() * 4 + 3, // height
+                    Math.random() * -20 // since negative is on top of player at start
                 );
 
-                cloud.scale.set(Math.random() * 5 + 10, Math.random() * 5 + 10, 1);  // Random sizes
+                cloud.scale.set(
+                    Math.random() * 5 + 10,
+                    Math.random() * 5 + 10,
+                    1
+                ); // Random sizes
                 this.add(cloud);
-
             }
         });
     }
@@ -88,28 +96,30 @@ class SeedScene extends Scene {
         startScreen.style.justifyContent = 'center';
         startScreen.style.alignItems = 'center';
         startScreen.style.flexDirection = 'column';
-        startScreen.style.zIndex = '10'; 
+        startScreen.style.zIndex = '10';
         document.body.appendChild(startScreen);
 
         // Add title text
         const title = document.createElement('h1');
         const welcomeText = document.createElement('span');
         welcomeText.innerHTML = 'WELCOME TO';
-        welcomeText.style.fontFamily = 'Impact, sans-serif';  
-        welcomeText.style.fontSize = '60px';  
+        welcomeText.style.fontFamily = 'Impact, sans-serif';
+        welcomeText.style.fontSize = '60px';
         const princetonText = document.createElement('span');
-        princetonText.innerHTML = '<br><span style="font-size: 120px;color: #FF6600;">PRINCETON RUN</span>';  
-        princetonText.style.fontFamily = 'Impact, sans-serif';  
+        princetonText.innerHTML =
+            '<br><span style="font-size: 120px;color: #FF6600;">PRINCETON RUN</span>';
+        princetonText.style.fontFamily = 'Impact, sans-serif';
         title.appendChild(welcomeText);
         title.appendChild(princetonText);
-        title.style.textAlign = 'center';  
+        title.style.textAlign = 'center';
         startScreen.appendChild(title);
 
         // Add instructions (can change to make it more fun later)
         const instructionText = document.createElement('p');
-        instructionText.innerHTML = 'Use WASD or arrow keys to avoid the obstacles as you run!';
-        instructionText.style.fontFamily = 'Courier New, Courier, monospace';  
-        instructionText.style.fontSize = '35px';  
+        instructionText.innerHTML =
+            'Use WASD or arrow keys to avoid the obstacles as you run!';
+        instructionText.style.fontFamily = 'Courier New, Courier, monospace';
+        instructionText.style.fontSize = '35px';
         startScreen.appendChild(instructionText);
 
         // Add start button
@@ -117,8 +127,8 @@ class SeedScene extends Scene {
         startButton.innerText = 'CLICK HERE TO START';
         startButton.style.padding = '30px';
         startButton.style.fontSize = '30px';
-        startButton.style.fontFamily = 'Courier New, Courier, monospace'; 
-        startButton.style.fontWeight = 'bold'; 
+        startButton.style.fontFamily = 'Courier New, Courier, monospace';
+        startButton.style.fontWeight = 'bold';
         startButton.style.backgroundColor = '##ffffff';
         startButton.style.border = 'none';
         startButton.style.cursor = 'pointer';
@@ -133,7 +143,7 @@ class SeedScene extends Scene {
     }
 
     startGame() {
-    this.state.laneWidth =
+        this.state.laneWidth =
             this.state.roadWidth / (this.state.laneCount - 1);
 
         // Add meshes to scene
@@ -153,7 +163,6 @@ class SeedScene extends Scene {
         this.add(this.state.lights, this.state.roadChunk, this.state.student);
 
         this.createTimerElement();
-
     }
     createTimerElement() {
         const timerElement = document.createElement('div');
@@ -186,8 +195,8 @@ class SeedScene extends Scene {
         const { updateList } = this.state;
 
         if (this.state.student) {
-        const stPos = this.state.student.state.position;
-        this.state.studentPos.set(stPos.x, stPos.y, stPos.z);
+            const stPos = this.state.student.state.position;
+            this.state.studentPos.set(stPos.x, stPos.y, stPos.z);
         }
         // calculate time elapsed
         const timeElapsed = (Date.now() - this.state.startTime) / 1000; // time in seconds

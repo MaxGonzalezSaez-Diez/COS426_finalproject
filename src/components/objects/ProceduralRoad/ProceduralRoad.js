@@ -147,6 +147,8 @@ class ProceduralRoad extends Group {
             center: newCenter.clone(),
             direction: newDirection.clone().normalize(),
             disableObstacles: disableObstacles,
+            initialroadColor: this.state.parent.state.roadColor,
+            initialsidewalkColor: this.state.parent.state.sidewalkColor,
             timeElapsed: timeElapsed, // pass timeElapsed to RoadChunk
             // roadWidth: roadWidth,
             // laneCount: laneCount,
@@ -171,6 +173,8 @@ class ProceduralRoad extends Group {
                 center: newCorner.clone(),
                 oldDirection: oldDirection.clone().normalize(),
                 turn: segmentType,
+                initialroadColor: this.parent.state.roadColor,
+                initialsidewalkColor: this.parent.state.sidewalkColor,
             });
 
             this.add(roadCorner);

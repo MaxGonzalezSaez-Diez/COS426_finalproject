@@ -19,6 +19,8 @@ class RoadCorner extends Group {
             center = new Vector3(),
             oldDirection = new Vector3(),
             turn = 'turn-left',
+            initialsidewalkColor: initialsidewalkColor,
+            initialroadColor: initialroadColor,
         } = {}
     ) {
         super();
@@ -31,7 +33,12 @@ class RoadCorner extends Group {
             center: center,
             oldDirection: oldDirection,
             turn: turn,
+            initialsidewalkColor: initialsidewalkColor,
+            initialroadColor: initialroadColor,
         };
+
+        const currentSideWalkColor = initialsidewalkColor;
+        const currentRoadColor = initialroadColor;
 
         // Create road geometry
         const geometry = new PlaneGeometry(
@@ -49,6 +56,7 @@ class RoadCorner extends Group {
         // Create road material
         const material = new MeshBasicMaterial({
             map: roadTexture,
+            color: currentRoadColor,
         });
 
         // Create road mesh
@@ -79,12 +87,30 @@ class RoadCorner extends Group {
         sideTexture.repeat.y = 0.1;
 
         const materials = [
-            new MeshBasicMaterial({ map: sideTexture }), // Side faces
-            new MeshBasicMaterial({ map: sideTexture }), // Other side faces
-            new MeshBasicMaterial({ map: sidewalkTextureMap }), // Top face
-            new MeshBasicMaterial({ map: sidewalkTextureMap }), // Bottom face
-            new MeshBasicMaterial({ map: sideTexture }), // Front face
-            new MeshBasicMaterial({ map: sideTexture }), // Back face
+            new MeshBasicMaterial({
+                color: currentSideWalkColor,
+                map: sideTexture,
+            }), // Side faces
+            new MeshBasicMaterial({
+                color: currentSideWalkColor,
+                map: sideTexture,
+            }), // Other side faces
+            new MeshBasicMaterial({
+                color: currentSideWalkColor,
+                map: sidewalkTextureMap,
+            }), // Top face
+            new MeshBasicMaterial({
+                color: currentSideWalkColor,
+                map: sidewalkTextureMap,
+            }), // Bottom face
+            new MeshBasicMaterial({
+                color: currentSideWalkColor,
+                map: sideTexture,
+            }), // Front face
+            new MeshBasicMaterial({
+                color: currentSideWalkColor,
+                map: sideTexture,
+            }), // Back face
         ];
 
         const sidewalkGeometry = new BoxGeometry(
@@ -125,13 +151,13 @@ class RoadCorner extends Group {
                 m = -1;
             }
             leftSidewalk.position.add(
-                offsetDirO
-                    .clone()
-                    .multiplyScalar((this.state.segmentWidth) / 2)
+                offsetDirO.clone().multiplyScalar(this.state.segmentWidth / 2)
             );
             rightSidewalk.rotation.y = Math.PI / 2;
             rightSidewalk.position.add(
-                offsetDir.clone().multiplyScalar(m*this.state.segmentWidth / 2)
+                offsetDir
+                    .clone()
+                    .multiplyScalar((m * this.state.segmentWidth) / 2)
             );
         } else if (oldDirection.x == -1) {
             let m = 1;
@@ -139,13 +165,13 @@ class RoadCorner extends Group {
                 m = -1;
             }
             leftSidewalk.position.add(
-                offsetDirO
-                    .clone()
-                    .multiplyScalar((this.state.segmentWidth) / 2)
+                offsetDirO.clone().multiplyScalar(this.state.segmentWidth / 2)
             );
             rightSidewalk.rotation.y = Math.PI / 2;
             rightSidewalk.position.add(
-                offsetDir.clone().multiplyScalar(m*this.state.segmentWidth / 2)
+                offsetDir
+                    .clone()
+                    .multiplyScalar((m * this.state.segmentWidth) / 2)
             );
         } else if (oldDirection.z == 1) {
             let m = 1;
