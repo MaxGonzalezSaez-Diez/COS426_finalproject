@@ -11,7 +11,12 @@ import { RoadChunk, Student } from 'objects';
 import { BasicLights } from 'lights';
 import ProceduralRoad from '../objects/ProceduralRoad/ProceduralRoad';
 import Obstacle from '../objects/Cone/Cone';
-import CLOUD from './cloud.png';
+import Clouds from '../objects/Clouds/Clouds';
+import DAYSKY from './day.png';
+import NIGHTSKY from './night2.png';
+
+
+
 
 class SeedScene extends Scene {
     constructor() {
@@ -31,6 +36,7 @@ class SeedScene extends Scene {
             obstacle: null,
             roadChunk: null,
             lights: null,
+            clouds: null,
             roadWidth: 20,
             // cameraPos: new Vector3(),
             studentPos: new Vector3(),
@@ -39,45 +45,21 @@ class SeedScene extends Scene {
             timeElapsed: 0,
             roadColor: null,
             sidewalkColor: 0xa0522d,
+            currentBackground: 'day',
         };
 
         // Set background to a nice color
-        this.background = new Color(0xaaaaee);
-
-        // add clouds (just at the beginning for now)
-        this.loadClouds();
+        //this.background = new Color(0xaaaaee);
+        this.loadBackgroundImage(DAYSKY);
 
         // create start screen
         this.createStartScreen();
     }
 
-    loadClouds() {
+loadBackgroundImage(imagePath) {
         const loader = new TextureLoader();
-
-        loader.load(CLOUD, (texture) => {
-            const cloudMaterial = new SpriteMaterial({
-                map: texture,
-                transparent: true,
-                opacity: 0.8,
-            });
-
-            // Create cloud sprites and position them in the scene
-            for (let i = 0; i < 20; i++) {
-                const cloud = new Sprite(cloudMaterial);
-
-                cloud.position.set(
-                    Math.random() * 20 - 10, // left to right
-                    Math.random() * 4 + 3, // height
-                    Math.random() * -20 // since negative is on top of player at start
-                );
-
-                cloud.scale.set(
-                    Math.random() * 5 + 10,
-                    Math.random() * 5 + 10,
-                    1
-                ); // Random sizes
-                this.add(cloud);
-            }
+        loader.load(imagePath, (texture) => {
+            this.background = texture;  // Set the background to the loaded image
         });
     }
 
@@ -159,6 +141,10 @@ class SeedScene extends Scene {
             laneWidth: this.state.laneWidth,
         });
 
+        this.state.clouds = new Clouds(this);
+        this.add(this.state.clouds);  // Add clouds to the scene
+
+
         this.state.lights = new BasicLights();
         this.add(this.state.lights, this.state.roadChunk, this.state.student);
 
@@ -200,8 +186,21 @@ class SeedScene extends Scene {
         }
         // calculate time elapsed
         const timeElapsed = (Date.now() - this.state.startTime) / 1000; // time in seconds
-        console.log('Time Elapsed (Update method):', timeElapsed);
+      //  console.log('Time Elapsed (Update method):', timeElapsed);
         this.state.timeElapsed = timeElapsed;
+
+        // Switch the background every 60 seconds (1 minute)
+        if (Math.floor(timeElapsed / 30) % 2 === 0) {
+            if (this.state.currentBackground !== 'day') {
+                this.loadBackgroundImage(DAYSKY);
+                this.state.currentBackground = 'day';
+            }
+        } else {
+            if (this.state.currentBackground !== 'night') {
+                this.loadBackgroundImage(NIGHTSKY);
+                this.state.currentBackground = 'night';
+            }
+        }
 
         // Update the timer display
         this.updateTimerElement(timeElapsed);
@@ -213,7 +212,11 @@ class SeedScene extends Scene {
                 obj.update(timeStamp);
             }
         }
+        // Update clouds, if present
+    if (this.clouds) {
+        this.clouds.update(timeElapsed); // Call the clouds update function
     }
+}
 }
 
 export default SeedScene;

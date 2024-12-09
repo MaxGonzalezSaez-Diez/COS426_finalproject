@@ -7,3 +7,4 @@ export * from './Bush';
 export * from './Oak';
 export * from './ProceduralRoad';
 export * from './RoadCorner';
+export * from './Clouds';

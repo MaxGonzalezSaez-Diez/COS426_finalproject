@@ -192,7 +192,7 @@ class ProceduralRoad extends Group {
     }
 
     update(timeStamp, student, timeElapsed) {
-        console.log('Time Elapsed (update, Procedural Road)', timeElapsed);
+       // console.log('Time Elapsed (update, Procedural Road)', timeElapsed);
         // generateNextRoadSegment
         const runnerPos = student.state.position;
         let nrCurSeg = this.state.roadSegments.length;
