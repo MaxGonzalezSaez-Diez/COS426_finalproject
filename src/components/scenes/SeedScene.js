@@ -12,8 +12,9 @@ import { BasicLights } from 'lights';
 import ProceduralRoad from '../objects/ProceduralRoad/ProceduralRoad';
 import Obstacle from '../objects/Cone/Cone';
 import Clouds from '../objects/Clouds/Clouds';
-import DAYSKY from './day.png';
+import DAYSKY from './dayv7.png';
 import NIGHTSKY from './night2.png';
+import STORMSKY from './stormv2.png';
 
 
 
@@ -190,15 +191,31 @@ loadBackgroundImage(imagePath) {
         this.state.timeElapsed = timeElapsed;
 
         // Switch the background every 60 seconds (1 minute)
-        if (Math.floor(timeElapsed / 30) % 2 === 0) {
-            if (this.state.currentBackground !== 'day') {
-                this.loadBackgroundImage(DAYSKY);
-                this.state.currentBackground = 'day';
+        if (Math.floor(timeElapsed / 15) % 2 === 0) {
+            if (this.state.currentBackground === 'night') {
+                // Generate a random number to simulate a low chance
+        const randomChance = Math.random(); // Returns a number between 0 and 1
+        
+        if (randomChance < 0.5) { // 10% chance (adjust this value as needed)
+            // Switch to storm background
+            this.loadBackgroundImage(STORMSKY);
+            this.state.currentBackground = 'storm';
+         //   this.state.lights.updateLighting('storm');
+
+        } else {
+            // Switch to regular day background
+            this.loadBackgroundImage(DAYSKY);
+            this.state.currentBackground = 'day';
+          //  this.state.lights.updateLighting('day');
+
             }
+        }
         } else {
             if (this.state.currentBackground !== 'night') {
                 this.loadBackgroundImage(NIGHTSKY);
                 this.state.currentBackground = 'night';
+              //  this.state.lights.updateLighting('night');
+
             }
         }
 

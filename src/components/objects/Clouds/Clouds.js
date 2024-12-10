@@ -52,23 +52,24 @@ class Clouds extends Group {
 
             // Now that the texture is loaded, spawn clouds
             this.spawnCloud();
+            this.spawnCloud();
         });
     }
 
     // Method to spawn a new cloud
     spawnCloud() {
-        for (let i = 0; i < 100; i++) {
-            console.log("Spawning a new cloud");
+        for (let i = 0; i < 50; i++) {
+           // console.log("Spawning a new cloud");
 
         const cloud = new Sprite(this.cloudMaterial);
         const stPos = this.state.parent.state.student ? this.state.parent.state.student.state.position : new Vector3(0, 0, 0);
 
-            console.log("Student position:", stPos);
+           // console.log("Student position:", stPos);
 
         cloud.position.set(
-            stPos.x + Math.random() * 200 - 100, // left to right
-            stPos.y + Math.random() * 7 + 5, // height
-            stPos.z + Math.random() * 200 -100 // depth
+            stPos.x + Math.random() * 300 - 150, // left to right
+            stPos.y + Math.random() * 8 + 5, // height
+            stPos.z + Math.random() * 300 -150 // depth
         );
 
         cloud.scale.set(
@@ -83,8 +84,8 @@ class Clouds extends Group {
 
     // Method to remove the oldest cloud if we exceed the max cloud count
     removeOldestCloud() {
-for (let i = 0; i < 100; i++) {
-                    console.log("removing cloud");
+for (let i = 0; i < 50; i++) {
+                   // console.log("removing cloud");
 
             const oldestCloud = this.clouds.shift();  // Remove the oldest cloud from the array
             this.remove(oldestCloud);  // Remove the cloud from the group
@@ -95,7 +96,7 @@ for (let i = 0; i < 100; i++) {
     update(timeElapsed) {
          // Only spawn and remove clouds every `cloudsSpawnRate` seconds
         if (timeElapsed - this.state.lastCloudsSpawnTime > this.state.cloudsSpawnRate) {
-            console.log("Spawning and removing clouds");
+           // console.log("Spawning and removing clouds");
 
             // Spawn new clouds
             this.spawnCloud();
