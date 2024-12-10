@@ -87,7 +87,10 @@ class Student extends Group {
         let turnEdge = Math.round((this.state.laneCount - 1) / 2);
         let moveSign = 0;
         let angle = 0;
-        if (turn_direction === 'left' && this.state.currentLane > -turnEdge) {
+        if (
+            turn_direction === 'left' &&
+            (this.state.currentLane > -turnEdge || roadType == 'corner')
+        ) {
             moveSign = 1;
             angle = Math.PI / 2;
 
@@ -96,7 +99,7 @@ class Student extends Group {
             }
         } else if (
             turn_direction === 'right' &&
-            this.state.currentLane < turnEdge
+            (this.state.currentLane < turnEdge || roadType == 'corner')
         ) {
             moveSign = -1;
             angle = -Math.PI / 2;
@@ -260,7 +263,7 @@ class Student extends Group {
         }
         this.state.lastpowerrunsegment = roadtype;
 
-        this.state.position.add(dir.multiplyScalar(this.state.speed));
+        this.state.position.add(dir.multiplyScalar(2.5*this.state.speed));
 
         this.state.position.y = currentSeg.state.center.y;
 

@@ -10,7 +10,7 @@ class ProceduralRoad extends Group {
             segmentWidth = 25,
             segmentLength = 100,
             startSegments = 1,
-            fracTurns = 0.3,
+            fracTurns = 0.1,
             obstacleSpawnProbability = 1,
             prizeSpawnProbability = 1,
             laneCount = 5,
