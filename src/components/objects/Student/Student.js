@@ -263,6 +263,18 @@ class Student extends Group {
             this.state.pastSegment != currentSeg &&
             this.state.pastSegment != null
         ) {
+            const pastObstacles = this.state.pastSegment.state.obstacles || [];
+            for (const obstacle of pastObstacles) {
+                obstacle.state.model.scale.set(0, 0, 0);
+                // this.parent.remove(obstacle); // Remove each obstacle from the scene
+            }
+
+            // Clear the obstacles array
+            this.state.pastSegment.state.obstacles = [];
+
+            // this.parent.state.student.state.pastSegment.remove(
+            // );
+            // this.parent.state.roadChunk.remove(this.state.pastSegment);
             this.parent.state.roadChunk.remove(this.state.pastSegment);
         }
 
