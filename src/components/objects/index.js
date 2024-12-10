@@ -5,5 +5,6 @@ export * from './Student';
 export * from './Cone';
 export * from './Bush';
 export * from './Oak';
+export * from './Coffee';
 export * from './ProceduralRoad';
 export * from './RoadCorner';

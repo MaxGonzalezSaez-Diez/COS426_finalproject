@@ -18,6 +18,7 @@ class RoadCorner extends Group {
             segmentWidth = 20,
             center = new Vector3(),
             oldDirection = new Vector3(),
+            direction = new Vector3(),
             turn = 'turn-left',
             initialsidewalkColor: initialsidewalkColor,
             initialroadColor: initialroadColor,
@@ -33,6 +34,7 @@ class RoadCorner extends Group {
             center: center,
             oldDirection: oldDirection,
             turn: turn,
+            direction: direction,
             initialsidewalkColor: initialsidewalkColor,
             initialroadColor: initialroadColor,
         };

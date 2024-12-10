@@ -13,6 +13,7 @@ import sidewalkTexture from './stone2.jpeg';
 import Cone from '../Cone/Cone.js';
 import Bush from '../Bush/Bush.js';
 import Oak from '../Oak/Oak.js';
+import Coffee from '../Coffee/Coffee.js';
 
 class RoadChunk extends Group {
     constructor(
@@ -40,6 +41,12 @@ class RoadChunk extends Group {
                 { cones: 0, probability: 96 },
                 { cones: 1, probability: 4 },
             ],
+            coffeeProbabilities = [
+                { cones: 0, probability: 40 },
+                { cones: 1, probability: 30 },
+                { cones: 2, probability: 20 },
+                { cones: 3, probability: 10 },
+            ],
             initialsidewalkColor: initialsidewalkColor,
             initialroadColor: initialroadColor,
             timeElapsed = 0, // Add timeElapsed here with a default value of 0
@@ -58,6 +65,7 @@ class RoadChunk extends Group {
             coneProbabilities: coneProbabilities,
             bushProbabilities: bushProbabilities,
             oakProbabilities: oakProbabilities,
+            coffeeProbabilities: coffeeProbabilities,
             initialsidewalkColor: initialsidewalkColor,
             initialroadColor: initialroadColor,
             obstacles: [],
@@ -207,14 +215,14 @@ class RoadChunk extends Group {
 
     // todo: need to account for turns
     spawnObstacles(roadCenter, timeElapsed = 0) {
-        this.createObject('Cone', roadCenter, timeElapsed);
-        this.createObject('Bush', roadCenter, timeElapsed);
-        this.createObject('Oak', roadCenter, timeElapsed);
-
+        this.createObject('Cone', roadCenter, timeElapsed, 'bad');
+        this.createObject('Bush', roadCenter, timeElapsed, 'bad');
+        this.createObject('Oak', roadCenter, timeElapsed, 'bad');
+        this.createObject('Coffee', roadCenter, timeElapsed, 'good');
         // TODO: add other stuff here
     }
 
-    createObject(objectName, roadCenter, timeElapsed = 0) {
+    createObject(objectName, roadCenter, timeElapsed = 0, type = 'bad') {
         // baseProbabilities modified based on the amount of time elapsed
         // more time = more cones in adjustedProbabilities
         let baseProbabilities = null;
@@ -224,6 +232,8 @@ class RoadChunk extends Group {
             baseProbabilities = this.state.bushProbabilities;
         } else if (objectName == 'Oak') {
             baseProbabilities = this.state.oakProbabilities;
+        } else if (objectName == 'Coffee') {
+            baseProbabilities = this.state.coffeeProbabilities;
         }
 
         timeElapsed *= 1000;
@@ -311,6 +321,10 @@ class RoadChunk extends Group {
                 });
             } else if (objectName == 'Oak') {
                 object = new Oak(this.state.parent, {
+                    position: positionObject,
+                });
+            } else if (objectName == 'Coffee') {
+                object = new Coffee(this.state.parent, {
                     position: positionObject,
                 });
             }

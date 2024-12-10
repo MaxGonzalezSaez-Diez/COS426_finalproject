@@ -19,11 +19,15 @@ class Student extends Group {
             direction: new Vector3(0, 0, 1),
             rotAxis: new Vector3(0, 1, 0),
             isJumping: false,
+            isSprinting: false,
+            lastpowerrunsegment: null,
+            runtime: 0,
             startSpeed: startSpeed,
             speed: startSpeed, // todo: pick good speed
             spf: 2.5,
             jumpStrength: 10,
             pastSegment: null,
+            secondpastSegment: null,
             currentSegment: null,
             nextSegment: null,
             roadType: null,
@@ -80,7 +84,7 @@ class Student extends Group {
         // this.state.currentSegment = currentSeg;
         // this.state.roadType = roadType;
 
-        const turnEdge = Math.round((this.state.laneCount - 1) / 2);
+        let turnEdge = Math.round((this.state.laneCount - 1) / 2);
         let moveSign = 0;
         let angle = 0;
         if (turn_direction === 'left' && this.state.currentLane > -turnEdge) {
@@ -220,7 +224,53 @@ class Student extends Group {
             case 'arrowup':
                 this.jump();
                 break;
+            case 'p':
+                this.startpowerrun();
+                break;
         }
+    }
+
+    startpowerrun() {
+        if (!this.state.powerrun) {
+            this.state.powerrun = true;
+            this.state.runtime = 0;
+        }
+    }
+
+    powerrun(currentSeg, timeStamp, roadtype) {
+        if (currentSeg == null) {
+            let { newS, newR } = this.findCurrentSegment(
+                this.state.parent.state.roadChunk.state
+            );
+
+            currentSeg = newS;
+            roadtype = newR;
+        }
+        let dir = currentSeg.state.direction.clone();
+        let angle = 0;
+        if (
+            roadtype == 'corner' &&
+            roadtype != this.state.lastpowerrunsegment
+        ) {
+            if (currentSeg.state.turn === 'turn-left') {
+                this.turn('left');
+            } else if (currentSeg.state.turn === 'turn-right') {
+                this.turn('right');
+            }
+        }
+        this.state.lastpowerrunsegment = roadtype;
+
+        this.state.position.add(dir.multiplyScalar(this.state.speed));
+
+        this.state.position.y = currentSeg.state.center.y;
+
+        this.position.copy(this.state.position);
+        this.state.prev = timeStamp;
+
+        this.updateBoundingBox();
+        // this.state.speed =
+        //     this.state.startSpeed *
+        //     Math.log2(this.parent.state.timeElapsed + 4);
     }
 
     jump() {
@@ -261,24 +311,40 @@ class Student extends Group {
 
         if (
             this.state.pastSegment != currentSeg &&
+            // this.state.pastSegment != this.state.secondpastSegment &&
             this.state.pastSegment != null
+            // && this.state.secondpastSegment != null
         ) {
-            const pastObstacles = this.state.pastSegment.state.obstacles || [];
-            for (const obstacle of pastObstacles) {
-                obstacle.state.model.scale.set(0, 0, 0);
-                // this.parent.remove(obstacle); // Remove each obstacle from the scene
+            if (this.state.secondpastSegment != null) {
+                const pastObstacles =
+                    this.state.secondpastSegment.state.obstacles || [];
+                for (const obstacle of pastObstacles) {
+                    // obstacle.state.model.remove()
+                    this.parent.remove(obstacle.state.model);
+                    // obstacle.state.model.scale.set(0, 0, 0);
+                    // this.parent.remove(obstacle); // Remove each obstacle from the scene
+                }
+
+                // Clear the obstacles array
+                this.state.secondpastSegment.state.obstacles = [];
+                this.parent.state.roadChunk.remove(
+                    this.state.secondpastSegment
+                );
             }
 
-            // Clear the obstacles array
-            this.state.pastSegment.state.obstacles = [];
-
-            // this.parent.state.student.state.pastSegment.remove(
-            // );
-            // this.parent.state.roadChunk.remove(this.state.pastSegment);
-            this.parent.state.roadChunk.remove(this.state.pastSegment);
+            this.state.secondpastSegment = this.state.pastSegment;
         }
 
         this.state.pastSegment = currentSeg;
+
+        if (this.state.powerrun) {
+            if (roadType == 'corner') {
+                this.powerrun(currentSeg, timeStamp, 'corner');
+            } else {
+                this.powerrun(currentSeg, timeStamp, 'straight');
+            }
+            return;
+        }
 
         if (currentSeg.state.center.y - this.state.position.y > 0.1) {
             throw new Error('err');

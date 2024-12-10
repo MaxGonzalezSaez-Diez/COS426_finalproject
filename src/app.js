@@ -14,8 +14,8 @@ import { AxesHelper } from 'three';
 // ---------------------------------------------
 // Global Vars
 // ---------------------------------------------
-const cameraOffset = -20; 
-const heightOffset = 9;  
+const cameraOffset = -20;
+const heightOffset = 9;
 // ---------------------------------------------
 
 // Initialize core ThreeJS components
@@ -53,36 +53,36 @@ const onAnimationFrameHandler = (timeStamp) => {
     scene.update && scene.update(timeStamp);
 
     if (scene.state.student) {
-    const studentPosition = scene.state.student.state.position;
-    const studentDirection = scene.state.student.state.direction;
+        const studentPosition = scene.state.student.state.position;
+        const studentDirection = scene.state.student.state.direction;
 
-    const cameraPosition = studentPosition.clone().add(
-        studentDirection.clone().normalize().multiplyScalar(cameraOffset)
-    );
-    cameraPosition.y += heightOffset;
+        const cameraPosition = studentPosition
+            .clone()
+            .add(
+                studentDirection
+                    .clone()
+                    .normalize()
+                    .multiplyScalar(cameraOffset)
+            );
+        cameraPosition.y += heightOffset;
 
-    // Smooth camera interpolation
-    // TODO: adapt lerp to speed
-    const smoothFactor = 0.25; 
-    // controls.object.position.lerp(
-    //     new Vector3(
-    //         cameraPosition.x,
-    //         cameraPosition.y,
-    //         cameraPosition.z
-    //     ), 
-    //     smoothFactor
-    // );
+        // Smooth camera interpolation
+        // TODO: adapt lerp to speed
+        const smoothFactor = 0.25;
+        controls.object.position.lerp(
+            new Vector3(cameraPosition.x, cameraPosition.y, cameraPosition.z),
+            smoothFactor
+        );
 
-
-    controls.target.lerp(
-        new Vector3(
-            studentPosition.x,
-            studentPosition.y,
-            studentPosition.z
-        ), 
-        smoothFactor
-    );
-}
+        controls.target.lerp(
+            new Vector3(
+                studentPosition.x,
+                studentPosition.y,
+                studentPosition.z
+            ),
+            smoothFactor
+        );
+    }
 
     window.requestAnimationFrame(onAnimationFrameHandler);
 };

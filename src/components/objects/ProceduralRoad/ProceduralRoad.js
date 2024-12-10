@@ -10,8 +10,9 @@ class ProceduralRoad extends Group {
             segmentWidth = 25,
             segmentLength = 100,
             startSegments = 1,
-            fracTurns = 0.1,
+            fracTurns = 0.3,
             obstacleSpawnProbability = 1,
+            prizeSpawnProbability = 1,
             laneCount = 5,
             roadWidth = 20,
             laneWidth = 4,
@@ -31,6 +32,7 @@ class ProceduralRoad extends Group {
             currentDirection: new Vector3(0, 0, 1),
             currentPosition: new Vector3(0, 0, 0),
             obstacleSpawnProbability: obstacleSpawnProbability,
+            prizeSpawnProbability: prizeSpawnProbability,
             roadWidth: roadWidth,
             laneCount: laneCount,
             laneWidth: laneWidth,
@@ -145,8 +147,7 @@ class ProceduralRoad extends Group {
         }
 
         if (this.state.roadSegments.length > 2) {
-            // const rand = Math.random();
-            let rand = 1;
+            const rand = Math.random();
             if (rand < 0.12) {
                 newCenter.add(
                     new Vector3(0, 1, 0).multiplyScalar(
@@ -177,7 +178,6 @@ class ProceduralRoad extends Group {
         // Add to scene and tracking
         this.add(roadSegment);
         this.state.roadSegments.push(roadSegment);
-        
 
         if (segmentType === 'straight') {
             return;
@@ -187,11 +187,27 @@ class ProceduralRoad extends Group {
         const lastPiece = this.state.roadSegments[nrCurSeg - 1];
         const oldDirection = lastPiece.state.direction.clone();
 
+        let moveSign = 0;
+        let angle = 0;
+        if (segmentType === 'turn-left') {
+            angle = Math.PI / 2;
+        } else if (segmentType === 'turn-right') {
+            angle = -Math.PI / 2;
+        }
+
+        const newDirectionCorner = oldDirection
+            .clone()
+            .applyAxisAngle(new Vector3(0, 1, 0), angle)
+            .normalize();
+
+        // this.state.model.rotation.y += angle;
+
         if (nrCurSeg > 0) {
             const roadCorner = new RoadCorner(this.state.parent, {
                 segmentWidth: this.state.segmentWidth,
                 center: newCorner.clone(),
                 oldDirection: oldDirection.clone().normalize(),
+                direction: newDirectionCorner,
                 turn: segmentType,
                 initialroadColor: this.parent.state.roadColor,
                 initialsidewalkColor: this.parent.state.sidewalkColor,
