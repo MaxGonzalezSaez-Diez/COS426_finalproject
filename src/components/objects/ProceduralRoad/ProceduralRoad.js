@@ -140,7 +140,20 @@ class ProceduralRoad extends Group {
             }
         }
 
-        newCenter.add(new Vector3(0, 1, 0).multiplyScalar(5*(Math.random() - 1)));
+        if (this.state.roadSegments.length > 2) {
+            const rand = Math.random();
+            if (rand < 0.12) {
+                newCenter.add(
+                    new Vector3(0, 1, 0).multiplyScalar(
+                        20 * (Math.random() - 1)
+                    )
+                );
+            } else if (rand < 0.2) {
+                newCenter.add(
+                    new Vector3(0, 1, 0).multiplyScalar(7 * Math.random())
+                );
+            }
+        }
         // Create road segment
         const roadSegment = new RoadChunk(this.state.parent, {
             segmentWidth: this.state.segmentWidth,

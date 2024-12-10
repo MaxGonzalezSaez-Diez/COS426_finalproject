@@ -258,49 +258,74 @@ class Student extends Group {
             this.state.parent.state.roadChunk.state
         );
 
-        console.log(this.state.count);
-        // if (
-        //     this.state.position.y > currentSeg.state.center.y &&
-        //     this.state.count > 100
-        // ) {
-        //     this.state.isJumping = true;
-        //     this.state.jumpTime = 0;
-        // }
+        if (currentSeg.state.center.y - this.state.position.y > 0.1) {
+            throw new Error('err');
+        }
+
+        if (
+            !this.state.isJumping &&
+            this.state.position.y > currentSeg.state.center.y
+        ) {
+            const fallHeight =
+                this.state.position.y - currentSeg.state.center.y;
+            const gravity = 10;
+            const fallTimeFactor = deltaTime * 0.001;
+
+            // Quadratic easing function for falling
+            this.state.fallTime = (this.state.fallTime || 0) + fallTimeFactor;
+
+            // Update the Y position using inverse parabola
+            this.state.position.y =
+                currentSeg.state.center.y +
+                Math.max(
+                    fallHeight -
+                        0.25 * gravity * Math.pow(this.state.fallTime, 1.7),
+                    0
+                );
+
+            // Reset fall time and position when reaching the ground
+            if (this.state.position.y <= currentSeg.state.center.y) {
+                this.state.position.y = currentSeg.state.center.y;
+                this.state.fallTime = 0; // Reset the fall time
+            }
+        }
 
         if (this.state.isJumping) {
             this.state.jumpTime += deltaTime * 0.001;
-            // Jumping calculation with smooth easing
             const jumpHeight = this.state.jumpStrength;
             const jumpDuration = 0.8; // Total jump duration
 
             // Normalize jump time (0 to 1 range)
-            const normalizedTime = this.state.jumpTime / jumpDuration;
-            // let easingFactor = Math.sin(Math.PI * normalizedTime);
-            // if (normalizedTime > 1) {
-            //     easingFactor = -Math.pow(normalizedTime, 2) + 1;
-            // }
-            const easingFactor =
+            let normalizedTime = this.state.jumpTime / jumpDuration;
+
+            // Jumping easing function
+            let easingFactor =
                 Math.pow(jumpHeight, 1.35) * normalizedTime -
                 14 * Math.pow(normalizedTime, 2);
+
+            if (this.state.initialY === undefined) {
+                this.state.initialY = this.state.position.y;
+            }
+
+            if (isNaN(easingFactor)) {
+                easingFactor = 0; //14 * Math.pow(0.8, 2);
+                this.state.jumpTime = 0;
+            }
 
             this.state.position.y = Math.max(
                 this.state.initialY + easingFactor,
                 currentSeg.state.center.y
             );
 
-            if (this.state.position.y == currentSeg.state.center.y) {
-                this.state.isJumping = false;
-            }
-
-            // Check if jump is complete
+            // Check if jump or fall is complete
             if (
-                (this.state.jumpTime >= jumpDuration &&
-                    this.state.position <= currentSeg.state.center.y) ||
-                !this.state.isJumping
+                this.state.position.y <= currentSeg.state.center.y &&
+                this.state.jumpTime >= jumpDuration
             ) {
                 this.state.isJumping = false;
-                // this.state.position.y = this.state.initialY;
-                // this.state.mixer = new AnimationMixer(this.state.model);
+                this.state.position.y = currentSeg.state.center.y;
+
+                // Reset animation to running
                 this.state.action.stop();
                 const runningAnimation = this.state.gltf.animations[0];
                 this.state.action =
@@ -310,7 +335,6 @@ class Student extends Group {
                     0.1 * Math.log10(this.state.spf * this.state.speed + 15);
             }
         } else {
-            // BUG: fix this
             if (this.state.action != null) {
                 this.state.action.timeScale =
                     0.1 * Math.log10(this.state.spf * this.state.speed + 15);
