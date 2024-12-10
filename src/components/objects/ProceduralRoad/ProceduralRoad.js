@@ -56,7 +56,7 @@ class ProceduralRoad extends Group {
         disableObstacles = false,
         timeElapsed = 0, // Add timeElapsed parameter
     } = {}) {
-        console.log('Time Elapsed, generateNextRoadSegement', timeElapsed);
+        // console.log('Time Elapsed, generateNextRoadSegement', timeElapsed);
 
         let segmentType = 'straight';
         if (!forceStraight) {
@@ -140,6 +140,7 @@ class ProceduralRoad extends Group {
             }
         }
 
+        newCenter.add(new Vector3(0, 1, 0).multiplyScalar(5*(Math.random() - 1)));
         // Create road segment
         const roadSegment = new RoadChunk(this.state.parent, {
             segmentWidth: this.state.segmentWidth,
@@ -192,7 +193,7 @@ class ProceduralRoad extends Group {
     }
 
     update(timeStamp, student, timeElapsed) {
-        console.log('Time Elapsed (update, Procedural Road)', timeElapsed);
+        // console.log('Time Elapsed (update, Procedural Road)', timeElapsed);
         // generateNextRoadSegment
         const runnerPos = student.state.position;
         let nrCurSeg = this.state.roadSegments.length;

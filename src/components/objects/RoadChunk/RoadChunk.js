@@ -70,7 +70,7 @@ class RoadChunk extends Group {
         if (center.length() > 9) {
             currentSideWalkColor =
                 initialsidewalkColor +
-                0x0000aaaa * Math.sin(0.1*parent.state.student.state.speed);
+                0x0000aaaa * Math.sin(0.1 * parent.state.student.state.speed);
         }
 
         // Create road geometry
@@ -319,11 +319,11 @@ class RoadChunk extends Group {
             this.state.obstacles.push(object);
         }
 
-        console.log('Time Elapsed:', timeElapsed);
-        console.log('Adjusted Probabilities:', adjustedProbabilities);
-        console.log('Normalized Probabilities:', normalizedProbabilities);
-        console.log('Random Value:', randomValue);
-        console.log('Number of Cones Spawned:', numObjects);
+        // console.log('Time Elapsed:', timeElapsed);
+        // console.log('Adjusted Probabilities:', adjustedProbabilities);
+        // console.log('Normalized Probabilities:', normalizedProbabilities);
+        // console.log('Random Value:', randomValue);
+        // console.log('Number of Cones Spawned:', numObjects);
     }
 
     update(timeStamp) {

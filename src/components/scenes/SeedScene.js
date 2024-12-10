@@ -200,7 +200,7 @@ class SeedScene extends Scene {
         }
         // calculate time elapsed
         const timeElapsed = (Date.now() - this.state.startTime) / 1000; // time in seconds
-        console.log('Time Elapsed (Update method):', timeElapsed);
+        // console.log('Time Elapsed (Update method):', timeElapsed);
         this.state.timeElapsed = timeElapsed;
 
         // Update the timer display

@@ -6,7 +6,7 @@ class Student extends Group {
     constructor(parent, { laneCount = 5, roadWidth = 20, laneWidth = 4 } = {}) {
         // Call parent Group() constructor
         super();
-        const startSpeed = 1
+        const startSpeed = 1;
 
         this.state = {
             parent: parent,
@@ -52,6 +52,8 @@ class Student extends Group {
             const runningAnimation = this.state.gltf.animations[0];
             this.state.action = this.state.mixer.clipAction(runningAnimation);
             this.state.action.play();
+            this.state.action.timeScale =
+                0.1 * Math.log10(this.state.spf * this.state.speed + 15);
             this.add(this.state.model);
         });
     }
@@ -252,6 +254,19 @@ class Student extends Group {
             );
         }
 
+        const { currentSeg, roadType } = this.findCurrentSegment(
+            this.state.parent.state.roadChunk.state
+        );
+
+        console.log(this.state.count);
+        // if (
+        //     this.state.position.y > currentSeg.state.center.y &&
+        //     this.state.count > 100
+        // ) {
+        //     this.state.isJumping = true;
+        //     this.state.jumpTime = 0;
+        // }
+
         if (this.state.isJumping) {
             this.state.jumpTime += deltaTime * 0.001;
             // Jumping calculation with smooth easing
@@ -260,14 +275,31 @@ class Student extends Group {
 
             // Normalize jump time (0 to 1 range)
             const normalizedTime = this.state.jumpTime / jumpDuration;
-            const easingFactor = Math.sin(Math.PI * normalizedTime);
-            this.state.position.y =
-                this.state.initialY + jumpHeight * easingFactor;
+            // let easingFactor = Math.sin(Math.PI * normalizedTime);
+            // if (normalizedTime > 1) {
+            //     easingFactor = -Math.pow(normalizedTime, 2) + 1;
+            // }
+            const easingFactor =
+                Math.pow(jumpHeight, 1.35) * normalizedTime -
+                14 * Math.pow(normalizedTime, 2);
+
+            this.state.position.y = Math.max(
+                this.state.initialY + easingFactor,
+                currentSeg.state.center.y
+            );
+
+            if (this.state.position.y == currentSeg.state.center.y) {
+                this.state.isJumping = false;
+            }
 
             // Check if jump is complete
-            if (this.state.jumpTime >= jumpDuration) {
+            if (
+                (this.state.jumpTime >= jumpDuration &&
+                    this.state.position <= currentSeg.state.center.y) ||
+                !this.state.isJumping
+            ) {
                 this.state.isJumping = false;
-                this.state.position.y = this.state.initialY;
+                // this.state.position.y = this.state.initialY;
                 // this.state.mixer = new AnimationMixer(this.state.model);
                 this.state.action.stop();
                 const runningAnimation = this.state.gltf.animations[0];
@@ -278,7 +310,8 @@ class Student extends Group {
                     0.1 * Math.log10(this.state.spf * this.state.speed + 15);
             }
         } else {
-            if (this.state.count > 8) {
+            // BUG: fix this
+            if (this.state.action != null) {
                 this.state.action.timeScale =
                     0.1 * Math.log10(this.state.spf * this.state.speed + 15);
             }
@@ -293,7 +326,8 @@ class Student extends Group {
 
         this.updateBoundingBox();
         this.state.speed =
-        this.state.startSpeed * (Math.log2(this.parent.state.timeElapsed + 4));
+            this.state.startSpeed *
+            Math.log2(this.parent.state.timeElapsed + 4);
     }
 
     findCurrentSegment(roadState) {
