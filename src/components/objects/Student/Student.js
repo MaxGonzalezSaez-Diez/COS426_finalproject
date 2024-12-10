@@ -23,6 +23,7 @@ class Student extends Group {
             speed: startSpeed, // todo: pick good speed
             spf: 2.5,
             jumpStrength: 10,
+            pastSegment: null,
             currentSegment: null,
             nextSegment: null,
             roadType: null,
@@ -257,6 +258,15 @@ class Student extends Group {
         const { currentSeg, roadType } = this.findCurrentSegment(
             this.state.parent.state.roadChunk.state
         );
+
+        if (
+            this.state.pastSegment != currentSeg &&
+            this.state.pastSegment != null
+        ) {
+            this.parent.state.roadChunk.remove(this.state.pastSegment);
+        }
+
+        this.state.pastSegment = currentSeg;
 
         if (currentSeg.state.center.y - this.state.position.y > 0.1) {
             throw new Error('err');

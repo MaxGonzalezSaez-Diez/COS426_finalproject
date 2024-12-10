@@ -23,6 +23,7 @@ class ProceduralRoad extends Group {
             parent: parent,
             roadSegments: [],
             cornerSegments: [],
+            allsegments: [],
             segmentWidth: segmentWidth,
             segmentLength: segmentLength,
             fracTurns: fracTurns,
@@ -33,6 +34,9 @@ class ProceduralRoad extends Group {
             roadWidth: roadWidth,
             laneCount: laneCount,
             laneWidth: laneWidth,
+            maxSegments: 20,
+            maxCornerSegments: 20,
+            maxAllsegments: 25,
         };
 
         this.generateInitialRoad();
@@ -141,7 +145,8 @@ class ProceduralRoad extends Group {
         }
 
         if (this.state.roadSegments.length > 2) {
-            const rand = Math.random();
+            // const rand = Math.random();
+            let rand = 1;
             if (rand < 0.12) {
                 newCenter.add(
                     new Vector3(0, 1, 0).multiplyScalar(
@@ -172,9 +177,10 @@ class ProceduralRoad extends Group {
         // Add to scene and tracking
         this.add(roadSegment);
         this.state.roadSegments.push(roadSegment);
+        
 
         if (segmentType === 'straight') {
-            return roadSegment;
+            return;
         }
 
         // TODO: clean this up! delete past road segments
@@ -195,14 +201,7 @@ class ProceduralRoad extends Group {
             this.state.cornerSegments.push(roadCorner);
         }
 
-        // Remove old segments if we exceed max
-        if (this.state.cornerSegments.length > this.state.maxSegments) {
-            const oldSegment = this.state.cornerSegments.shift();
-            this.remove(oldSegment);
-        }
-
-        // TODO: make sure this is clean and returns both
-        return roadSegment;
+        return;
     }
 
     update(timeStamp, student, timeElapsed) {

@@ -64,14 +64,14 @@ const onAnimationFrameHandler = (timeStamp) => {
     // Smooth camera interpolation
     // TODO: adapt lerp to speed
     const smoothFactor = 0.25; 
-    controls.object.position.lerp(
-        new Vector3(
-            cameraPosition.x,
-            cameraPosition.y,
-            cameraPosition.z
-        ), 
-        smoothFactor
-    );
+    // controls.object.position.lerp(
+    //     new Vector3(
+    //         cameraPosition.x,
+    //         cameraPosition.y,
+    //         cameraPosition.z
+    //     ), 
+    //     smoothFactor
+    // );
 
 
     controls.target.lerp(
