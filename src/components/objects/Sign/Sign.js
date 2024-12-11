@@ -1,9 +1,9 @@
-import { Group, Vector3, AnimationMixer, THREE, BoxHelper, Box3 } from 'three';
+import { Group, Vector3, AnimationMixer, THREE, Box3, BoxHelper } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import MODELCONE from './cone.glb';
+import MODELSIGN from './sign.glb';
 
-class Cone extends Group {
-    constructor(parent, { position = new Vector3() }) {
+class Sign extends Group {
+    constructor(parent, { position = new Vector3() } ) {
         super();
 
         this.state = {
@@ -13,17 +13,17 @@ class Cone extends Group {
             boundingBox: new Box3(),
             roadWidth: parent.state.roadWidth,
             laneCount: parent.state.laneCount,
-            laneWidth: parent.state.laneWidth,
+            laneWidth: parent.state.laneWidth
         };
 
-        this.name = 'cone';
-        this.addCone();
+        this.name = 'sign';
+        this.addSign();
         parent.addToUpdateList(this);
     }
 
-    addCone() {
+    addSign() {
         const loader = new GLTFLoader();
-        loader.load(MODELCONE, (gltf) => {
+        loader.load(MODELSIGN, (gltf) => {
             this.state.gltf = gltf;
             this.state.model = gltf.scene;
 
@@ -32,9 +32,10 @@ class Cone extends Group {
             // Position the obstacle
             this.state.model.position.set(
                 this.state.position.x,
-                this.state.position.y,
+                this.state.position.y + 2.5,
                 this.state.position.z
             );
+
 
             // requestAnimationFrame(() => {
             //     this.state.boundingBox = new BoxHelper(
@@ -48,8 +49,6 @@ class Cone extends Group {
             //     this.add(this.state.boundingBox);
             //     this.state.parent.add(this.state.boundingBox);
             // });
-
-            this.state.boundingBox.setFromObject(this.state.model);
 
             // create and attach a BoxHelper for visualizing the bounding box
             const boundingBoxHelper = new BoxHelper(this.state.model, 0xff0000);
@@ -85,4 +84,4 @@ class Cone extends Group {
     }
 }
 
-export default Cone;
+export default Sign;

@@ -1,9 +1,9 @@
-import { Group, Vector3, AnimationMixer, THREE, BoxHelper, Box3 } from 'three';
+import { Group, Vector3, AnimationMixer, THREE, Box3, BoxHelper } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import MODELCONE from './cone.glb';
+import MODELTIGER from './tiger.glb';
 
-class Cone extends Group {
-    constructor(parent, { position = new Vector3() }) {
+class Tiger extends Group {
+    constructor(parent, { position = new Vector3() } ) {
         super();
 
         this.state = {
@@ -16,25 +16,26 @@ class Cone extends Group {
             laneWidth: parent.state.laneWidth,
         };
 
-        this.name = 'cone';
-        this.addCone();
+        this.name = 'tiger';
+        this.addTiger();
         parent.addToUpdateList(this);
     }
 
-    addCone() {
+    addTiger() {
         const loader = new GLTFLoader();
-        loader.load(MODELCONE, (gltf) => {
+        loader.load(MODELTIGER, (gltf) => {
             this.state.gltf = gltf;
             this.state.model = gltf.scene;
 
-            this.state.model.scale.set(3, 3, 3);
+            this.state.model.scale.set(0.03, 0.03, 0.03);
 
             // Position the obstacle
             this.state.model.position.set(
                 this.state.position.x,
-                this.state.position.y,
+                this.state.position.y + 2.5,
                 this.state.position.z
             );
+
 
             // requestAnimationFrame(() => {
             //     this.state.boundingBox = new BoxHelper(
@@ -48,8 +49,6 @@ class Cone extends Group {
             //     this.add(this.state.boundingBox);
             //     this.state.parent.add(this.state.boundingBox);
             // });
-
-            this.state.boundingBox.setFromObject(this.state.model);
 
             // create and attach a BoxHelper for visualizing the bounding box
             const boundingBoxHelper = new BoxHelper(this.state.model, 0xff0000);
@@ -85,4 +84,4 @@ class Cone extends Group {
     }
 }
 
-export default Cone;
+export default Tiger;

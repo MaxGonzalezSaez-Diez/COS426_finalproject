@@ -1,8 +1,10 @@
+// CREDITS: ChatGPT cup by Poly by Google [CC-BY] via Poly Pizza
+// This link provides the glb file: https://poly.pizza/m/fIuM_PW5prV
 import { Group, Vector3, AnimationMixer, THREE, BoxHelper, Box3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import MODELCONE from './cone.glb';
+import MODELCHATGPT from './ChatGPT.glb';
 
-class Cone extends Group {
+class ChatGPT extends Group {
     constructor(parent, { position = new Vector3() }) {
         super();
 
@@ -14,25 +16,26 @@ class Cone extends Group {
             roadWidth: parent.state.roadWidth,
             laneCount: parent.state.laneCount,
             laneWidth: parent.state.laneWidth,
+            marked: false,
         };
 
-        this.name = 'cone';
-        this.addCone();
+        this.name = 'ChatGPT';
+        this.addChatGPT();
         parent.addToUpdateList(this);
     }
 
-    addCone() {
+    addChatGPT() {
         const loader = new GLTFLoader();
-        loader.load(MODELCONE, (gltf) => {
+        loader.load(MODELCHATGPT, (gltf) => {
             this.state.gltf = gltf;
             this.state.model = gltf.scene;
 
-            this.state.model.scale.set(3, 3, 3);
+            this.state.model.scale.set(2, 2, 2);
 
             // Position the obstacle
             this.state.model.position.set(
                 this.state.position.x,
-                this.state.position.y,
+                this.state.position.y + this.state.model.scale.y,
                 this.state.position.z
             );
 
@@ -44,7 +47,7 @@ class Cone extends Group {
 
             //     this.state.boundingBox.material.transparent = true;
             //     this.state.boundingBox.material.opacity = 0;
-                
+
             //     this.add(this.state.boundingBox);
             //     this.state.parent.add(this.state.boundingBox);
             // });
@@ -79,10 +82,16 @@ class Cone extends Group {
         }
     }
 
+    collect() {
+        // TODO: add sound here on collection
+        this.remove(this.state.model);
+        this.state.parent.remove(this.state.model);
+    }
+
     update(timeStamp) {
         // Optional update method if you want any animations
         // Currently left empty
     }
 }
 
-export default Cone;
+export default ChatGPT;
