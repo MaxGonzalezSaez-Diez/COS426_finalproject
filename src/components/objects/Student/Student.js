@@ -237,10 +237,14 @@ class Student extends Group {
         if (!this.state.powerrun) {
             this.state.powerrun = true;
             this.state.runtime = 0;
+        } else {
+            this.state.powerrun = false;
         }
     }
 
     powerrun(currentSeg, timeStamp, roadtype) {
+        this.state.isJumping = false;
+
         if (currentSeg == null) {
             let { newS, newR } = this.findCurrentSegment(
                 this.state.parent.state.roadChunk.state
@@ -263,7 +267,7 @@ class Student extends Group {
         }
         this.state.lastpowerrunsegment = roadtype;
 
-        this.state.position.add(dir.multiplyScalar(2.5*this.state.speed));
+        this.state.position.add(dir.multiplyScalar(2.5 * this.state.speed));
 
         this.state.position.y = currentSeg.state.center.y;
 
@@ -271,14 +275,17 @@ class Student extends Group {
         this.state.prev = timeStamp;
 
         this.updateBoundingBox();
-        // this.state.speed =
-        //     this.state.startSpeed *
-        //     Math.log2(this.parent.state.timeElapsed + 4);
+        // this.state.action.stop();
+        const runningAnimation = this.state.gltf.animations[0];
+        this.state.action = this.state.mixer.clipAction(runningAnimation);
+        this.state.action.play();
+        this.state.action.timeScale =
+            0.1 * Math.log10(this.state.spf * 100 * this.state.speed + 15);
     }
 
     jump() {
         // Only allow jumping if not already jumping
-        if (!this.state.isJumping) {
+        if (!this.state.isJumping && !this.state.powerrun) {
             this.state.isJumping = true;
             this.state.initialY = this.state.position.y;
             this.state.jumpTime = 0;
