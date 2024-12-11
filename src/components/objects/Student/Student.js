@@ -38,6 +38,7 @@ class Student extends Group {
             laneWidth: laneWidth,
             currentLane: 0,
             count: 0,
+            distance: 0,
         };
 
         this.boundingBox = new Box3();
@@ -328,6 +329,10 @@ class Student extends Group {
         }
         this.state.lastpowerrunsegment = roadtype;
 
+        this.state.distance += dir
+            .multiplyScalar(2.5 * this.state.speed)
+            .clone()
+            .length();
         this.state.position.add(dir.multiplyScalar(2.5 * this.state.speed));
 
         this.state.position.y = currentSeg.state.center.y;
@@ -517,6 +522,11 @@ class Student extends Group {
             }
         }
 
+        this.state.distance += this.state.direction
+            .clone()
+            .multiplyScalar(0.25 * this.state.speed)
+            .clone()
+            .length();
         this.state.position.add(
             this.state.direction.clone().multiplyScalar(0.25 * this.state.speed)
         );

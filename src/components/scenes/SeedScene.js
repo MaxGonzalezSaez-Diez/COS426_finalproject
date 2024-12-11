@@ -50,6 +50,7 @@ class SeedScene extends Scene {
             currentBackground: 'day',
             gpa: 3.0,
             gradescollected: 1,
+            distance: 0,
         };
 
         // Set background to a nice color
@@ -153,6 +154,7 @@ class SeedScene extends Scene {
 
         this.createTimerElement();
         this.createGPTElement();
+        this.createDistanceElement();
         this.createProgressBar(COFFEE);
     }
 
@@ -183,7 +185,7 @@ class SeedScene extends Scene {
         const gpa = document.createElement('div');
         gpa.id = 'game-gpa';
         gpa.style.position = 'absolute';
-        gpa.style.top = '70px';
+        gpa.style.top = '60px';
         gpa.style.right = '10px';
         gpa.style.color = 'white';
         gpa.style.fontSize = '20px';
@@ -199,6 +201,30 @@ class SeedScene extends Scene {
         const gpa = document.getElementById('game-gpa');
         if (gpa) {
             gpa.innerText = `GPA: ${this.state.gpa.toFixed(2)}`; // Show elapsed time with 1 decimal place
+        }
+    }
+
+    createDistanceElement() {
+        const gpa = document.createElement('div');
+        gpa.id = 'game-dis';
+        gpa.style.position = 'absolute';
+        gpa.style.top = '110px';
+        gpa.style.right = '10px';
+        gpa.style.color = 'white';
+        gpa.style.fontSize = '20px';
+        gpa.style.fontFamily = 'Arial, sans-serif';
+        gpa.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        gpa.style.padding = '10px';
+        gpa.style.borderRadius = '5px';
+        gpa.innerText = 'Distance: 0m';
+        document.body.appendChild(gpa);
+    }
+
+    updateDistanceElement() {
+        const gpa = document.getElementById('game-dis');
+        if (gpa) {
+            let realDistance = this.state.student.state.distance / 10;
+            gpa.innerText = `Distance: ${realDistance.toFixed(0)}m`; // Show elapsed time with 1 decimal place
         }
     }
 
@@ -312,7 +338,7 @@ class SeedScene extends Scene {
         const container = document.createElement('div');
         container.id = 'loading-container';
         container.style.position = 'absolute';
-        container.style.top = '130px';
+        container.style.top = '160px';
         container.style.right = '10px';
         container.style.display = 'flex';
         container.style.alignItems = 'center';
@@ -460,6 +486,7 @@ class SeedScene extends Scene {
         // Update the timer display
         this.updateTimerElement(timeElapsed);
         this.updateGPAElement();
+        this.updateDistanceElement();
 
         for (const obj of updateList) {
             if (obj.constructor.name === 'ProceduralRoad') {

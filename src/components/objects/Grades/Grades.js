@@ -23,31 +23,31 @@ class Grades extends Group {
         let grade;
         let numericGrade;
 
-        if (r < 0.1) {
+        if (r < 0.2) {
             grade = 'a';
             numericGrade = 4.0;
-        } else if (r < 0.15) {
-            grade = 'a+';
-            numericGrade = 4.3;
         } else if (r < 0.25) {
+            grade = 'a+';
+            numericGrade = 4.0;
+        } else if (r < 0.35) {
             grade = 'a-';
             numericGrade = 3.7;
-        } else if (r < 0.35) {
+        } else if (r < 0.4) {
             grade = 'b';
             numericGrade = 3.0;
-        } else if (r < 0.4) {
+        } else if (r < 0.5) {
             grade = 'b+';
             numericGrade = 3.3;
-        } else if (r < 0.45) {
+        } else if (r < 0.6) {
             grade = 'b-';
             numericGrade = 2.7;
-        } else if (r < 0.5) {
+        } else if (r < 0.65) {
             grade = 'c';
             numericGrade = 2.0;
-        } else if (r < 0.6) {
+        } else if (r < 0.7) {
             grade = 'c+';
             numericGrade = 2.3;
-        } else if (r < 0.7) {
+        } else if (r < 0.75) {
             grade = 'c-';
             numericGrade = 1.7;
         } else if (r < 0.8) {
