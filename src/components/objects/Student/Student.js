@@ -86,8 +86,7 @@ class Student extends Group {
             // Visualize the bounding box
             const boundingBoxHelper = new Box3Helper(
                 this.boundingBox,
-                0x00ff00,
-                (opacity = 0)
+                0x00ff00
             );
             this.state.parent.add(boundingBoxHelper);
             // this.state.boundingBoxHelper.visible = false;

@@ -10,7 +10,6 @@ import {
 import { RoadChunk, Student, Cone, Oak, Bush } from 'objects';
 import { BasicLights } from 'lights';
 import ProceduralRoad from '../objects/ProceduralRoad/ProceduralRoad';
-import Obstacle from '../objects/Cone/Cone';
 import Clouds from '../objects/Clouds/Clouds';
 import DAYSKY from './dayv7.png';
 import NIGHTSKY from './night2.png';

@@ -1,3 +1,4 @@
+// Wooden Wall by Quaternius (https://poly.pizza/m/L0TxLurnES)
 import {
     Group,
     PlaneGeometry,
@@ -20,6 +21,7 @@ import Tiger from '../Tiger/Tiger.js';
 import RightsRulesResponsibilities from '../RightsRulesResponsibilities/RightsRulesResponsibilities.js';
 import ChatGPT from '../ChatGPT/ChatGPT.js';
 import Grades from '../Grades/Grades.js';
+import Wall from '../Wall/Wall.js';
 
 class RoadChunk extends Group {
     constructor(
@@ -84,6 +86,8 @@ class RoadChunk extends Group {
             ],
             initialsidewalkColor: initialsidewalkColor,
             initialroadColor: initialroadColor,
+            verticalMovement: verticalMovement,
+            offset: offset,
             timeElapsed = 0, // Add timeElapsed here with a default value of 0
         } = {}
     ) {
@@ -109,17 +113,20 @@ class RoadChunk extends Group {
             gradesProbabilities: gradesProbabilities,
             initialsidewalkColor: initialsidewalkColor,
             initialroadColor: initialroadColor,
+            verticalMovement: verticalMovement,
+            offset: offset,
             obstacles: [],
         };
 
         let currentSideWalkColor = initialsidewalkColor;
         const currentRoadColor = initialroadColor;
-
-        // parent.state.student.state.speed;
+        let ss = 0;
+        if (parent.state.student != null) {
+            ss = parent.state.student.state.speed;
+        }
         if (center.length() > 9) {
             currentSideWalkColor =
-                initialsidewalkColor +
-                0x0000aaaa * Math.sin(0.1 * parent.state.student.state.speed);
+                initialsidewalkColor + 0x0000aaaa * Math.sin(0.1 * ss);
         }
 
         // Create road geometry
@@ -254,8 +261,22 @@ class RoadChunk extends Group {
         parent.addToUpdateList(this);
     }
 
+    createWall() {
+        let object = new Wall(this.state.parent, {
+            position: this.state.center.clone(),
+            orientation: this.state.direction.clone(),
+            segmentLength: this.state.segmentLength,
+            offset: this.state.offset,
+        });
+
+        this.state.obstacles.push(object);
+    }
+
     // todo: need to account for turns
     spawnObstacles(roadCenter, timeElapsed = 0) {
+        if (this.state.verticalMovement) {
+            this.createWall();
+        }
         this.createObject('Cone', roadCenter, timeElapsed, 'bad');
         this.createObject('Bush', roadCenter, timeElapsed, 'bad');
         this.createObject('Oak', roadCenter, timeElapsed, 'bad');
@@ -341,10 +362,7 @@ class RoadChunk extends Group {
             const max = r;
             let lanePush = Math.floor(Math.random() * (max - min + 1)) + min;
 
-            if (
-                objectName == 'Tiger' ||
-                objectName == 'Bike' 
-            ) {
+            if (objectName == 'Tiger' || objectName == 'Bike') {
                 lanePush =
                     Math.sign(lanePush) * Math.min(1.5, Math.abs(lanePush));
             }

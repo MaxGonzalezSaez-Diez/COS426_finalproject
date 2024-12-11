@@ -9,8 +9,8 @@ class ProceduralRoad extends Group {
         {
             segmentWidth = 25,
             segmentLength = 100,
-            startSegments = 1,
-            fracTurns = 0.2,
+            startSegments = 3,
+            fracTurns = 0.3,
             obstacleSpawnProbability = 1,
             prizeSpawnProbability = 1,
             laneCount = 5,
@@ -57,7 +57,6 @@ class ProceduralRoad extends Group {
         }
     }
 
-    // BUG: Roads overlap sometimes. Somehow we need to keep track of that
     generateNextRoadSegment({
         forceStraight = false,
         disableObstacles = false,
@@ -147,18 +146,19 @@ class ProceduralRoad extends Group {
             }
         }
 
+        let verticalMovement = false;
+        let offset = new Vector3();
         if (this.state.roadSegments.length > 2) {
             const rand = Math.random();
             if (rand < 0.12) {
-                newCenter.add(
-                    new Vector3(0, 1, 0).multiplyScalar(
-                        20 * (Math.random() - 1)
-                    )
+                offset = new Vector3(0, 1, 0).multiplyScalar(
+                    20 * (Math.random() - 1)
                 );
-            } else if (rand < 0.2) {
-                newCenter.add(
-                    new Vector3(0, 1, 0).multiplyScalar(7 * Math.random())
-                );
+                newCenter.add(offset);
+            } else if (rand < 0.5) {
+                verticalMovement = true;
+                offset = new Vector3(0, 1, 0).multiplyScalar(7 * Math.random());
+                newCenter.add(offset);
             }
         }
         // Create road segment
@@ -171,6 +171,8 @@ class ProceduralRoad extends Group {
             initialroadColor: this.state.parent.state.roadColor,
             initialsidewalkColor: this.state.parent.state.sidewalkColor,
             timeElapsed: timeElapsed, // pass timeElapsed to RoadChunk
+            verticalMovement: verticalMovement,
+            offset: offset,
             // roadWidth: roadWidth,
             // laneCount: laneCount,
             // laneWidth: laneWidth,
@@ -182,7 +184,10 @@ class ProceduralRoad extends Group {
 
         // add roadChunk obstacles
         // todo: we need to figure out how to REMOVE past obstacles from this array (otherwise it grows too much)
-        if (roadSegment.state.obstacles && roadSegment.state.obstacles.length > 0) {
+        if (
+            roadSegment.state.obstacles &&
+            roadSegment.state.obstacles.length > 0
+        ) {
             this.state.obstacles.push(...roadSegment.state.obstacles);
         }
 
@@ -228,12 +233,12 @@ class ProceduralRoad extends Group {
     }
 
     update(timeStamp, student, timeElapsed) {
-       // console.log('Time Elapsed (update, Procedural Road)', timeElapsed);
+        // console.log('Time Elapsed (update, Procedural Road)', timeElapsed);
         // generateNextRoadSegment
 
         // remove passed obstacles
         const playerZ = this.state.parent.state.student.state.position.z;
-        this.state.obstacles = this.state.obstacles.filter(obstacle => {
+        this.state.obstacles = this.state.obstacles.filter((obstacle) => {
             return obstacle.state.position.z > playerZ - 2000; // keep only obstacles within 2000 units behind the player
         });
 
@@ -254,7 +259,7 @@ class ProceduralRoad extends Group {
         let distance = runnerPos.manhattanDistanceTo(lastPieceCenter);
 
         // TODO: we need something here that updates as a function of number of turns
-        if (distance < 1500) {
+        if (distance < 300) {
             this.generateNextRoadSegment({
                 forceStraight: false,
                 disableObstacles: false,

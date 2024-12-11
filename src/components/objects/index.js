@@ -13,4 +13,5 @@ export * from './Tiger';
 export * from './ChatGPT';
 export * from './RightsRulesResponsibilities';
 export * from './Clouds';
+export * from './Wall';
 export * from './Grades';
