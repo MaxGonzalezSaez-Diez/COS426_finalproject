@@ -12,3 +12,4 @@ export * from './Bike';
 export * from './Tiger';
 export * from './ChatGPT';
 export * from './RightsRulesResponsibilities';
+export * from './Clouds';

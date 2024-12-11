@@ -13,7 +13,11 @@ class BasicLights extends Group {
         dir.target.position.set(0, 0, 0);
 
         this.add(ambi, hemi, dir);
+;
     }
+
+
+
 }
 
 export default BasicLights;

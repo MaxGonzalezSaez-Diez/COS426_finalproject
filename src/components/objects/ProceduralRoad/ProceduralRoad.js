@@ -228,7 +228,7 @@ class ProceduralRoad extends Group {
     }
 
     update(timeStamp, student, timeElapsed) {
-        // console.log('Time Elapsed (update, Procedural Road)', timeElapsed);
+       // console.log('Time Elapsed (update, Procedural Road)', timeElapsed);
         // generateNextRoadSegment
 
         // remove passed obstacles
