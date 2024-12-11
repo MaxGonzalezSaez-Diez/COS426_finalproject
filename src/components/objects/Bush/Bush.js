@@ -1,4 +1,12 @@
-import { Group, Vector3, AnimationMixer, THREE, Box3, Box3Helper, BoxHelper } from 'three';
+import {
+    Group,
+    Vector3,
+    AnimationMixer,
+    THREE,
+    Box3,
+    Box3Helper,
+    BoxHelper,
+} from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODELBUSH from './bush.glb';
 
@@ -44,7 +52,7 @@ class Bush extends Group {
 
             //     this.state.boundingBox.material.transparent = true;
             //     this.state.boundingBox.material.opacity = 0;
-                
+
             //     this.add(this.state.boundingBox);
             //     this.state.parent.add(this.state.boundingBox);
             // });
@@ -68,6 +76,15 @@ class Bush extends Group {
     update(timeStamp) {
         // Optional update method if you want any animations
         // Currently left empty
+    }
+
+    delete() {
+        this.remove(this.state.model);
+        this.state.parent.remove(this.state.model);
+        this.remove(this.state.boundingBox);
+        this.state.parent.remove(this.state.boundingBox);
+        this.remove(this.state.boundingBoxHelper);
+        this.state.parent.remove(this.state.boundingBoxHelper);
     }
 
     updateBoundingBox() {

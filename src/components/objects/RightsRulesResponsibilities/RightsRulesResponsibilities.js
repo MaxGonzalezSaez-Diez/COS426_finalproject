@@ -3,7 +3,10 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODELRRR from './rights_rules_responsibilitiesv2.glb';
 
 class RightsRulesResponsibilities extends Group {
-    constructor(parent, { position = new Vector3() }) {
+    constructor(
+        parent,
+        { position = new Vector3(), orientation = new Vector3() }
+    ) {
         super();
 
         this.state = {
@@ -14,9 +17,10 @@ class RightsRulesResponsibilities extends Group {
             roadWidth: parent.state.roadWidth,
             laneCount: parent.state.laneCount,
             laneWidth: parent.state.laneWidth,
+            orientation: orientation,
         };
 
-        this.name = 'RightsRulesResponsibilities';
+        this.name = 'RRR';
         this.addRightsRulesResponsibilities();
         parent.addToUpdateList(this);
     }
@@ -36,18 +40,11 @@ class RightsRulesResponsibilities extends Group {
                 this.state.position.z
             );
 
-            // requestAnimationFrame(() => {
-            //     this.state.boundingBox = new BoxHelper(
-            //         this.state.model,
-            //         0xff0000
-            //     );
-
-            //     this.state.boundingBox.material.transparent = true;
-            //     this.state.boundingBox.material.opacity = 0;
-
-            //     this.add(this.state.boundingBox);
-            //     this.state.parent.add(this.state.boundingBox);
-            // });
+            this.state.model.rotation.set(
+                0,
+                (Math.PI / 2) * this.state.orientation.x,
+                0
+            );
 
             // create and attach a BoxHelper for visualizing the bounding box
             const boundingBoxHelper = new BoxHelper(this.state.model, 0xff0000);

@@ -20,7 +20,6 @@ import Tiger from '../Tiger/Tiger.js';
 import RightsRulesResponsibilities from '../RightsRulesResponsibilities/RightsRulesResponsibilities.js';
 import ChatGPT from '../ChatGPT/ChatGPT.js';
 
-
 class RoadChunk extends Group {
     constructor(
         parent,
@@ -31,11 +30,11 @@ class RoadChunk extends Group {
             direction = new Vector3(0, 0, 1),
             disableObstacles = false,
             coneProbabilities = [
-                { cones: 0, probability: 80 },
-                { cones: 1, probability: 10 },
-                { cones: 2, probability: 5 },
-                { cones: 3, probability: 2.5 },
-                { cones: 4, probability: 1.25 },
+                { cones: 0, probability: 50 },
+                { cones: 1, probability: 25 },
+                { cones: 2, probability: 15 },
+                { cones: 3, probability: 5 },
+                { cones: 4, probability: 5 },
             ],
             bushProbabilities = [
                 { cones: 0, probability: 92 },
@@ -46,9 +45,9 @@ class RoadChunk extends Group {
                 { cones: 1, probability: 4 },
             ],
             signProbabilities = [
-                { cones: 0, probability: 50 },
-                { cones: 1, probability: 30 },
-                { cones: 2, probability: 20},
+                { cones: 0, probability: 85 },
+                { cones: 1, probability: 10 },
+                { cones: 2, probability: 5 },
             ],
             coffeeProbabilities = [
                 { cones: 0, probability: 40 },
@@ -57,25 +56,24 @@ class RoadChunk extends Group {
                 { cones: 3, probability: 10 },
             ],
             bikeProbabilities = [
-                { cones: 0, probability: 50 },
-                { cones: 1, probability: 20 },
-                { cones: 2, probability: 15 },
-                { cones: 3, probability: 15 },
+                { cones: 0, probability: 90 },
+                { cones: 1, probability: 5 },
+                { cones: 2, probability: 3 },
+                { cones: 3, probability: 1 },
             ],
             tigerProbabilities = [
-                { cones: 0, probability: 50 },
-                { cones: 1, probability: 20 },
-                { cones: 2, probability: 15 },
-                { cones: 3, probability: 15 },
+                { cones: 0, probability: 95 },
+                { cones: 1, probability: 2 },
+                { cones: 2, probability: 1 },
+                { cones: 3, probability: 1 },
             ],
             chatGPTProbabilities = [
                 { cones: 0, probability: 50 },
                 { cones: 1, probability: 50 },
-                
             ],
-            rightsRulesResponsibilitiesProbabilities = [
-                { cones: 0, probability: 70 },
-                { cones: 1, probability: 30 }
+            rrrponsibilitiesProbabilities = [
+                { cones: 0, probability: 96 },
+                { cones: 1, probability: 4 },
             ],
             initialsidewalkColor: initialsidewalkColor,
             initialroadColor: initialroadColor,
@@ -100,7 +98,7 @@ class RoadChunk extends Group {
             bikeProbabilities: bikeProbabilities,
             tigerProbabilities: tigerProbabilities,
             chatGPTProbabilities: chatGPTProbabilities,
-            rightsRulesResponsibilitiesProbabilities: rightsRulesResponsibilitiesProbabilities,
+            rrrponsibilitiesProbabilities: rrrponsibilitiesProbabilities,
             initialsidewalkColor: initialsidewalkColor,
             initialroadColor: initialroadColor,
             obstacles: [],
@@ -257,10 +255,8 @@ class RoadChunk extends Group {
         this.createObject('Coffee', roadCenter, timeElapsed, 'good');
         this.createObject('Bike', roadCenter, timeElapsed, 'bad');
         this.createObject('Tiger', roadCenter, timeElapsed, 'bad');
-        this.createObject('RightsRulesResponsibilities', roadCenter, timeElapsed, 'bad');
+        this.createObject('RRR', roadCenter, timeElapsed, 'bad');
         this.createObject('ChatGPT', roadCenter, timeElapsed, 'good');
-
-
 
         // TODO: add other stuff here
     }
@@ -285,28 +281,11 @@ class RoadChunk extends Group {
             baseProbabilities = this.state.tigerProbabilities;
         } else if (objectName == 'ChatGPT') {
             baseProbabilities = this.state.chatGPTProbabilities;
-        } else if (objectName == 'RightsRulesResponsibilities') {
-            baseProbabilities = this.state.rightsRulesResponsibilitiesProbabilities;
-                }
+        } else if (objectName == 'RRR') {
+            baseProbabilities = this.state.rrrponsibilitiesProbabilities;
+        }
 
         timeElapsed *= 1000;
-
-        // const adjustedProbabilities = baseProbabilities.map((entry) => {
-        //     if (entry.cones === 0) {
-        //         return {
-        //             ...entry,
-        //             probability: Math.max(80 - timeElapsed, 10),
-        //         };
-        //     } else {
-        //         return {
-        //             ...entry,
-        //             probability: Math.min(
-        //                 entry.probability + timeElapsed * 0.1,
-        //                 50
-        //             ),
-        //         };
-        //     }
-        // });
 
         const adjustedProbabilities = baseProbabilities;
         // calculates cumulative and normalized probabilities for cone spawning,
@@ -349,7 +328,12 @@ class RoadChunk extends Group {
             let r = Math.floor(this.state.parent.state.laneCount / 2);
             const min = -r;
             const max = r;
-            const lanePush = Math.floor(Math.random() * (max - min + 1)) + min;
+            let lanePush = Math.floor(Math.random() * (max - min + 1)) + min;
+
+            if (objectName == 'Tiger' || objectName == 'Bike') {
+                lanePush =
+                    Math.sign(lanePush) * Math.min(1.5, Math.abs(lanePush));
+            }
 
             let positionObject = roadCenter
                 .clone()
@@ -378,7 +362,8 @@ class RoadChunk extends Group {
                 });
             } else if (objectName == 'Sign') {
                 object = new Sign(this.state.parent, {
-                position: positionObject
+                    position: positionObject,
+                    orientation: this.state.direction.clone(),
                 });
             } else if (objectName == 'Coffee') {
                 object = new Coffee(this.state.parent, {
@@ -387,32 +372,28 @@ class RoadChunk extends Group {
             } else if (objectName == 'Bike') {
                 object = new Bike(this.state.parent, {
                     position: positionObject,
+                    orientation: this.state.direction.clone(),
                 });
             } else if (objectName == 'Tiger') {
                 object = new Tiger(this.state.parent, {
                     position: positionObject,
+                    orientation: this.state.direction.clone(),
                 });
             } else if (objectName == 'ChatGPT') {
                 object = new ChatGPT(this.state.parent, {
                     position: positionObject,
+                    orientation: this.state.direction.clone(),
                 });
-            } else if (objectName == 'RightsRulesResponsibilities') {
+            } else if (objectName == 'RRR') {
                 object = new RightsRulesResponsibilities(this.state.parent, {
                     position: positionObject,
+                    orientation: this.state.direction.clone(),
                 });
             }
-
-            
 
             // this.add(object)
             this.state.obstacles.push(object);
         }
-
-        // console.log('Time Elapsed:', timeElapsed);
-        // console.log('Adjusted Probabilities:', adjustedProbabilities);
-        // console.log('Normalized Probabilities:', normalizedProbabilities);
-        // console.log('Random Value:', randomValue);
-        // console.log('Number of Cones Spawned:', numObjects);
     }
 
     update(timeStamp) {

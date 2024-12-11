@@ -3,7 +3,10 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODELSIGN from './sign.glb';
 
 class Sign extends Group {
-    constructor(parent, { position = new Vector3() }) {
+    constructor(
+        parent,
+        { position = new Vector3(), orientation = new Vector3() }
+    ) {
         super();
 
         this.state = {
@@ -14,6 +17,7 @@ class Sign extends Group {
             roadWidth: parent.state.roadWidth,
             laneCount: parent.state.laneCount,
             laneWidth: parent.state.laneWidth,
+            orientation: orientation,
         };
 
         this.name = 'sign';
@@ -27,27 +31,23 @@ class Sign extends Group {
             this.state.gltf = gltf;
             this.state.model = gltf.scene;
 
-            this.state.model.scale.set(3, 3, 3);
+            const height = Math.random() * 4 + 1;
+            this.state.model.scale.set(3, height, 3);
 
             // Position the obstacle
             this.state.model.position.set(
                 this.state.position.x,
-                this.state.position.y + 2.5,
+                this.state.position.y + Math.min(3.5, height),
                 this.state.position.z
             );
 
-            // requestAnimationFrame(() => {
-            //     this.state.boundingBox = new BoxHelper(
-            //         this.state.model,
-            //         0xff0000
-            //     );
+            this.state.model.rotation.set(
+                0,
+                (Math.PI / 2) * this.state.orientation.x,
+                0
+            );
 
-            //     this.state.boundingBox.material.transparent = true;
-            //     this.state.boundingBox.material.opacity = 0;
-
-            //     this.add(this.state.boundingBox);
-            //     this.state.parent.add(this.state.boundingBox);
-            // });
+            // this.state.model.rotation.add(this.state.orientation);
 
             // create and attach a BoxHelper for visualizing the bounding box
             const boundingBoxHelper = new BoxHelper(this.state.model, 0xff0000);
