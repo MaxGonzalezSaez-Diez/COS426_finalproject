@@ -118,6 +118,10 @@ class RoadChunk extends Group {
             obstacles: [],
         };
 
+        // Create sidewalks
+        const sidewalkWidth = 2; // Adjust the width of the sidewalk as needed
+        const sidewalkHeight = 1; // Adjust the height of the sidewalk as needed
+
         let currentSideWalkColor = initialsidewalkColor;
         const currentRoadColor = initialroadColor;
         let ss = 0;
@@ -169,10 +173,6 @@ class RoadChunk extends Group {
         // Add to the group
         this.add(roadMesh);
 
-        // Create sidewalks
-        const sidewalkWidth = 2; // Adjust the width of the sidewalk as needed
-        const sidewalkHeight = 1; // Adjust the height of the sidewalk as needed
-
         // Load sidewalk texture
         const sidewalkTextureLoader = new TextureLoader();
         const sidewalkTextureMap = sidewalkTextureLoader.load(sidewalkTexture);
@@ -213,7 +213,7 @@ class RoadChunk extends Group {
         const sidewalkGeometry = new BoxGeometry(
             sidewalkWidth,
             sidewalkHeight,
-            this.state.segmentLength
+            this.state.segmentLength + 2
         );
 
         // Create left sidewalk

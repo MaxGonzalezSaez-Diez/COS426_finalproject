@@ -118,7 +118,7 @@ class RoadCorner extends Group {
         const sidewalkGeometry = new BoxGeometry(
             sidewalkWidth,
             sidewalkHeight,
-            this.state.segmentLength
+            this.state.segmentLength + 2
         );
 
         let leftSidewalk = new Mesh(sidewalkGeometry, materials);
