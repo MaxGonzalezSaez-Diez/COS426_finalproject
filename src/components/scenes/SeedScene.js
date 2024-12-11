@@ -48,6 +48,7 @@ class SeedScene extends Scene {
             progressBar: null,
             coffesPerSprint: 20,
             currentBackground: 'day',
+            gpa: 3.0,
         };
 
         // Set background to a nice color
@@ -150,6 +151,7 @@ class SeedScene extends Scene {
         this.add(this.state.lights, this.state.roadChunk, this.state.student);
 
         this.createTimerElement();
+        this.createGPTElement();
         this.createProgressBar(COFFEE);
     }
 
@@ -173,6 +175,29 @@ class SeedScene extends Scene {
         const timerElement = document.getElementById('game-timer');
         if (timerElement) {
             timerElement.innerText = `Time: ${timeElapsed.toFixed(1)}s`; // Show elapsed time with 1 decimal place
+        }
+    }
+
+    createGPTElement() {
+        const gpa = document.createElement('div');
+        gpa.id = 'game-gpa';
+        gpa.style.position = 'absolute';
+        gpa.style.top = '70px';
+        gpa.style.right = '10px';
+        gpa.style.color = 'white';
+        gpa.style.fontSize = '20px';
+        gpa.style.fontFamily = 'Arial, sans-serif';
+        gpa.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        gpa.style.padding = '10px';
+        gpa.style.borderRadius = '5px';
+        gpa.innerText = 'GPA: 3.00';
+        document.body.appendChild(gpa);
+    }
+
+    updateGPAElement() {
+        const gpa = document.getElementById('game-gpa');
+        if (gpa) {
+            gpa.innerText = `GPA: ${this.state.gpa.toFixed(2)}`; // Show elapsed time with 1 decimal place
         }
     }
 
@@ -272,7 +297,7 @@ class SeedScene extends Scene {
         const container = document.createElement('div');
         container.id = 'loading-container';
         container.style.position = 'absolute';
-        container.style.top = '70px';
+        container.style.top = '130px';
         container.style.right = '10px';
         container.style.display = 'flex';
         container.style.alignItems = 'center';
@@ -419,6 +444,7 @@ class SeedScene extends Scene {
 
         // Update the timer display
         this.updateTimerElement(timeElapsed);
+        this.updateGPAElement();
 
         for (const obj of updateList) {
             if (obj.constructor.name === 'ProceduralRoad') {
@@ -430,10 +456,10 @@ class SeedScene extends Scene {
 
         this.checkCollisions();
         // Update clouds, if present
-    if (this.clouds) {
-        this.clouds.update(timeElapsed); // Call the clouds update function
+        if (this.clouds) {
+            this.clouds.update(timeElapsed); // Call the clouds update function
+        }
     }
-}
 }
 
 export default SeedScene;

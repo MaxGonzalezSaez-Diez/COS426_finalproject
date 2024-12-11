@@ -19,6 +19,7 @@ import Bike from '../Bike/Bike.js';
 import Tiger from '../Tiger/Tiger.js';
 import RightsRulesResponsibilities from '../RightsRulesResponsibilities/RightsRulesResponsibilities.js';
 import ChatGPT from '../ChatGPT/ChatGPT.js';
+import Grades from '../Grades/Grades.js';
 
 class RoadChunk extends Group {
     constructor(
@@ -75,6 +76,12 @@ class RoadChunk extends Group {
                 { cones: 0, probability: 96 },
                 { cones: 1, probability: 4 },
             ],
+            gradesProbabilities = [
+                { cones: 0, probability: 60 },
+                { cones: 1, probability: 20 },
+                { cones: 2, probability: 10 },
+                { cones: 3, probability: 10 },
+            ],
             initialsidewalkColor: initialsidewalkColor,
             initialroadColor: initialroadColor,
             timeElapsed = 0, // Add timeElapsed here with a default value of 0
@@ -99,6 +106,7 @@ class RoadChunk extends Group {
             tigerProbabilities: tigerProbabilities,
             chatGPTProbabilities: chatGPTProbabilities,
             rrrponsibilitiesProbabilities: rrrponsibilitiesProbabilities,
+            gradesProbabilities: gradesProbabilities,
             initialsidewalkColor: initialsidewalkColor,
             initialroadColor: initialroadColor,
             obstacles: [],
@@ -257,6 +265,7 @@ class RoadChunk extends Group {
         this.createObject('Tiger', roadCenter, timeElapsed, 'bad');
         this.createObject('RRR', roadCenter, timeElapsed, 'bad');
         this.createObject('ChatGPT', roadCenter, timeElapsed, 'good');
+        this.createObject('Grades', roadCenter, timeElapsed, 'good');
 
         // TODO: add other stuff here
     }
@@ -283,6 +292,8 @@ class RoadChunk extends Group {
             baseProbabilities = this.state.chatGPTProbabilities;
         } else if (objectName == 'RRR') {
             baseProbabilities = this.state.rrrponsibilitiesProbabilities;
+        } else if (objectName == 'Grades') {
+            baseProbabilities = this.state.gradesProbabilities;
         }
 
         timeElapsed *= 1000;
@@ -330,7 +341,11 @@ class RoadChunk extends Group {
             const max = r;
             let lanePush = Math.floor(Math.random() * (max - min + 1)) + min;
 
-            if (objectName == 'Tiger' || objectName == 'Bike') {
+            if (
+                objectName == 'Tiger' ||
+                objectName == 'Bike' ||
+                objectName == 'Grades'
+            ) {
                 lanePush =
                     Math.sign(lanePush) * Math.min(1.5, Math.abs(lanePush));
             }
@@ -386,6 +401,11 @@ class RoadChunk extends Group {
                 });
             } else if (objectName == 'RRR') {
                 object = new RightsRulesResponsibilities(this.state.parent, {
+                    position: positionObject,
+                    orientation: this.state.direction.clone(),
+                });
+            } else if (objectName == 'Grades') {
+                object = new Grades(this.state.parent, {
                     position: positionObject,
                     orientation: this.state.direction.clone(),
                 });
