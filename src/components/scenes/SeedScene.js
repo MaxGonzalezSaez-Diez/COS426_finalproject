@@ -249,7 +249,7 @@ class SeedScene extends Scene {
                         this.state.student.state.speed = 0;
 
                         // Display a big error message on the screen
-                        this.showCollisionMessage();
+                        // this.showCollisionMessage();
 
                         // TODO: Add more collision handling logic here
                         // for example: trigger game over screen, reduce health, etc.

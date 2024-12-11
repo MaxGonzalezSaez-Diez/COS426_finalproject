@@ -88,6 +88,15 @@ class Coffee extends Group {
         this.state.parent.remove(this.state.model);
     }
 
+    delete() {
+        this.remove(this.state.model);
+        this.state.parent.remove(this.state.model);
+        this.remove(this.state.boundingBox);
+        this.state.parent.remove(this.state.boundingBox);
+        this.remove(this.state.boundingBoxHelper);
+        this.state.parent.remove(this.state.boundingBoxHelper);
+    }
+
     update(timeStamp) {
         // Optional update method if you want any animations
         // Currently left empty

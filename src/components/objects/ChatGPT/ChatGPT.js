@@ -1,5 +1,3 @@
-// CREDITS: ChatGPT cup by Poly by Google [CC-BY] via Poly Pizza
-// This link provides the glb file: https://poly.pizza/m/fIuM_PW5prV
 import { Group, Vector3, AnimationMixer, THREE, BoxHelper, Box3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODELCHATGPT from './ChatGPT.glb';
@@ -86,6 +84,15 @@ class ChatGPT extends Group {
         // TODO: add sound here on collection
         this.remove(this.state.model);
         this.state.parent.remove(this.state.model);
+    }
+
+    delete() {
+        this.remove(this.state.model);
+        this.state.parent.remove(this.state.model);
+        this.remove(this.state.boundingBox);
+        this.state.parent.remove(this.state.boundingBox);
+        this.remove(this.state.boundingBoxHelper);
+        this.state.parent.remove(this.state.boundingBoxHelper);
     }
 
     update(timeStamp) {

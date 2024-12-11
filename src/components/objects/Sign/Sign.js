@@ -3,7 +3,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODELSIGN from './sign.glb';
 
 class Sign extends Group {
-    constructor(parent, { position = new Vector3() } ) {
+    constructor(parent, { position = new Vector3() }) {
         super();
 
         this.state = {
@@ -13,7 +13,7 @@ class Sign extends Group {
             boundingBox: new Box3(),
             roadWidth: parent.state.roadWidth,
             laneCount: parent.state.laneCount,
-            laneWidth: parent.state.laneWidth
+            laneWidth: parent.state.laneWidth,
         };
 
         this.name = 'sign';
@@ -36,7 +36,6 @@ class Sign extends Group {
                 this.state.position.z
             );
 
-
             // requestAnimationFrame(() => {
             //     this.state.boundingBox = new BoxHelper(
             //         this.state.model,
@@ -45,7 +44,7 @@ class Sign extends Group {
 
             //     this.state.boundingBox.material.transparent = true;
             //     this.state.boundingBox.material.opacity = 0;
-                
+
             //     this.add(this.state.boundingBox);
             //     this.state.parent.add(this.state.boundingBox);
             // });
@@ -76,6 +75,15 @@ class Sign extends Group {
                 this.state.boundingBoxHelper.update();
             }
         }
+    }
+
+    delete() {
+        this.remove(this.state.model);
+        this.state.parent.remove(this.state.model);
+        this.remove(this.state.boundingBox);
+        this.state.parent.remove(this.state.boundingBox);
+        this.remove(this.state.boundingBoxHelper);
+        this.state.parent.remove(this.state.boundingBoxHelper);
     }
 
     update(timeStamp) {

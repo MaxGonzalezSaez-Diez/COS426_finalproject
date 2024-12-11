@@ -396,9 +396,9 @@ class Student extends Group {
                     this.state.secondpastSegment.state.obstacles || [];
                 for (const obstacle of pastObstacles) {
                     // obstacle.state.model.remove()
-                    this.parent.remove(obstacle.state.model);
-                    // obstacle.state.model.scale.set(0, 0, 0);
-                    // this.parent.remove(obstacle); // Remove each obstacle from the scene
+                    // this.parent.remove(obstacle.state.model);
+                    // this.parent.remove(obstacle.state);
+                    obstacle.delete();
                 }
 
                 // Clear the obstacles array

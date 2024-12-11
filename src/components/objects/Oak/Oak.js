@@ -44,7 +44,7 @@ class Oak extends Group {
 
             //     this.state.boundingBox.material.transparent = true;
             //     this.state.boundingBox.material.opacity = 0;
-                
+
             //     this.add(this.state.boundingBox);
             //     this.state.parent.add(this.state.boundingBox);
             // });
@@ -75,6 +75,15 @@ class Oak extends Group {
                 this.state.boundingBoxHelper.update();
             }
         }
+    }
+
+    delete() {
+        this.remove(this.state.model);
+        this.state.parent.remove(this.state.model);
+        this.remove(this.state.boundingBox);
+        this.state.parent.remove(this.state.boundingBox);
+        this.remove(this.state.boundingBoxHelper);
+        this.state.parent.remove(this.state.boundingBoxHelper);
     }
 
     update(timeStamp) {
