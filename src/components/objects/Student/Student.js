@@ -304,7 +304,15 @@ class Student extends Group {
     }
 
     powerrun(currentSeg, timeStamp, roadtype, extraTime) {
-        this.state.isJumping = false;
+        if (this.state.isJumping) {
+            this.state.isJumping = false;
+            this.state.action.stop();
+            const runningAnimation = this.state.gltf.animations[0];
+            this.state.action = this.state.mixer.clipAction(runningAnimation);
+            this.state.action.play();
+            this.state.action.timeScale =
+                0.1 * Math.log10(this.state.spf * this.state.speed + 15);
+        }
         this.state.runtime += extraTime;
 
         if (currentSeg == null) {
@@ -329,11 +337,13 @@ class Student extends Group {
         }
         this.state.lastpowerrunsegment = roadtype;
 
-        this.state.distance += dir
-            .multiplyScalar(2.5 * this.state.speed)
-            .clone()
-            .length();
-        this.state.position.add(dir.multiplyScalar(2.5 * this.state.speed));
+        let speedupdate = Math.min(
+            Math.max(2.5 * this.state.speed, 2.5 * this.state.startSpeed),
+            2.5 * this.state.startSpeed
+        );
+
+        this.state.distance += dir.multiplyScalar(speedupdate).clone().length();
+        this.state.position.add(dir.multiplyScalar(speedupdate));
 
         this.state.position.y = currentSeg.state.center.y;
 
