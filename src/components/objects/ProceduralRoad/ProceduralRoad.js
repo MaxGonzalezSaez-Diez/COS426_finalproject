@@ -36,6 +36,7 @@ class ProceduralRoad extends Group {
             roadWidth: roadWidth,
             laneCount: laneCount,
             laneWidth: laneWidth,
+            obstacles: [],
             maxSegments: 20,
             maxCornerSegments: 20,
             maxAllsegments: 25,
@@ -179,6 +180,12 @@ class ProceduralRoad extends Group {
         this.add(roadSegment);
         this.state.roadSegments.push(roadSegment);
 
+        // add roadChunk obstacles
+        // todo: we need to figure out how to REMOVE past obstacles from this array (otherwise it grows too much)
+        if (roadSegment.state.obstacles && roadSegment.state.obstacles.length > 0) {
+            this.state.obstacles.push(...roadSegment.state.obstacles);
+        }
+
         if (segmentType === 'straight') {
             return;
         }
@@ -223,6 +230,13 @@ class ProceduralRoad extends Group {
     update(timeStamp, student, timeElapsed) {
         // console.log('Time Elapsed (update, Procedural Road)', timeElapsed);
         // generateNextRoadSegment
+
+        // remove passed obstacles
+        const playerZ = this.state.parent.state.student.state.position.z;
+        this.state.obstacles = this.state.obstacles.filter(obstacle => {
+            return obstacle.state.position.z > playerZ - 2000; // keep only obstacles within 2000 units behind the player
+        });
+
         const runnerPos = student.state.position;
         let nrCurSeg = this.state.roadSegments.length;
         const lastPieceCenter =

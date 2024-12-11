@@ -7,7 +7,7 @@ import {
     Sprite,
     SpriteMaterial,
 } from 'three';
-import { RoadChunk, Student } from 'objects';
+import { RoadChunk, Student, Cone, Oak, Bush} from 'objects';
 import { BasicLights } from 'lights';
 import ProceduralRoad from '../objects/ProceduralRoad/ProceduralRoad';
 import Obstacle from '../objects/Cone/Cone';
@@ -191,6 +191,66 @@ class SeedScene extends Scene {
         this.state.updateList.push(object);
     }
 
+    // *** Collision Detection Method ***
+    checkCollisions() {
+        if (!this.state.roadChunk || !this.state.roadChunk.state.obstacles) {
+            console.warn("No obstacles found!");
+            return;
+        }
+
+        // Ensure the student and obstacles have updated bounding boxes
+        if (this.state.student) {
+            this.state.student.updateBoundingBox();
+        }
+
+        // Check each obstacle for collision
+        for (const obstacle of this.state.roadChunk.state.obstacles) {
+            // Update obstacle bounding box
+            obstacle.updateBoundingBox();
+
+            // Check if obstacle and student have bounding boxes
+            if (this.state.student && this.state.student.boundingBox && obstacle.state.boundingBox) {
+                // Perform intersection test
+                if (this.state.student.boundingBox.intersectsBox(obstacle.state.boundingBox)) {
+                    console.log(`Collision detected with a ${obstacle.name}!`);
+
+                    // Stop the student
+                    this.state.student.state.speed = 0;
+
+                    // Display a big error message on the screen
+                    this.showCollisionMessage();
+
+                    // TODO: Add more collision handling logic here
+                    // for example: trigger game over screen, reduce health, etc.
+
+                    break; // Stop checking after the first collision
+                }
+            }
+        }
+    }
+
+    showCollisionMessage() {
+        const collisionMessage = document.createElement('div');
+        collisionMessage.id = 'collision-message';
+        collisionMessage.style.position = 'absolute';
+        collisionMessage.style.top = '50%';
+        collisionMessage.style.left = '50%';
+        collisionMessage.style.transform = 'translate(-50%, -50%)';
+        collisionMessage.style.color = 'white';
+        collisionMessage.style.fontSize = '60px';
+        collisionMessage.style.fontFamily = 'Impact, sans-serif';
+        collisionMessage.style.backgroundColor = 'rgba(255, 0, 0, 0.7)';
+        collisionMessage.style.padding = '40px';
+        collisionMessage.style.borderRadius = '20px';
+        collisionMessage.style.zIndex = '9999';
+        collisionMessage.innerText = 'COLLISION OCCURRED!';
+
+        document.body.appendChild(collisionMessage);
+
+        // TODO: Add more collision handling logic here
+        // For example, end the game, restart level, reduce player health, etc.
+    }
+
     update(timeStamp) {
         const { updateList } = this.state;
 
@@ -213,6 +273,8 @@ class SeedScene extends Scene {
                 obj.update(timeStamp);
             }
         }
+
+        this.checkCollisions();
     }
 }
 

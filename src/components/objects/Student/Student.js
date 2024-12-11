@@ -1,4 +1,4 @@
-import { Group, Vector3, AnimationMixer, Box3 } from 'three';
+import { Group, Vector3, AnimationMixer, Box3, Box3Helper } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODEL from './runnerv2.glb';
 
@@ -60,15 +60,66 @@ class Student extends Group {
             this.state.action.timeScale =
                 0.1 * Math.log10(this.state.spf * this.state.speed + 15);
             this.add(this.state.model);
+
+            // Manually define the bounding box dimensions
+            const halfRoadWidth = this.state.roadWidth / 2;
+            const boundingBoxWidth = halfRoadWidth / 16;
+            const boundingBoxHeight = this.state.roadWidth/4;
+            const boundingBoxLength = halfRoadWidth / 16;
+    
+            this.boundingBox.set(
+                new Vector3(
+                    -boundingBoxWidth, // Min X
+                    0,                 // Min Y
+                    -boundingBoxLength // Min Z
+                ),
+                new Vector3(
+                    boundingBoxWidth,  // Max X
+                    boundingBoxHeight, // Max Y
+                    boundingBoxLength  // Max Z
+                )
+            );
+    
+            // Visualize the bounding box
+            const boundingBoxHelper = new Box3Helper(this.boundingBox, 0x00ff00);
+            this.state.parent.add(boundingBoxHelper);
+
+            this.updateBoundingBox();
         });
     }
 
     updateBoundingBox() {
-        // Update the bounding box based on the current position of the model
         if (this.state.model) {
-            this.boundingBox.setFromObject(this.state.model);
+            // Update the bounding box position to follow the model
+            const position = this.state.position;
+    
+            const halfRoadWidth = this.state.roadWidth / 2;
+            const boundingBoxWidth = halfRoadWidth / 16;
+            const boundingBoxHeight = this.state.roadWidth/4;
+            const boundingBoxLength = halfRoadWidth / 16;
+    
+            this.boundingBox.set(
+                new Vector3(
+                    position.x - boundingBoxWidth, // Min X
+                    position.y,                   // Min Y
+                    position.z - boundingBoxLength // Min Z
+                ),
+                new Vector3(
+                    position.x + boundingBoxWidth, // Max X
+                    position.y + boundingBoxHeight, // Max Y
+                    position.z + boundingBoxLength // Max Z
+                )
+            );
+            if (this.state.boundingBoxHelper) {
+                this.state.boundingBoxHelper.box.copy(this.boundingBox);
+            }
+        }
+        else {
+            console.log("No model exists");
         }
     }
+    
+    
 
     turn(turn_direction) {
         // if (this.state.isJumping) {
