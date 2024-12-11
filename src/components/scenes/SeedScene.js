@@ -46,9 +46,10 @@ class SeedScene extends Scene {
             roadColor: null,
             sidewalkColor: 0xa0522d,
             progressBar: null,
-            coffesPerSprint: 20,
+            coffesPerSprint: 10,
             currentBackground: 'day',
             gpa: 3.0,
+            gradescollected: 1,
         };
 
         // Set background to a nice color
@@ -246,6 +247,20 @@ class SeedScene extends Scene {
                             obstacle.collect();
                             this.state.tracker += 1;
                             this.updateProgressBar();
+                        }
+                    } else if (obstacle.name == 'grade') {
+                        if (obstacle.marked) {
+                            break;
+                        } else {
+                            obstacle.marked = true;
+                            obstacle.collect();
+                            let totalgrades =
+                                this.state.gpa * this.state.gradescollected;
+                            totalgrades += obstacle.state.numericgrade;
+                            this.state.gradescollected += 1;
+                            this.state.gpa =
+                                totalgrades / this.state.gradescollected;
+                            this.updateGPAElement();
                         }
                     } else {
                         // ---------------------------------------------------- //

@@ -36,19 +36,6 @@ class Cone extends Group {
                 this.state.position.z
             );
 
-            // requestAnimationFrame(() => {
-            //     this.state.boundingBox = new BoxHelper(
-            //         this.state.model,
-            //         0xff0000
-            //     );
-
-            //     this.state.boundingBox.material.transparent = true;
-            //     this.state.boundingBox.material.opacity = 0;
-
-            //     this.add(this.state.boundingBox);
-            //     this.state.parent.add(this.state.boundingBox);
-            // });
-
             this.state.boundingBox.setFromObject(this.state.model);
 
             // create and attach a BoxHelper for visualizing the bounding box
@@ -62,7 +49,7 @@ class Cone extends Group {
             // Add the obstacle to the parent (scene or group)
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
-
+            this.state.boundingBoxHelper.visible = false;
             this.updateBoundingBox();
         });
     }
@@ -77,6 +64,14 @@ class Cone extends Group {
                 this.state.boundingBoxHelper.update();
             }
         }
+    }
+
+    hideBBox() {
+        this.state.boundingBoxHelper.visible = false;
+    }
+
+    showBBox() {
+        this.state.boundingBoxHelper.visible = true;
     }
 
     delete() {

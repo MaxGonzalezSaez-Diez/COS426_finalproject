@@ -37,19 +37,6 @@ class ChatGPT extends Group {
                 this.state.position.z
             );
 
-            // requestAnimationFrame(() => {
-            //     this.state.boundingBox = new BoxHelper(
-            //         this.state.model,
-            //         0xff0000
-            //     );
-
-            //     this.state.boundingBox.material.transparent = true;
-            //     this.state.boundingBox.material.opacity = 0;
-
-            //     this.add(this.state.boundingBox);
-            //     this.state.parent.add(this.state.boundingBox);
-            // });
-
             this.state.boundingBox.setFromObject(this.state.model);
 
             // create and attach a BoxHelper for visualizing the bounding box
@@ -64,6 +51,7 @@ class ChatGPT extends Group {
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
 
+            this.state.boundingBoxHelper.visible = false;
             this.updateBoundingBox();
         });
     }
@@ -84,6 +72,14 @@ class ChatGPT extends Group {
         // TODO: add sound here on collection
         this.remove(this.state.model);
         this.state.parent.remove(this.state.model);
+    }
+
+    hideBBox() {
+        this.state.boundingBoxHelper.visible = false;
+    }
+
+    showBBox() {
+        this.state.boundingBoxHelper.visible = true;
     }
 
     delete() {

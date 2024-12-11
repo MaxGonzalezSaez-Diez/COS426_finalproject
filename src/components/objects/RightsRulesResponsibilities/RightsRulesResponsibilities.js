@@ -57,7 +57,7 @@ class RightsRulesResponsibilities extends Group {
             // Add the obstacle to the parent (scene or group)
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
-
+            this.state.boundingBoxHelper.visible = false;
             this.updateBoundingBox();
         });
     }
@@ -81,6 +81,14 @@ class RightsRulesResponsibilities extends Group {
         this.state.parent.remove(this.state.boundingBox);
         this.remove(this.state.boundingBoxHelper);
         this.state.parent.remove(this.state.boundingBoxHelper);
+    }
+
+    hideBBox() {
+        this.state.boundingBoxHelper.visible = false;
+    }
+
+    showBBox() {
+        this.state.boundingBoxHelper.visible = true;
     }
 
     update(timeStamp) {

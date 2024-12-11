@@ -343,8 +343,7 @@ class RoadChunk extends Group {
 
             if (
                 objectName == 'Tiger' ||
-                objectName == 'Bike' ||
-                objectName == 'Grades'
+                objectName == 'Bike' 
             ) {
                 lanePush =
                     Math.sign(lanePush) * Math.min(1.5, Math.abs(lanePush));

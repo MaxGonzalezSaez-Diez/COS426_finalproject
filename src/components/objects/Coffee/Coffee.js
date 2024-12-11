@@ -30,12 +30,12 @@ class Coffee extends Group {
             this.state.gltf = gltf;
             this.state.model = gltf.scene;
 
-            this.state.model.scale.set(2, 2, 2);
+            this.state.model.scale.set(2.5, 2.5, 2.5);
 
             // Position the obstacle
             this.state.model.position.set(
                 this.state.position.x,
-                this.state.position.y + this.state.model.scale.y,
+                this.state.position.y + 3,
                 this.state.position.z
             );
 
@@ -66,6 +66,8 @@ class Coffee extends Group {
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
 
+            this.state.boundingBoxHelper.visible = false;
+
             this.updateBoundingBox();
         });
     }
@@ -80,6 +82,14 @@ class Coffee extends Group {
                 this.state.boundingBoxHelper.update();
             }
         }
+    }
+
+    hideBBox() {
+        this.state.boundingBoxHelper.visible = false;
+    }
+
+    showBBox() {
+        this.state.boundingBoxHelper.visible = true;
     }
 
     collect() {

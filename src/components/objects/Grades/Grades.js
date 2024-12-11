@@ -20,30 +20,42 @@ class Grades extends Group {
         super();
 
         const r = Math.random();
-        let grade = 'a';
+        let grade;
+        let numericGrade;
 
         if (r < 0.1) {
             grade = 'a';
+            numericGrade = 4.0;
         } else if (r < 0.15) {
             grade = 'a+';
+            numericGrade = 4.3;
         } else if (r < 0.25) {
             grade = 'a-';
+            numericGrade = 3.7;
         } else if (r < 0.35) {
             grade = 'b';
+            numericGrade = 3.0;
         } else if (r < 0.4) {
             grade = 'b+';
+            numericGrade = 3.3;
         } else if (r < 0.45) {
             grade = 'b-';
+            numericGrade = 2.7;
         } else if (r < 0.5) {
             grade = 'c';
+            numericGrade = 2.0;
         } else if (r < 0.6) {
             grade = 'c+';
+            numericGrade = 2.3;
         } else if (r < 0.7) {
             grade = 'c-';
+            numericGrade = 1.7;
         } else if (r < 0.8) {
             grade = 'd';
+            numericGrade = 1.0;
         } else {
             grade = 'f';
+            numericGrade = 0.0;
         }
 
         this.state = {
@@ -55,10 +67,12 @@ class Grades extends Group {
             laneCount: parent.state.laneCount,
             laneWidth: parent.state.laneWidth,
             grade: grade,
+            numericgrade: numericGrade,
             orientation: orientation,
+            marked: false,
         };
 
-        this.name = grade;
+        this.name = 'grade';
         this.addGrade(grade);
         parent.addToUpdateList(this);
     }
@@ -99,7 +113,7 @@ class Grades extends Group {
             // Position the obstacle
             this.state.model.position.set(
                 this.state.position.x,
-                this.state.position.y,
+                this.state.position.y + 1,
                 this.state.position.z
             );
 
@@ -122,6 +136,7 @@ class Grades extends Group {
             // Add the obstacle to the parent (scene or group)
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
+            this.state.boundingBoxHelper.visible = false;
 
             this.updateBoundingBox();
         });
@@ -137,6 +152,20 @@ class Grades extends Group {
                 this.state.boundingBoxHelper.update();
             }
         }
+    }
+
+    hideBBox() {
+        this.state.boundingBoxHelper.visible = false;
+    }
+
+    showBBox() {
+        this.state.boundingBoxHelper.visible = true;
+    }
+
+    collect() {
+        // TODO: add sound here on collection
+        this.remove(this.state.model);
+        this.state.parent.remove(this.state.model);
     }
 
     delete() {

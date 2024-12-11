@@ -60,7 +60,7 @@ class Sign extends Group {
             // Add the obstacle to the parent (scene or group)
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
-
+            this.state.boundingBoxHelper.visible = false;
             this.updateBoundingBox();
         });
     }
@@ -75,6 +75,14 @@ class Sign extends Group {
                 this.state.boundingBoxHelper.update();
             }
         }
+    }
+
+    hideBBox() {
+        this.state.boundingBoxHelper.visible = false;
+    }
+
+    showBBox() {
+        this.state.boundingBoxHelper.visible = true;
     }
 
     delete() {

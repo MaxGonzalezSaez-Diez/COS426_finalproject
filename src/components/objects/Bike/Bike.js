@@ -64,7 +64,7 @@ class Bike extends Group {
             // Add the obstacle to the parent (scene or group)
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
-
+            this.state.boundingBoxHelper.visible = false;
             this.updateBoundingBox();
         });
     }
@@ -81,6 +81,14 @@ class Bike extends Group {
     update(timeStamp) {
         // Optional update method if you want any animations
         // Currently left empty
+    }
+
+    hideBBox() {
+        this.state.boundingBoxHelper.visible = false;
+    }
+
+    showBBox() {
+        this.state.boundingBoxHelper.visible = true;
     }
 
     updateBoundingBox() {

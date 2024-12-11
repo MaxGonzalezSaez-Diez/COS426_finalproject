@@ -44,19 +44,6 @@ class Bush extends Group {
                 this.state.position.z
             );
 
-            // requestAnimationFrame(() => {
-            //     this.state.boundingBox = new BoxHelper(
-            //         this.state.model,
-            //         0xff0000
-            //     );
-
-            //     this.state.boundingBox.material.transparent = true;
-            //     this.state.boundingBox.material.opacity = 0;
-
-            //     this.add(this.state.boundingBox);
-            //     this.state.parent.add(this.state.boundingBox);
-            // });
-
             // create and attach a BoxHelper for visualizing the bounding box
             const boundingBoxHelper = new BoxHelper(this.state.model, 0xff0000);
             this.add(boundingBoxHelper);
@@ -68,7 +55,7 @@ class Bush extends Group {
             // Add the obstacle to the parent (scene or group)
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
-
+            this.state.boundingBoxHelper.visible = false;
             this.updateBoundingBox();
         });
     }
@@ -85,6 +72,14 @@ class Bush extends Group {
         this.state.parent.remove(this.state.boundingBox);
         this.remove(this.state.boundingBoxHelper);
         this.state.parent.remove(this.state.boundingBoxHelper);
+    }
+
+    hideBBox() {
+        this.state.boundingBoxHelper.visible = false;
+    }
+
+    showBBox() {
+        this.state.boundingBoxHelper.visible = true;
     }
 
     updateBoundingBox() {
