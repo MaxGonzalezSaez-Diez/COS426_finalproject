@@ -21,6 +21,7 @@ class Student extends Group {
             isJumping: false,
             isSprinting: false,
             lastpowerrunsegment: null,
+            canSprint: false,
             runtime: 0,
             startSpeed: startSpeed,
             speed: startSpeed, // todo: pick good speed
@@ -278,9 +279,9 @@ class Student extends Group {
             case 'arrowup':
                 this.jump();
                 break;
-            case 'p':
-                this.startpowerrun();
-                break;
+            // case 'p':
+            //     this.startpowerrun();
+            //     break;
         }
     }
 

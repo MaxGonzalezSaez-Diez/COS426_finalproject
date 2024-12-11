@@ -7,11 +7,12 @@ import {
     Sprite,
     SpriteMaterial,
 } from 'three';
-import { RoadChunk, Student, Cone, Oak, Bush} from 'objects';
+import { RoadChunk, Student, Cone, Oak, Bush } from 'objects';
 import { BasicLights } from 'lights';
 import ProceduralRoad from '../objects/ProceduralRoad/ProceduralRoad';
 import Obstacle from '../objects/Cone/Cone';
 import CLOUD from './cloud.png';
+import COFFEE from './coffee.png';
 
 class SeedScene extends Scene {
     constructor() {
@@ -39,6 +40,7 @@ class SeedScene extends Scene {
             timeElapsed: 0,
             roadColor: null,
             sidewalkColor: 0xa0522d,
+            progressBar: null,
         };
 
         // Set background to a nice color
@@ -163,7 +165,9 @@ class SeedScene extends Scene {
         this.add(this.state.lights, this.state.roadChunk, this.state.student);
 
         this.createTimerElement();
+        this.createProgressBar(COFFEE);
     }
+
     createTimerElement() {
         const timerElement = document.createElement('div');
         timerElement.id = 'game-timer';
@@ -194,7 +198,7 @@ class SeedScene extends Scene {
     // *** Collision Detection Method ***
     checkCollisions() {
         if (!this.state.roadChunk || !this.state.roadChunk.state.obstacles) {
-            console.warn("No obstacles found!");
+            console.warn('No obstacles found!');
             return;
         }
 
@@ -209,19 +213,43 @@ class SeedScene extends Scene {
             obstacle.updateBoundingBox();
 
             // Check if obstacle and student have bounding boxes
-            if (this.state.student && this.state.student.boundingBox && obstacle.state.boundingBox) {
+            if (
+                this.state.student &&
+                this.state.student.boundingBox &&
+                obstacle.state.boundingBox
+            ) {
                 // Perform intersection test
-                if (this.state.student.boundingBox.intersectsBox(obstacle.state.boundingBox)) {
-                    console.log(`Collision detected with a ${obstacle.name}!`);
+                if (
+                    this.state.student.boundingBox.intersectsBox(
+                        obstacle.state.boundingBox
+                    )
+                ) {
+                    // HERE: add to coffee count
+                    if (obstacle.name == 'coffee') {
+                        if (obstacle.marked) {
+                            break;
+                        } else {
+                            obstacle.marked = true;
+                            obstacle.collect();
+                            this.state.tracker += 1;
+                            this.updateProgressBar(this.state.tracker);
+                        }
+                    } else {
+                        // ---------------------------------------------------- //
+                        // ---------------------------------------------------- //
+                        console.log(
+                            `Collision detected with a ${obstacle.name}!`
+                        );
 
-                    // Stop the student
-                    this.state.student.state.speed = 0;
+                        // Stop the student
+                        this.state.student.state.speed = 0;
 
-                    // Display a big error message on the screen
-                    this.showCollisionMessage();
+                        // Display a big error message on the screen
+                        this.showCollisionMessage();
 
-                    // TODO: Add more collision handling logic here
-                    // for example: trigger game over screen, reduce health, etc.
+                        // TODO: Add more collision handling logic here
+                        // for example: trigger game over screen, reduce health, etc.
+                    }
 
                     break; // Stop checking after the first collision
                 }
@@ -251,8 +279,108 @@ class SeedScene extends Scene {
         // For example, end the game, restart level, reduce player health, etc.
     }
 
+    createProgressBar(iconSrc) {
+        // Create main container for progress bar and icon
+        const container = document.createElement('div');
+        container.id = 'loading-container';
+        container.style.position = 'absolute';
+        container.style.top = '70px';
+        container.style.right = '10px';
+        container.style.display = 'flex';
+        container.style.alignItems = 'center';
+        container.style.gap = '10px';
+        container.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        container.style.borderRadius = '8px';
+        container.style.padding = '8px 12px';
+        container.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+
+        // Create icon (if provided)
+        if (iconSrc) {
+            const icon = document.createElement('img');
+            icon.id = 'loading-icon';
+            icon.src = iconSrc;
+            icon.style.width = '30px';
+            icon.style.height = '30px';
+            icon.style.objectFit = 'contain';
+            container.appendChild(icon);
+        }
+
+        // Create progress bar container
+        const progressBarContainer = document.createElement('div');
+        progressBarContainer.id = 'progress-bar-container';
+        progressBarContainer.style.width = '150px';
+        progressBarContainer.style.height = '10px';
+        progressBarContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+        progressBarContainer.style.borderRadius = '5px';
+        progressBarContainer.style.overflow = 'hidden';
+
+        // Create the progress bar fill
+        const progressBarFill = document.createElement('div');
+        progressBarFill.id = 'progress-bar-fill';
+        progressBarFill.style.width = '0%';
+        progressBarFill.style.height = '100%';
+        progressBarFill.style.backgroundColor = '#4CAF50'; // Material green
+        progressBarFill.style.transition =
+            'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+
+        // Append elements
+        progressBarContainer.appendChild(progressBarFill);
+        container.appendChild(progressBarContainer);
+        document.body.appendChild(container);
+
+        // Method to update progress
+        this.state.progressBar = progressBarContainer;
+
+        const style = document.createElement('style');
+        style.innerHTML = `
+    .pulse {
+        -webkit-animation-name: pulsate;
+        -webkit-animation-duration: 0.7s;
+        -webkit-animation-timing-function: ease-in-out;
+        -webkit-animation-iteration-count: infinite;
+    }
+
+    @-webkit-keyframes pulsate {
+        0% { opacity: 0.0; }
+        10% { opacity: 0.20; }
+        20% { opacity: 0.40; }
+        30% { opacity: 0.60; }
+        40% { opacity: 0.80; }
+        50% { opacity: 1.0; }
+        60% { opacity: 0.80; }
+        70% { opacity: 0.60; }
+        80% { opacity: 0.40; }
+        90% { opacity: 0.20; }
+        100% { opacity: 0.0; }
+    }
+`;
+        document.head.appendChild(style);
+    }
+
+    updateProgressBar(tracker) {
+        // Calculate the progress percentage (0 to 100%)
+        const progressPercentage = Math.min((tracker / 20) * 100, 100);
+
+        // Update the progress bar width
+        const progressBarFill = document.getElementById('progress-bar-fill');
+        if (progressBarFill) {
+            progressBarFill.style.width = `${progressPercentage}%`;
+        }
+
+        if (progressPercentage === 100) {
+            progressBarFill.style.backgroundColor = '#FF0000'; // Material green
+            progressBarFill.classList.add('pulse');
+        } else {
+            progressBarFill.classList.remove('pulse');
+        }
+    }
+
     update(timeStamp) {
         const { updateList } = this.state;
+
+        if (!this.state.tracker) {
+            this.state.tracker = 0;
+        }
 
         if (this.state.student) {
             const stPos = this.state.student.state.position;
