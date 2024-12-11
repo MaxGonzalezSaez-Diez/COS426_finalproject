@@ -1,6 +1,20 @@
-import { Group, Vector3, AnimationMixer, THREE, BoxHelper, Box3 } from 'three';
+import {
+    Group,
+    Vector3,
+    AnimationMixer,
+    THREE,
+    BoxHelper,
+    RepeatWrapping,
+    Box3,
+    BoxGeometry,
+    TextureLoader,
+    MeshBasicMaterial,
+    Mesh,
+} from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODELCHATGPT from './ChatGPT.glb';
+import gptAI from './gpt.jpeg';
+import claAO from './claude.jpeg';
 
 class ChatGPT extends Group {
     constructor(parent, { position = new Vector3() }) {
@@ -17,43 +31,48 @@ class ChatGPT extends Group {
             marked: false,
         };
 
-        this.name = 'ChatGPT';
+        this.name = 'cgpt';
         this.addChatGPT();
         parent.addToUpdateList(this);
     }
 
     addChatGPT() {
-        const loader = new GLTFLoader();
-        loader.load(MODELCHATGPT, (gltf) => {
-            this.state.gltf = gltf;
-            this.state.model = gltf.scene;
+        const geometry = new BoxGeometry(2, 2, 2);
 
-            this.state.model.scale.set(2, 2, 2);
+        const textureLoader = new TextureLoader();
 
-            // Position the obstacle
-            this.state.model.position.set(
-                this.state.position.x,
-                this.state.position.y + this.state.model.scale.y,
-                this.state.position.z
-            );
+        const r = Math.random();
+        let roadTexture = textureLoader.load(gptAI);
+        if (r > 0.7) {
+            roadTexture = textureLoader.load(claAO);
+        }
+        roadTexture.wrapS = RepeatWrapping;
+        roadTexture.wrapT = RepeatWrapping;
+        roadTexture.repeat.set(1, 1);
 
-            this.state.boundingBox.setFromObject(this.state.model);
+        const material = new MeshBasicMaterial({ map: roadTexture });
+        const roadMesh = new Mesh(geometry, material);
+        this.state.model = roadMesh;
+        // roadMesh.rotation.x = -Math.PI / 2;
 
-            // create and attach a BoxHelper for visualizing the bounding box
-            const boundingBoxHelper = new BoxHelper(this.state.model, 0xff0000);
-            this.add(boundingBoxHelper);
-            this.state.parent.add(boundingBoxHelper);
+        roadMesh.position.set(
+            this.state.position.x,
+            this.state.position.y + 3,
+            this.state.position.z
+        );
 
-            // store the BoxHelper for updates
-            this.state.boundingBoxHelper = boundingBoxHelper;
+        this.add(roadMesh);
 
-            // Add the obstacle to the parent (scene or group)
-            this.add(this.state.model);
-            this.state.parent.add(this.state.model);
-
-            this.state.boundingBoxHelper.visible = false;
-            this.updateBoundingBox();
-        });
+        this.state.boundingBox.setFromObject(roadMesh);
+        const boundingBoxHelper = new BoxHelper(roadMesh, 0xff0000);
+        this.add(boundingBoxHelper);
+        this.state.parent.add(boundingBoxHelper);
+        // store the BoxHelper for updates
+        this.state.boundingBoxHelper = boundingBoxHelper;
+        // Add the obstacle to the parent (scene or group)
+        this.state.parent.add(roadMesh);
+        this.state.boundingBoxHelper.visible = false;
+        this.updateBoundingBox();
     }
 
     updateBoundingBox() {
@@ -92,8 +111,13 @@ class ChatGPT extends Group {
     }
 
     update(timeStamp) {
-        // Optional update method if you want any animations
-        // Currently left empty
+        if (this.state.model) {
+            this.state.model.rotation.y = timeStamp * 0.001;
+            this.state.boundingBox.setFromObject(this.state.model);
+            if (this.state.boundingBoxHelper) {
+                this.state.boundingBoxHelper.update();
+            }
+        }
     }
 }
 

@@ -62,6 +62,7 @@ class Student extends Group {
             this.state.action.play();
             this.state.action.timeScale =
                 0.1 * Math.log10(this.state.spf * this.state.speed + 15);
+
             this.add(this.state.model);
 
             // Manually define the bounding box dimensions

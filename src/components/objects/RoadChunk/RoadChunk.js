@@ -71,12 +71,12 @@ class RoadChunk extends Group {
                 { cones: 3, probability: 1 },
             ],
             chatGPTProbabilities = [
-                { cones: 0, probability: 50 },
-                { cones: 1, probability: 50 },
+                { cones: 0, probability: 90 },
+                { cones: 1, probability: 10 },
             ],
             rrrponsibilitiesProbabilities = [
-                { cones: 0, probability: 96 },
-                { cones: 1, probability: 4 },
+                { cones: 0, probability: 90 },
+                { cones: 1, probability: 10 },
             ],
             gradesProbabilities = [
                 { cones: 0, probability: 60 },
