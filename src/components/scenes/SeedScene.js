@@ -49,6 +49,7 @@ class SeedScene extends Scene {
             coffesPerSprint: 1,
             currentBackground: 'day',
             gpa: 3.0,
+            lives: 3,
             gradescollected: 1,
             distance: 0,
         };
@@ -122,18 +123,104 @@ class SeedScene extends Scene {
         startButton.style.marginTop = '40px';
         startScreen.appendChild(startButton);
 
-        // click the start button to start the game
+        startButton.addEventListener('mouseover', () => {
+            startButton.style.backgroundColor = '#FF6600';
+            startButton.style.color = '#ffffff';
+        });
+        startButton.addEventListener('mouseout', () => {
+            startButton.style.backgroundColor = '#ffffff';
+            startButton.style.color = '#000000';
+        });
+    
+        // Add functionality to restart the game
         startButton.addEventListener('click', () => {
             this.startGame();
-            startScreen.style.display = 'none'; // Hide the start screen when clicked
+            startScreen.style.display = 'none';
         });
+    }
+
+    showEndScreen() {
+        // end screen overlay like the start screen (does not remove ui elements)
+        if (document.getElementById('end-screen')) return;
+        
+        // calculate final stats
+        const finalCoffees = this.state.tracker || 0;
+        const finalGPA = this.state.gpa.toFixed(2);
+        const finalDistance = (this.state.student.state.distance / 10).toFixed(0);
+
+        const endScreen = document.createElement('div');
+        endScreen.id = 'end-screen';
+        endScreen.style.position = 'absolute';
+        endScreen.style.top = '0';
+        endScreen.style.left = '0';
+        endScreen.style.width = '100%';
+        endScreen.style.height = '100%';
+        endScreen.style.backgroundColor = 'rgba(88, 27, 0, 0.7)';
+        endScreen.style.color = 'white';
+        endScreen.style.display = 'flex';
+        endScreen.style.justifyContent = 'center';
+        endScreen.style.alignItems = 'center';
+        endScreen.style.flexDirection = 'column';
+        endScreen.style.zIndex = '10';
+        document.body.appendChild(endScreen);
+
+        // GAME OVER
+        const title = document.createElement('h1');
+        const gameOverText = document.createElement('span');
+        gameOverText.innerHTML = 'GAME OVER';
+        gameOverText.style.fontFamily = 'Impact, sans-serif';
+        gameOverText.style.fontSize = '80px';
+        title.appendChild(gameOverText);
+        title.style.textAlign = 'center';
+        endScreen.appendChild(title);
+
+        // final stats
+        const statsText = document.createElement('p');
+        statsText.innerHTML = `
+            Coffees Collected: ${finalCoffees}<br>
+            Final GPA: ${finalGPA}<br>
+            Distance Traveled: ${finalDistance}m
+        `;
+        statsText.style.fontFamily = 'Courier New, Courier, monospace';
+        statsText.style.fontSize = '35px';
+        statsText.style.textAlign = 'center';
+        endScreen.appendChild(statsText);
+
+        // add "Try Again" button
+        const tryAgainButton = document.createElement('button');
+        tryAgainButton.innerText = 'TRY AGAIN';
+        tryAgainButton.style.padding = '30px';
+        tryAgainButton.style.fontSize = '30px';
+        tryAgainButton.style.fontFamily = 'Courier New, Courier, monospace';
+        tryAgainButton.style.fontWeight = 'bold';
+        tryAgainButton.style.backgroundColor = '##ffffff';
+        tryAgainButton.style.border = 'none';
+        tryAgainButton.style.cursor = 'pointer';
+        tryAgainButton.style.marginTop = '40px';
+
+        // add hover effects
+    tryAgainButton.addEventListener('mouseover', () => {
+        tryAgainButton.style.backgroundColor = '#FF6600';
+        tryAgainButton.style.color = '#ffffff';
+    });
+    tryAgainButton.addEventListener('mouseout', () => {
+        tryAgainButton.style.backgroundColor = '#ffffff';
+        tryAgainButton.style.color = '#000000';
+    });
+
+    // Add functionality to restart the game
+    tryAgainButton.addEventListener('click', () => {
+        this.resetGame();
+    });
+
+    endScreen.appendChild(tryAgainButton);
     }
 
     startGame() {
         this.state.laneWidth =
             this.state.roadWidth / (this.state.laneCount - 1);
 
-        // Add meshes to scene
+        // add meshes to scene
         this.state.roadChunk = new ProceduralRoad(this, {
             laneCount: this.state.laneCount,
             roadWidth: this.state.roadWidth,
@@ -147,7 +234,7 @@ class SeedScene extends Scene {
         });
 
         this.state.clouds = new Clouds(this);
-        this.add(this.state.clouds); // Add clouds to the scene
+        this.add(this.state.clouds); // add clouds to the scene
 
         this.state.lights = new BasicLights();
         this.add(this.state.lights, this.state.roadChunk, this.state.student);
@@ -155,6 +242,7 @@ class SeedScene extends Scene {
         this.createTimerElement();
         this.createGPTElement();
         this.createDistanceElement();
+        this.createLivesElement();
         this.createProgressBar(COFFEE);
     }
 
@@ -232,10 +320,32 @@ class SeedScene extends Scene {
         this.state.updateList.push(object);
     }
 
+    createLivesElement() {
+        const livesElement = document.createElement('div');
+        livesElement.id = 'game-lives';
+        livesElement.style.position = 'absolute';
+        livesElement.style.top = '210px';
+        livesElement.style.right = '10px';
+        livesElement.style.color = 'white';
+        livesElement.style.fontSize = '20px';
+        livesElement.style.fontFamily = 'Arial, sans-serif';
+        livesElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        livesElement.style.padding = '10px';
+        livesElement.style.borderRadius = '5px';
+        livesElement.innerText = 'Lives: 3'; 
+        document.body.appendChild(livesElement);
+    }
+
+    updateLivesElement() {
+        const livesElement = document.getElementById('game-lives');
+        if (livesElement) {
+            livesElement.innerText = `Lives: ${this.state.lives}`;
+        }
+    }
+
     // *** Collision Detection Method ***
     checkCollisions() {
         if (!this.state.roadChunk || !this.state.roadChunk.state.obstacles) {
-            console.warn('No obstacles found!');
             return;
         }
 
@@ -244,18 +354,18 @@ class SeedScene extends Scene {
             this.state.student.updateBoundingBox();
         }
 
-        // Check each obstacle for collision
+        // check each obstacle for collision
         for (const obstacle of this.state.roadChunk.state.obstacles) {
-            // Update obstacle bounding box
+            // update obstacle bounding box
             obstacle.updateBoundingBox();
 
-            // Check if obstacle and student have bounding boxes
+            // check if obstacle and student have bounding boxes
             if (
                 this.state.student &&
                 this.state.student.boundingBox &&
                 obstacle.state.boundingBox
             ) {
-                // Perform intersection test
+                // perform intersection test
                 if (
                     this.state.student.boundingBox.intersectsBox(
                         obstacle.state.boundingBox
@@ -289,48 +399,138 @@ class SeedScene extends Scene {
                             this.updateGPAElement();
                         }
                     } else {
-                        // ---------------------------------------------------- //
-                        // ---------------------------------------------------- //
-                        if (this.state.student.state.powerrun) {
-                            break;
+                        // Handle other obstacle collisions (e.g., enemies, hazards)
+                        if (
+                            this.state.student.state.powerrun
+                        ) {
+                            continue; // Skip to the next obstacle
                         }
-
-                        // Stop the student
-                        this.state.student.state.speed = 0;
-
-                        // Display a big error message on the screen
-                        // this.showCollisionMessage();
-
-                        // TODO: Add more collision handling logic here
-                        // for example: trigger game over screen, reduce health, etc.
+                        else if (
+                            obstacle.marked) {
+                                this.state.student.state.speed = 0;
+                            }
+                        else {
+    
+                        // subtract one life
+                        this.state.lives -= 1;
+                        this.updateLivesElement(); // update UI
+    
+                        // mark the obstacle to prevent multiple life deductions
+                        obstacle.marked = true;
+    
+                        // TODO: trigger additional effects here
+    
+                        // Check if lives have run out
+                        if (this.state.lives <= 0) {
+                            this.showEndScreen(); // Trigger end screen
+                            return; // Exit the collision check to prevent further processing
+                        }
                     }
-
-                    break; // Stop checking after the first collision
-                }
             }
         }
     }
+}
+}
+resetGame() {
+    // Reset state variables
+    this.state.lives = 3;
+    this.state.gpa = 3.0;
+    this.state.gradescollected = 1;
+    this.state.distance = 0;
+    this.state.tracker = 0;
+    this.state.realDistance = 0;
+    this.state.currentBackground = 'day';
 
-    showCollisionMessage() {
-        const collisionMessage = document.createElement('div');
-        collisionMessage.id = 'collision-message';
-        collisionMessage.style.position = 'absolute';
-        collisionMessage.style.top = '50%';
-        collisionMessage.style.left = '50%';
-        collisionMessage.style.transform = 'translate(-50%, -50%)';
-        collisionMessage.style.color = 'white';
-        collisionMessage.style.fontSize = '60px';
-        collisionMessage.style.fontFamily = 'Impact, sans-serif';
-        collisionMessage.style.backgroundColor = 'rgba(255, 0, 0, 0.7)';
-        collisionMessage.style.padding = '40px';
-        collisionMessage.style.borderRadius = '20px';
-        collisionMessage.style.zIndex = '9999';
-        collisionMessage.innerText = 'COLLISION OCCURRED!';
+    // Remove existing road chunks
+    if (this.state.roadChunk) {
+        this.remove(this.state.roadChunk);
+        // If ProceduralRoad has a dispose method, call it to free resources
+        if (typeof this.state.roadChunk.dispose === 'function') {
+            this.state.roadChunk.dispose();
+        }
+        this.state.roadChunk = null;
+    }
 
-        document.body.appendChild(collisionMessage);
+    // Remove existing student
+    if (this.state.student) {
+        this.remove(this.state.student);
+        // If Student has a dispose method, call it
+        if (typeof this.state.student.dispose === 'function') {
+            this.state.student.dispose();
+        }
+        this.state.student = null;
+    }
 
-        // TODO: Add more collision handling logic here
-        // For example, end the game, restart level, reduce player health, etc.
+    // Remove existing clouds
+    if (this.state.clouds) {
+        this.remove(this.state.clouds);
+        // If Clouds has a dispose method, call it
+        if (typeof this.state.clouds.dispose === 'function') {
+            this.state.clouds.dispose();
+        }
+        this.state.clouds = null;
+    }
+
+    // Remove existing lights
+    if (this.state.lights) {
+        this.remove(this.state.lights);
+        // If BasicLights has a dispose method, call it
+        if (typeof this.state.lights.dispose === 'function') {
+            this.state.lights.dispose();
+        }
+        this.state.lights = null;
+    }
+
+    // Remove all obstacles and reset their marked status
+    if (this.state.roadChunk && this.state.roadChunk.state.obstacles) {
+        for (const obstacle of this.state.roadChunk.state.obstacles) {
+            this.remove(obstacle);
+            // If obstacles have a dispose method, call it
+            if (typeof obstacle.dispose === 'function') {
+                obstacle.dispose();
+            }
+        }
+        // Clear the obstacles array
+        this.state.roadChunk.state.obstacles = [];
+    }
+
+    // Reset UI elements
+    this.updateTimerElement(0);
+    this.updateGPAElement();
+    this.updateDistanceElement();
+    this.updateLivesElement();
+    this.resetProgressBar();
+
+    // Remove the end screen if it exists
+    const endScreen = document.getElementById('end-screen');
+    if (endScreen) {
+        document.body.removeChild(endScreen);
+    }
+
+    // Reinitialize game components
+    this.startGame();
+}
+
+/**
+ * Resets the progress bar to its initial state.
+ */
+resetProgressBar() {
+    const progressBarFill = document.getElementById('progress-bar-fill');
+    if (progressBarFill) {
+        progressBarFill.style.width = '0%';
+        progressBarFill.classList.remove('pulse');
+        progressBarFill.style.backgroundColor = '#4CAF50';
+    }
+}
+
+    // TODO: checkIfOffRoad will trigger the end screen
+    checkIfOffRoad() {
+        if (!this.state.student || !this.state.student.state) {
+            // if the student isn't initialized yet, we can't check if they're off road.
+            return true;
+        }
+
+        return false;
     }
 
     createProgressBar(iconSrc) {
@@ -451,6 +651,9 @@ class SeedScene extends Scene {
             const stPos = this.state.student.state.position;
             this.state.studentPos.set(stPos.x, stPos.y, stPos.z);
         }
+        else {
+            return;
+        }
         // calculate time elapsed
         const timeElapsed = (Date.now() - this.state.startTime) / 1000; // time in seconds
         //  console.log('Time Elapsed (Update method):', timeElapsed);
@@ -487,6 +690,12 @@ class SeedScene extends Scene {
         this.updateTimerElement(timeElapsed);
         this.updateGPAElement();
         this.updateDistanceElement();
+
+        // check if off road
+        if (this.checkIfOffRoad()) {
+            this.showEndScreen();
+            return; // Stop updating once game is over
+        }
 
         for (const obj of updateList) {
             if (obj.constructor.name === 'ProceduralRoad') {
