@@ -21,8 +21,9 @@ class Student extends Group {
             isJumping: false,
             isSprinting: false,
             lastpowerrunsegment: null,
-            canSprint: false,
+            readyToStrint: false,
             runtime: 0,
+            maxRunTime: 3,
             startSpeed: startSpeed,
             speed: startSpeed, // todo: pick good speed
             spf: 2.5,
@@ -65,24 +66,27 @@ class Student extends Group {
             // Manually define the bounding box dimensions
             const halfRoadWidth = this.state.roadWidth / 2;
             const boundingBoxWidth = halfRoadWidth / 16;
-            const boundingBoxHeight = this.state.roadWidth/4;
+            const boundingBoxHeight = this.state.roadWidth / 4;
             const boundingBoxLength = halfRoadWidth / 16;
-    
+
             this.boundingBox.set(
                 new Vector3(
                     -boundingBoxWidth, // Min X
-                    0,                 // Min Y
+                    0, // Min Y
                     -boundingBoxLength // Min Z
                 ),
                 new Vector3(
-                    boundingBoxWidth,  // Max X
+                    boundingBoxWidth, // Max X
                     boundingBoxHeight, // Max Y
-                    boundingBoxLength  // Max Z
+                    boundingBoxLength // Max Z
                 )
             );
-    
+
             // Visualize the bounding box
-            const boundingBoxHelper = new Box3Helper(this.boundingBox, 0x00ff00);
+            const boundingBoxHelper = new Box3Helper(
+                this.boundingBox,
+                0x00ff00
+            );
             this.state.parent.add(boundingBoxHelper);
 
             this.updateBoundingBox();
@@ -93,16 +97,16 @@ class Student extends Group {
         if (this.state.model) {
             // Update the bounding box position to follow the model
             const position = this.state.position;
-    
+
             const halfRoadWidth = this.state.roadWidth / 2;
             const boundingBoxWidth = halfRoadWidth / 16;
-            const boundingBoxHeight = this.state.roadWidth/4;
+            const boundingBoxHeight = this.state.roadWidth / 4;
             const boundingBoxLength = halfRoadWidth / 16;
-    
+
             this.boundingBox.set(
                 new Vector3(
                     position.x - boundingBoxWidth, // Min X
-                    position.y,                   // Min Y
+                    position.y, // Min Y
                     position.z - boundingBoxLength // Min Z
                 ),
                 new Vector3(
@@ -114,13 +118,10 @@ class Student extends Group {
             if (this.state.boundingBoxHelper) {
                 this.state.boundingBoxHelper.box.copy(this.boundingBox);
             }
-        }
-        else {
-            console.log("No model exists");
+        } else {
+            console.log('No model exists');
         }
     }
-    
-    
 
     turn(turn_direction) {
         // if (this.state.isJumping) {
@@ -279,9 +280,14 @@ class Student extends Group {
             case 'arrowup':
                 this.jump();
                 break;
-            // case 'p':
-            //     this.startpowerrun();
-            //     break;
+            case 'p':
+                if (this.state.readyToStrint) {
+                    this.startpowerrun();
+                    this.state.readyToStrint = false;
+                    this.state.parent.state.tracker = 0;
+                    this.state.parent.updateProgressBar();
+                }
+                break;
         }
     }
 
@@ -294,8 +300,9 @@ class Student extends Group {
         }
     }
 
-    powerrun(currentSeg, timeStamp, roadtype) {
+    powerrun(currentSeg, timeStamp, roadtype, extraTime) {
         this.state.isJumping = false;
+        this.state.runtime += extraTime;
 
         if (currentSeg == null) {
             let { newS, newR } = this.findCurrentSegment(
@@ -333,6 +340,13 @@ class Student extends Group {
         this.state.action.play();
         this.state.action.timeScale =
             0.1 * Math.log10(this.state.spf * 100 * this.state.speed + 15);
+
+        if (this.state.runtime > this.state.maxRunTime) {
+            this.state.powerrun = false;
+            this.state.runtime = 0;
+            this.state.parent.state.tracker = 0;
+            this.state.readyToStrint = false;
+        }
     }
 
     jump() {
@@ -401,9 +415,19 @@ class Student extends Group {
 
         if (this.state.powerrun) {
             if (roadType == 'corner') {
-                this.powerrun(currentSeg, timeStamp, 'corner');
+                this.powerrun(
+                    currentSeg,
+                    timeStamp,
+                    'corner',
+                    0.001 * deltaTime
+                );
             } else {
-                this.powerrun(currentSeg, timeStamp, 'straight');
+                this.powerrun(
+                    currentSeg,
+                    timeStamp,
+                    'straight',
+                    0.001 * deltaTime
+                );
             }
             return;
         }

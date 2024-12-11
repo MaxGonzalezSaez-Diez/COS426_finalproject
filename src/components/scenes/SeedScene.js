@@ -41,6 +41,7 @@ class SeedScene extends Scene {
             roadColor: null,
             sidewalkColor: 0xa0522d,
             progressBar: null,
+            coffesPerSprint: 20,
         };
 
         // Set background to a nice color
@@ -226,20 +227,23 @@ class SeedScene extends Scene {
                 ) {
                     // HERE: add to coffee count
                     if (obstacle.name == 'coffee') {
-                        if (obstacle.marked) {
+                        if (
+                            obstacle.marked ||
+                            this.state.student.state.powerrun
+                        ) {
                             break;
                         } else {
                             obstacle.marked = true;
                             obstacle.collect();
                             this.state.tracker += 1;
-                            this.updateProgressBar(this.state.tracker);
+                            this.updateProgressBar();
                         }
                     } else {
                         // ---------------------------------------------------- //
                         // ---------------------------------------------------- //
-                        console.log(
-                            `Collision detected with a ${obstacle.name}!`
-                        );
+                        if (this.state.student.state.powerrun) {
+                            break;
+                        }
 
                         // Stop the student
                         this.state.student.state.speed = 0;
@@ -319,7 +323,7 @@ class SeedScene extends Scene {
         progressBarFill.id = 'progress-bar-fill';
         progressBarFill.style.width = '0%';
         progressBarFill.style.height = '100%';
-        progressBarFill.style.backgroundColor = '#4CAF50'; // Material green
+        progressBarFill.style.backgroundColor = '#4CAF50';
         progressBarFill.style.transition =
             'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
 
@@ -357,9 +361,12 @@ class SeedScene extends Scene {
         document.head.appendChild(style);
     }
 
-    updateProgressBar(tracker) {
+    updateProgressBar() {
         // Calculate the progress percentage (0 to 100%)
-        const progressPercentage = Math.min((tracker / 20) * 100, 100);
+        const progressPercentage = Math.min(
+            (this.state.tracker / this.state.coffesPerSprint) * 100,
+            100
+        );
 
         // Update the progress bar width
         const progressBarFill = document.getElementById('progress-bar-fill');
@@ -368,11 +375,19 @@ class SeedScene extends Scene {
         }
 
         if (progressPercentage === 100) {
-            progressBarFill.style.backgroundColor = '#FF0000'; // Material green
+            if (!this.state.student.state.readyToStrint) {
+                this.state.student.state.readyToStrint = true;
+            }
             progressBarFill.classList.add('pulse');
+            progressBarFill.style.backgroundColor = '#FF0000'; // red
         } else {
             progressBarFill.classList.remove('pulse');
+            progressBarFill.style.backgroundColor = '#4CAF50';
         }
+
+        // if (this.state.student.state.powerrun) {
+        //     progressBarFill.style.width = `${0}%`;
+        // }
     }
 
     update(timeStamp) {
