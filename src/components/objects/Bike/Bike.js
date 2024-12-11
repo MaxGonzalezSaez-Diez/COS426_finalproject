@@ -1,8 +1,8 @@
-import { Group, Vector3, AnimationMixer, THREE, BoxHelper, Box3 } from 'three';
+import { Group, Vector3, AnimationMixer, THREE, Box3, Box3Helper, BoxHelper } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import MODELCONE from './cone.glb';
+import MODELBIKE from './bicycle.glb';
 
-class Cone extends Group {
+class Bike extends Group {
     constructor(parent, { position = new Vector3() }) {
         super();
 
@@ -16,18 +16,18 @@ class Cone extends Group {
             laneWidth: parent.state.laneWidth,
         };
 
-        this.name = 'cone';
-        this.addCone();
+        this.name = 'bike';
+        this.addBike();
         parent.addToUpdateList(this);
     }
 
-    addCone() {
+    addBike() {
         const loader = new GLTFLoader();
-        loader.load(MODELCONE, (gltf) => {
+        loader.load(MODELBIKE, (gltf) => {
             this.state.gltf = gltf;
             this.state.model = gltf.scene;
 
-            this.state.model.scale.set(3, 3, 3);
+            this.state.model.scale.set(2, 2, 2);
 
             // Position the obstacle
             this.state.model.position.set(
@@ -49,8 +49,6 @@ class Cone extends Group {
             //     this.state.parent.add(this.state.boundingBox);
             // });
 
-            this.state.boundingBox.setFromObject(this.state.model);
-
             // create and attach a BoxHelper for visualizing the bounding box
             const boundingBoxHelper = new BoxHelper(this.state.model, 0xff0000);
             this.add(boundingBoxHelper);
@@ -67,6 +65,11 @@ class Cone extends Group {
         });
     }
 
+    update(timeStamp) {
+        // Optional update method if you want any animations
+        // Currently left empty
+    }
+
     updateBoundingBox() {
         if (this.state.model) {
             // compute the bounding box based on the model's current state
@@ -78,11 +81,6 @@ class Cone extends Group {
             }
         }
     }
-
-    update(timeStamp) {
-        // Optional update method if you want any animations
-        // Currently left empty
-    }
 }
 
-export default Cone;
+export default Bike;

@@ -13,7 +13,13 @@ import sidewalkTexture from './stone2.jpeg';
 import Cone from '../Cone/Cone.js';
 import Bush from '../Bush/Bush.js';
 import Oak from '../Oak/Oak.js';
+import Sign from '../Sign/Sign.js';
 import Coffee from '../Coffee/Coffee.js';
+import Bike from '../Bike/Bike.js';
+import Tiger from '../Tiger/Tiger.js';
+import RightsRulesResponsibilities from '../RightsRulesResponsibilities/RightsRulesResponsibilities.js';
+import ChatGPT from '../ChatGPT/ChatGPT.js';
+
 
 class RoadChunk extends Group {
     constructor(
@@ -30,8 +36,6 @@ class RoadChunk extends Group {
                 { cones: 2, probability: 5 },
                 { cones: 3, probability: 2.5 },
                 { cones: 4, probability: 1.25 },
-                { cones: 5, probability: 0.75 },
-                { cones: 6, probability: 0.75 },
             ],
             bushProbabilities = [
                 { cones: 0, probability: 92 },
@@ -41,11 +45,37 @@ class RoadChunk extends Group {
                 { cones: 0, probability: 96 },
                 { cones: 1, probability: 4 },
             ],
+            signProbabilities = [
+                { cones: 0, probability: 50 },
+                { cones: 1, probability: 30 },
+                { cones: 2, probability: 20},
+            ],
             coffeeProbabilities = [
                 { cones: 0, probability: 40 },
                 { cones: 1, probability: 30 },
                 { cones: 2, probability: 20 },
                 { cones: 3, probability: 10 },
+            ],
+            bikeProbabilities = [
+                { cones: 0, probability: 50 },
+                { cones: 1, probability: 20 },
+                { cones: 2, probability: 15 },
+                { cones: 3, probability: 15 },
+            ],
+            tigerProbabilities = [
+                { cones: 0, probability: 50 },
+                { cones: 1, probability: 20 },
+                { cones: 2, probability: 15 },
+                { cones: 3, probability: 15 },
+            ],
+            chatGPTProbabilities = [
+                { cones: 0, probability: 50 },
+                { cones: 1, probability: 50 },
+                
+            ],
+            rightsRulesResponsibilitiesProbabilities = [
+                { cones: 0, probability: 70 },
+                { cones: 1, probability: 30 }
             ],
             initialsidewalkColor: initialsidewalkColor,
             initialroadColor: initialroadColor,
@@ -65,7 +95,12 @@ class RoadChunk extends Group {
             coneProbabilities: coneProbabilities,
             bushProbabilities: bushProbabilities,
             oakProbabilities: oakProbabilities,
+            signProbabilities: signProbabilities,
             coffeeProbabilities: coffeeProbabilities,
+            bikeProbabilities: bikeProbabilities,
+            tigerProbabilities: tigerProbabilities,
+            chatGPTProbabilities: chatGPTProbabilities,
+            rightsRulesResponsibilitiesProbabilities: rightsRulesResponsibilitiesProbabilities,
             initialsidewalkColor: initialsidewalkColor,
             initialroadColor: initialroadColor,
             obstacles: [],
@@ -218,7 +253,15 @@ class RoadChunk extends Group {
         this.createObject('Cone', roadCenter, timeElapsed, 'bad');
         this.createObject('Bush', roadCenter, timeElapsed, 'bad');
         this.createObject('Oak', roadCenter, timeElapsed, 'bad');
+        this.createObject('Sign', roadCenter, timeElapsed, 'bad');
         this.createObject('Coffee', roadCenter, timeElapsed, 'good');
+        this.createObject('Bike', roadCenter, timeElapsed, 'bad');
+        this.createObject('Tiger', roadCenter, timeElapsed, 'bad');
+        this.createObject('RightsRulesResponsibilities', roadCenter, timeElapsed, 'bad');
+        this.createObject('ChatGPT', roadCenter, timeElapsed, 'good');
+
+
+
         // TODO: add other stuff here
     }
 
@@ -232,9 +275,19 @@ class RoadChunk extends Group {
             baseProbabilities = this.state.bushProbabilities;
         } else if (objectName == 'Oak') {
             baseProbabilities = this.state.oakProbabilities;
+        } else if (objectName == 'Sign') {
+            baseProbabilities = this.state.signProbabilities;
         } else if (objectName == 'Coffee') {
             baseProbabilities = this.state.coffeeProbabilities;
-        }
+        } else if (objectName == 'Bike') {
+            baseProbabilities = this.state.bikeProbabilities;
+        } else if (objectName == 'Tiger') {
+            baseProbabilities = this.state.tigerProbabilities;
+        } else if (objectName == 'ChatGPT') {
+            baseProbabilities = this.state.chatGPTProbabilities;
+        } else if (objectName == 'RightsRulesResponsibilities') {
+            baseProbabilities = this.state.rightsRulesResponsibilitiesProbabilities;
+                }
 
         timeElapsed *= 1000;
 
@@ -323,11 +376,33 @@ class RoadChunk extends Group {
                 object = new Oak(this.state.parent, {
                     position: positionObject,
                 });
+            } else if (objectName == 'Sign') {
+                object = new Sign(this.state.parent, {
+                position: positionObject
+                });
             } else if (objectName == 'Coffee') {
                 object = new Coffee(this.state.parent, {
                     position: positionObject,
                 });
+            } else if (objectName == 'Bike') {
+                object = new Bike(this.state.parent, {
+                    position: positionObject,
+                });
+            } else if (objectName == 'Tiger') {
+                object = new Tiger(this.state.parent, {
+                    position: positionObject,
+                });
+            } else if (objectName == 'ChatGPT') {
+                object = new ChatGPT(this.state.parent, {
+                    position: positionObject,
+                });
+            } else if (objectName == 'RightsRulesResponsibilities') {
+                object = new RightsRulesResponsibilities(this.state.parent, {
+                    position: positionObject,
+                });
             }
+
+            
 
             // this.add(object)
             this.state.obstacles.push(object);
