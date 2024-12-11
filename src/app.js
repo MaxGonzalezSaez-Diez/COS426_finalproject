@@ -43,8 +43,8 @@ controls.maxDistance = 1000000;
 controls.update();
 
 // Create and add axes helper to the scene
-const axesHelper = new AxesHelper(20);
-scene.add(axesHelper);
+// const axesHelper = new AxesHelper(20);
+// scene.add(axesHelper);
 
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {

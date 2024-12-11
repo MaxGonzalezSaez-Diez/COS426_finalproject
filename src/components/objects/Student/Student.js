@@ -454,7 +454,8 @@ class Student extends Group {
         }
 
         if (currentSeg.state.center.y - this.state.position.y > 0.1) {
-            throw new Error('err');
+            this.state.position.y = currentSeg.state.center.y;
+            console.log('weird bug');
         }
 
         if (

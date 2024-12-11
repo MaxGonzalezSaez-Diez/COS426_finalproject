@@ -186,7 +186,6 @@ class ProceduralRoad extends Group {
         this.state.roadSegments.push(roadSegment);
 
         // add roadChunk obstacles
-        // todo: we need to figure out how to REMOVE past obstacles from this array (otherwise it grows too much)
         if (
             roadSegment.state.obstacles &&
             roadSegment.state.obstacles.length > 0
@@ -198,7 +197,6 @@ class ProceduralRoad extends Group {
             return;
         }
 
-        // TODO: clean this up! delete past road segments
         const lastPiece = this.state.roadSegments[nrCurSeg - 1];
         const oldDirection = lastPiece.state.direction.clone();
 
@@ -236,14 +234,11 @@ class ProceduralRoad extends Group {
     }
 
     update(timeStamp, student, timeElapsed) {
-        // console.log('Time Elapsed (update, Procedural Road)', timeElapsed);
-        // generateNextRoadSegment
-
         // remove passed obstacles
-        const playerZ = this.state.parent.state.student.state.position.z;
-        this.state.obstacles = this.state.obstacles.filter((obstacle) => {
-            return obstacle.state.position.z > playerZ - 2000; // keep only obstacles within 2000 units behind the player
-        });
+        // const playerZ = this.state.parent.state.student.state.position.z;
+        // this.state.obstacles = this.state.obstacles.filter((obstacle) => {
+        //     return obstacle.state.position.z > playerZ - 2000; // keep only obstacles within 2000 units behind the player
+        // });
 
         const runnerPos = student.state.position;
         let nrCurSeg = this.state.roadSegments.length;
@@ -263,11 +258,19 @@ class ProceduralRoad extends Group {
 
         // TODO: we need something here that updates as a function of number of turns
         if (distance < 300) {
-            this.generateNextRoadSegment({
-                forceStraight: false,
-                disableObstacles: false,
-                timeElapsed: timeElapsed, // Pass timeElapsed to adjust probabilities
-            });
+            if (this.parent.state.student.state.powerrun) {
+                this.generateNextRoadSegment({
+                    forceStraight: true,
+                    disableObstacles: false,
+                    timeElapsed: timeElapsed, // Pass timeElapsed to adjust probabilities
+                });
+            } else {
+                this.generateNextRoadSegment({
+                    forceStraight: false,
+                    disableObstacles: false,
+                    timeElapsed: timeElapsed, // Pass timeElapsed to adjust probabilities
+                });
+            }
         }
     }
 }

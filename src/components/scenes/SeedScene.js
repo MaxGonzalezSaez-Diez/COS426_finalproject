@@ -45,7 +45,7 @@ class SeedScene extends Scene {
             roadColor: null,
             sidewalkColor: 0xa0522d,
             progressBar: null,
-            coffesPerSprint: 1,
+            coffesPerSprint: 10,
             currentBackground: 'day',
             gpa: 3.0,
             lives: 3,
@@ -452,6 +452,7 @@ class SeedScene extends Scene {
                             obstacle.marked ||
                             this.state.student.state.powerrun
                         ) {
+                            obstacle.marked = true;
                             break;
                         } else {
                             const r = Math.random();
@@ -461,12 +462,17 @@ class SeedScene extends Scene {
                                 this.updateLivesElement();
                                 this.showEndScreen('gpt');
                             } else {
+                                obstacle.collect();
                                 this.state.lives = 3;
                                 this.state.gpa = 4.0;
                             }
                         }
                     } else if (obstacle.name == 'RRR') {
-                        if (this.state.student.state.powerrun) {
+                        if (
+                            this.state.student.state.powerrun ||
+                            obstacle.marked
+                        ) {
+                            obstacle.marked = true;
                             break;
                         } else {
                             this.state.lives = 0;
@@ -475,7 +481,11 @@ class SeedScene extends Scene {
                         }
                         return;
                     } else if (obstacle.name == 'wall') {
-                        if (this.state.student.state.powerrun) {
+                        if (
+                            this.state.student.state.powerrun ||
+                            obstacle.marked
+                        ) {
+                            obstacle.marked = true;
                             break;
                         } else {
                             this.state.lives = 0;
@@ -486,6 +496,7 @@ class SeedScene extends Scene {
                     } else {
                         // Handle other obstacle collisions (e.g., enemies, hazards)
                         if (this.state.student.state.powerrun) {
+                            obstacle.marked = true;
                             continue; // Skip to the next obstacle
                         } else if (obstacle.marked) {
                             this.state.student.state.speed = 0;
