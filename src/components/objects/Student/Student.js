@@ -86,7 +86,8 @@ class Student extends Group {
             // Visualize the bounding box
             const boundingBoxHelper = new Box3Helper(
                 this.boundingBox,
-                0x00ff00
+                // 0x00ff00
+                (opacity = 0)
             );
             this.state.parent.add(boundingBoxHelper);
             // this.state.boundingBoxHelper.visible = false;
@@ -357,7 +358,10 @@ class Student extends Group {
         this.state.action.timeScale =
             0.1 * Math.log10(this.state.spf * 100 * this.state.speed + 15);
 
-        if (this.state.runtime > this.state.maxRunTime) {
+        if (
+            this.state.runtime > this.state.maxRunTime &&
+            roadtype != 'corner'
+        ) {
             this.state.powerrun = false;
             this.state.runtime = 0;
             this.state.parent.state.tracker = 0;
@@ -464,7 +468,7 @@ class Student extends Group {
             // Quadratic easing function for falling
             this.state.fallTime = (this.state.fallTime || 0) + fallTimeFactor;
 
-            // Update the Y position using inverse parabola
+            // Update the Y position using inpse parabola
             this.state.position.y =
                 currentSeg.state.center.y +
                 Math.max(

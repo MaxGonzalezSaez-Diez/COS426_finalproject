@@ -119,7 +119,8 @@ class Grades extends Group {
 
             this.state.model.rotation.set(
                 0,
-                (Math.PI / 2) * this.state.orientation.x + Math.PI,
+                Math.PI * this.state.orientation.z -
+                    (Math.PI / 2) * this.state.orientation.x,
                 0
             );
 

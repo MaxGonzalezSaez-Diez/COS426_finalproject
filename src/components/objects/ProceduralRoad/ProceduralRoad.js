@@ -155,7 +155,10 @@ class ProceduralRoad extends Group {
                     20 * (Math.random() - 1)
                 );
                 newCenter.add(offset);
-            } else if (rand < 0.5) {
+            } else if (
+                rand < 0.2 &&
+                !this.state.parent.state.student.state.powerrun
+            ) {
                 verticalMovement = true;
                 offset = new Vector3(0, 1, 0).multiplyScalar(7 * Math.random());
                 newCenter.add(offset);
