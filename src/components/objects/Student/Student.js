@@ -1,6 +1,7 @@
 import { Group, Vector3, AnimationMixer, Box3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODEL from './runnerv2.glb';
+import { Audio } from 'three';
 
 class Student extends Group {
     constructor(parent, { laneCount = 5, roadWidth = 20, laneWidth = 4 } = {}) {
@@ -277,6 +278,7 @@ class Student extends Group {
             case 'w':
             case 'arrowup':
                 this.jump();
+                this.parent.jumpSound.play();
                 break;
             case 'p':
                 if (this.state.readyToStrint) {
@@ -293,8 +295,16 @@ class Student extends Group {
         if (!this.state.powerrun) {
             this.state.powerrun = true;
             this.state.runtime = 0;
+            if (!this.state.isSprintSoundPlaying) {
+            this.parent.sprintSound.play();
+            this.state.isSprintSoundPlaying = true;
+            }
         } else {
             this.state.powerrun = false;
+            if (this.state.isSprintSoundPlaying) {
+            this.parent.sprintSound.stop();
+            this.state.isSprintSoundPlaying = false; 
+            }
         }
     }
 
@@ -361,7 +371,10 @@ class Student extends Group {
             this.state.runtime = 0;
             this.state.parent.state.tracker = 0;
             this.state.readyToStrint = false;
-        }
+if (this.state.isSprintSoundPlaying) {
+            this.parent.sprintSound.stop();
+            this.state.isSprintSoundPlaying = false;
+        }        }
     }
 
     jump() {

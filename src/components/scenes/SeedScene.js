@@ -22,7 +22,7 @@ import BETWEENSKY from './dawndusk.png';
 import COFFEE from './coffee.png';
 
 class SeedScene extends Scene {
-    constructor(camera, hitSound, rrrSound, coffeeSound, gptSound, gradeSound, backgroundMusic) {
+    constructor(camera, hitSound, rrrSound, coffeeSound, gptSound, gradeSound, sprintSound, jumpSound, backgroundMusic) {
         // Call parent Scene() constructor
         super();
 
@@ -71,6 +71,8 @@ class SeedScene extends Scene {
         this.coffeeSound = coffeeSound;
         this.gptSound = gptSound;
         this.gradeSound = gradeSound; 
+        this.sprintSound = sprintSound; 
+        this.jumpSound = jumpSound; 
         this.backgroundMusic = backgroundMusic;
     }
 
@@ -184,6 +186,8 @@ class SeedScene extends Scene {
 
         // Add functionality to restart the game
         startButton.addEventListener('click', () => {
+                    this.backgroundMusic.play();
+
             this.startGame();
             startScreen.style.display = 'none';
         });
@@ -747,32 +751,52 @@ class SeedScene extends Scene {
         }
         // calculate time elapsed
         const timeElapsed = (Date.now() - this.state.startTime) / 1000; // time in seconds
-        console.log('Time Elapsed (Update method):', timeElapsed);
+      //  console.log('Time Elapsed (Update method):', timeElapsed);
         this.state.timeElapsed = timeElapsed;
 
-        // Switch the background every 10 seconds
-        if ((timeElapsed / 5) % 2 <= 0.01) {
-            console.log((timeElapsed / 5) % 2);
-            switch (this.state.currentBackground) {
-                case 'day':
-                    this.loadBackgroundImage(BETWEENSKY);
-                    this.state.currentBackground = 'dusk';
-                    break;
-                case 'night':
-                    this.loadBackgroundImage(BETWEENSKY);
-                    this.state.currentBackground = 'dawn';
-                    break;
-                case 'dusk':
-                    this.loadBackgroundImage(NIGHTSKY);
-                    this.state.currentBackground = 'night';
-                    break;
-                case 'dawn':
-                    this.loadBackgroundImage(DAYSKY);
-                    this.state.currentBackground = 'day';
-                    break;
-                default:
-                    break;
+        // Track the time and change background every 10 seconds
+    const cycleDuration = 10; // 10 seconds for each cycle (day -> dusk -> night -> dawn)
+    const cycleCheckInterval = 5; // Check every 1 second
+
+    // Use modulo to find which part of the cycle we are in
+
+    // Track the time of last background change
+    if (!this.state.lastBackgroundUpdate) {
+        this.state.lastBackgroundUpdate = 0;  // Initialize if not set
+    }
+    if (timeElapsed - this.state.lastBackgroundUpdate >= cycleCheckInterval) {
+        this.state.lastBackgroundUpdate = timeElapsed; // Update the last background update time
+    const cyclePosition = Math.floor((timeElapsed / cycleDuration) % 4); // 4 phases: day, dusk, night, dawn
+
+    // Switch background based on the cycle phase
+    switch (cyclePosition) {
+        case 0: // Day
+          if (this.state.currentBackground !== 'day') {
+                this.loadBackgroundImage(DAYSKY);
+                this.state.currentBackground = 'day';
             }
+            break;
+        case 1: // Dusk
+            if (this.state.currentBackground !== 'dusk') {
+                this.loadBackgroundImage(BETWEENSKY);
+                this.state.currentBackground = 'dusk';
+            }
+            break;
+        case 2: // Night
+            if (this.state.currentBackground !== 'night') {
+                this.loadBackgroundImage(NIGHTSKY);
+                this.state.currentBackground = 'night';
+            }
+            break;
+        case 3: // Dawn
+            if (this.state.currentBackground !== 'dawn') {
+                this.loadBackgroundImage(BETWEENSKY);
+                this.state.currentBackground = 'dawn';
+            }
+            break;
+        default:
+            break;
+    }
 
             /*
             if (this.state.currentBackground === 'night') {
