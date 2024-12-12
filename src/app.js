@@ -17,6 +17,9 @@ import COFFEE from './coffeePowerup.ogg'
 import GPT from './gpt.ogg'
 import GRADE from './pickupGrade.ogg'
 import BGMUSIC from './backgroundMusic.ogg'
+import SPRINT from './coffeesprint3.ogg'
+import JUMP from './jump.ogg'
+
 
 
 // ---------------------------------------------
@@ -73,16 +76,30 @@ audioLoader.load(GRADE, (buffer) => {
     gradeSound.setVolume(1);  // Adjust volume if needed
     gradeSound.setLoop(false);  // Set to true if you want it to loop
 });
+
+const sprintSound = new Audio(listener);
+audioLoader.load(SPRINT, (buffer) => {
+    sprintSound.setBuffer(buffer);
+    sprintSound.setVolume(1);  // Adjust volume if needed
+    sprintSound.setLoop(true);  // Set to true if you want it to loop
+});
+
+const jumpSound = new Audio(listener);
+audioLoader.load(JUMP, (buffer) => {
+    jumpSound.setBuffer(buffer);
+    jumpSound.setVolume(1);  // Adjust volume if needed
+    jumpSound.setLoop(false);  // Set to true if you want it to loop
+});
 // Load background music (looped indefinitely)
 const backgroundMusic = new Audio(listener);
 audioLoader.load(BGMUSIC, (buffer) => {
     backgroundMusic.setBuffer(buffer);
     backgroundMusic.setVolume(0.2);  // Lower the volume for background music
     backgroundMusic.setLoop(true);   // Set to loop
-    backgroundMusic.play();          // Start the background music immediately
+    // backgroundMusic.play();          // Start the background music immediately
 });
 
-const scene = new SeedScene(camera, hitSound, rrrSound, coffeeSound, gptSound, gradeSound, backgroundMusic);
+const scene = new SeedScene(camera, hitSound, rrrSound, coffeeSound, gptSound, gradeSound, sprintSound, jumpSound, backgroundMusic);
 
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.setPixelRatio(window.devicePixelRatio);
