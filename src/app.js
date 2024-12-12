@@ -10,6 +10,8 @@ import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene } from 'scenes';
 import { AxesHelper } from 'three';
+import { AudioListener, Audio, AudioLoader } from 'three';
+import HITHURT from './hitHurt.ogg'
 
 // ---------------------------------------------
 // Global Vars
@@ -18,13 +20,31 @@ const cameraOffset = -20;
 const heightOffset = 9;
 // ---------------------------------------------
 
+
+
 // Initialize core ThreeJS components
-const scene = new SeedScene();
+// const scene = new SeedScene();
 const camera = new PerspectiveCamera();
 const renderer = new WebGLRenderer({ antialias: true });
 
 // Set up camera
 camera.position.set(0, 15, -30);
+
+// Set up audio
+const listener = new AudioListener();
+camera.add(listener);  // Attach the listener to the camera
+
+const audioLoader = new AudioLoader();
+const sound = new Audio(listener);
+
+audioLoader.load(HITHURT, (buffer) => {
+    sound.setBuffer(buffer);
+    sound.setVolume(1);  // Adjust volume if needed
+    sound.setLoop(false);  // Set to true if you want it to loop
+});
+
+const scene = new SeedScene(camera, sound);
+
 
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.setPixelRatio(window.devicePixelRatio);

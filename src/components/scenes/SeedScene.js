@@ -6,6 +6,9 @@ import {
     TextureLoader,
     Sprite,
     SpriteMaterial,
+    AudioLoader,
+    AudioListener,
+    Audio
 } from 'three';
 import { RoadChunk, Student, Cone, Oak, Bush } from 'objects';
 import { BasicLights } from 'lights';
@@ -19,7 +22,7 @@ import BETWEENSKY from './dawndusk.png'
 import COFFEE from './coffee.png';
 
 class SeedScene extends Scene {
-    constructor() {
+    constructor(camera, sound) {
         // Call parent Scene() constructor
         super();
 
@@ -61,6 +64,10 @@ class SeedScene extends Scene {
 
         // create start screen
         this.createStartScreen();
+
+        this.camera = camera;
+        this.sound = sound;
+
     }
 
     loadBackgroundImage(imagePath) {
@@ -86,6 +93,7 @@ class SeedScene extends Scene {
         startScreen.style.alignItems = 'center';
         startScreen.style.flexDirection = 'column';
         startScreen.style.zIndex = '10';
+        startScreen.style.padding = '20px';
         document.body.appendChild(startScreen);
 
         // Add title text
@@ -109,6 +117,9 @@ class SeedScene extends Scene {
             'Avoid the obstacles while trying to keep the highest GPA!';
         instructionText.style.fontFamily = 'Courier New, Courier, monospace';
         instructionText.style.fontSize = '50px';
+        instructionText.style.textAlign = 'center'; // Centers the text
+        instructionText.style.marginBottom = '15px'; // Reduce spacing between instructions
+        instructionText.style.lineHeight = '1.2'; // Adjust line height
         startScreen.appendChild(instructionText);
 
         const movementText = document.createElement('p');
@@ -116,6 +127,10 @@ class SeedScene extends Scene {
             'Use A/D or Left/Right Arrows to move and W or Up Arrow to jump. Hitting walls or missing turns will send you to McCosh instantly!';
         movementText.style.fontFamily = 'Courier New, Courier, monospace';
         movementText.style.fontSize = '25px';
+        movementText.style.marginBottom = '15px'; // Reduce spacing between instructions
+        movementText.style.lineHeight = '1.4'; // Adjust line height
+        movementText.style.textAlign = 'center'; // Centers the text
+
         startScreen.appendChild(movementText);
 
         const specialText = document.createElement('p');
@@ -123,6 +138,10 @@ class SeedScene extends Scene {
             'Use P for a caffeine boost once you drink enough coffee';
         specialText.style.fontFamily = 'Courier New, Courier, monospace';
         specialText.style.fontSize = '25px';
+        specialText.style.marginBottom = '15px'; // Reduce spacing between instructions
+        specialText.style.lineHeight = '1.4'; // Adjust line height
+        specialText.style.textAlign = 'center'; // Centers the text
+
         startScreen.appendChild(specialText);
 
          const gptText = document.createElement('p');
@@ -130,6 +149,11 @@ class SeedScene extends Scene {
             'Using AI could greatly help you, or get you expelled! And be sure not to violate the Honor Code by running into the Rights, Rules, Responsibilities book!';
         gptText.style.fontFamily = 'Courier New, Courier, monospace';
         gptText.style.fontSize = '25px';
+        gptText.style.textAlign = 'center'; // Centers the text
+        gptText.style.marginBottom = '30px'; // Larger margin before the button
+        gptText.style.lineHeight = '1.4'; // Adjust line height
+gptText.style.maxWidth = '80%'; // Limits text width to 80% of the screen width
+    gptText.style.wordWrap = 'break-word';
         startScreen.appendChild(gptText);
 
         // Add start button
@@ -526,6 +550,7 @@ class SeedScene extends Scene {
                             // subtract one life
                             this.state.lives -= 1;
                             this.updateLivesElement(); // update UI
+                            this.sound.play();
 
                             // mark the obstacle to prevent multiple life deductions
                             obstacle.marked = true;
