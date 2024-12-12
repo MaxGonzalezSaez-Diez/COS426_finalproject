@@ -22,7 +22,7 @@ import BETWEENSKY from './dawndusk.png';
 import COFFEE from './coffee.png';
 
 class SeedScene extends Scene {
-    constructor(camera, sound) {
+    constructor(camera, hitSound, rrrSound, coffeeSound, gptSound, gradeSound, backgroundMusic) {
         // Call parent Scene() constructor
         super();
 
@@ -66,7 +66,12 @@ class SeedScene extends Scene {
         this.createStartScreen();
 
         this.camera = camera;
-        this.sound = sound;
+        this.hitSound = hitSound;
+        this.rrrSound = rrrSound;
+        this.coffeeSound = coffeeSound;
+        this.gptSound = gptSound;
+        this.gradeSound = gradeSound; 
+        this.backgroundMusic = backgroundMusic;
     }
 
     loadBackgroundImage(imagePath) {
@@ -475,6 +480,7 @@ class SeedScene extends Scene {
                             obstacle.collect();
                             this.state.tracker += 1;
                             this.updateProgressBar();
+                            this.gradeSound.play();
                         }
                     } else if (obstacle.name == 'grade') {
                         if (
@@ -492,6 +498,7 @@ class SeedScene extends Scene {
                             this.state.gpa =
                                 totalgrades / this.state.gradescollected;
                             this.updateGPAElement();
+                            this.gradeSound.play();
                         }
                     } else if (obstacle.name == 'cgpt') {
                         if (
@@ -507,10 +514,12 @@ class SeedScene extends Scene {
                                 this.state.notgpt = 0;
                                 this.updateLivesElement();
                                 this.showEndScreen('gpt');
+                                this.rrrSound.play();
                             } else {
                                 obstacle.collect();
                                 this.state.lives = 3;
                                 this.state.gpa = 4.0;
+                                this.gptSound.play();
                             }
                         }
                     } else if (obstacle.name == 'RRR') {
@@ -523,6 +532,7 @@ class SeedScene extends Scene {
                         } else {
                             this.state.lives = 0;
                             this.updateLivesElement();
+                            this.rrrSound.play();
                             this.showEndScreen('RRR');
                         }
                         return;
@@ -536,6 +546,7 @@ class SeedScene extends Scene {
                         } else {
                             this.state.lives = 0;
                             this.updateLivesElement();
+                            this.hitSound.play();
                             this.showEndScreen('wall');
                         }
                         return;
@@ -550,7 +561,7 @@ class SeedScene extends Scene {
                             // subtract one life
                             this.state.lives -= 1;
                             this.updateLivesElement(); // update UI
-                            this.sound.play();
+                            this.hitSound.play();
 
                             // mark the obstacle to prevent multiple life deductions
                             obstacle.marked = true;
@@ -702,6 +713,7 @@ class SeedScene extends Scene {
         if (progressPercentage === 100) {
             if (!this.state.student.state.readyToStrint) {
                 this.state.student.state.readyToStrint = true;
+                this.coffeeSound.play();
             }
             progressBarFill.classList.add('pulse');
             progressBarFill.style.backgroundColor = '#FF0000'; // red
