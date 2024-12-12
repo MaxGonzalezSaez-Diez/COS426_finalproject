@@ -42,7 +42,9 @@ class RightsRulesResponsibilities extends Group {
 
             this.state.model.rotation.set(
                 0,
-                (Math.PI / 2) * this.state.orientation.x,
+                Math.PI +
+                    Math.min(this.state.orientation.z, 0) * Math.PI +
+                    (Math.PI / 2) * this.state.orientation.x,
                 0
             );
 

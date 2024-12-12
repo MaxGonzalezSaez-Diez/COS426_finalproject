@@ -180,8 +180,13 @@ class Grades extends Group {
     }
 
     update(timeStamp) {
-        // Optional update method if you want any animations
-        // Currently left empty
+        if (this.state.model) {
+            this.state.model.rotation.y = timeStamp * 0.002;
+            this.state.boundingBox.setFromObject(this.state.model);
+            if (this.state.boundingBoxHelper) {
+                this.state.boundingBoxHelper.update();
+            }
+        }
     }
 }
 

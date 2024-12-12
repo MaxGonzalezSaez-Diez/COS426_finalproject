@@ -80,8 +80,8 @@ class RoadChunk extends Group {
             ],
             rrrponsibilitiesProbabilities = [
                 { cones: 0, probability: 80 },
-                { cones: 1, probability: 10 },
-                { cones: 2, probability: 10 },
+                { cones: 1, probability: 15 },
+                { cones: 2, probability: 15 },
             ],
             gradesProbabilities = [
                 { cones: 0, probability: 50 },
