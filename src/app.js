@@ -12,6 +12,12 @@ import { SeedScene } from 'scenes';
 import { AxesHelper } from 'three';
 import { AudioListener, Audio, AudioLoader } from 'three';
 import HITHURT from './hitHurt.ogg'
+import RRRHURT from './RRR.ogg'
+import COFFEE from './coffeePowerup.ogg'
+import GPT from './gpt.ogg'
+import GRADE from './pickupGrade.ogg'
+import BGMUSIC from './backgroundMusic.ogg'
+
 
 // ---------------------------------------------
 // Global Vars
@@ -35,16 +41,48 @@ const listener = new AudioListener();
 camera.add(listener);  // Attach the listener to the camera
 
 const audioLoader = new AudioLoader();
-const sound = new Audio(listener);
-
+const hitSound = new Audio(listener);
 audioLoader.load(HITHURT, (buffer) => {
-    sound.setBuffer(buffer);
-    sound.setVolume(1);  // Adjust volume if needed
-    sound.setLoop(false);  // Set to true if you want it to loop
+    hitSound.setBuffer(buffer);
+    hitSound.setVolume(1);  // Adjust volume if needed
+    hitSound.setLoop(false);  // Set to true if you want it to loop
 });
 
-const scene = new SeedScene(camera, sound);
+const rrrSound = new Audio(listener);
+audioLoader.load(RRRHURT, (buffer) => {
+    rrrSound.setBuffer(buffer);
+    rrrSound.setVolume(1);  // Adjust volume if needed
+    rrrSound.setLoop(false);  // Set to true if you want it to loop
+});
 
+const coffeeSound = new Audio(listener);
+audioLoader.load(COFFEE, (buffer) => {
+    coffeeSound.setBuffer(buffer);
+    coffeeSound.setVolume(1);  // Adjust volume if needed
+    coffeeSound.setLoop(false);  // Set to true if you want it to loop
+});
+const gptSound = new Audio(listener);
+audioLoader.load(GPT, (buffer) => {
+    gptSound.setBuffer(buffer);
+    gptSound.setVolume(1);  // Adjust volume if needed
+    gptSound.setLoop(false);  // Set to true if you want it to loop
+});
+const gradeSound = new Audio(listener);
+audioLoader.load(GRADE, (buffer) => {
+    gradeSound.setBuffer(buffer);
+    gradeSound.setVolume(1);  // Adjust volume if needed
+    gradeSound.setLoop(false);  // Set to true if you want it to loop
+});
+// Load background music (looped indefinitely)
+const backgroundMusic = new Audio(listener);
+audioLoader.load(BGMUSIC, (buffer) => {
+    backgroundMusic.setBuffer(buffer);
+    backgroundMusic.setVolume(0.2);  // Lower the volume for background music
+    backgroundMusic.setLoop(true);   // Set to loop
+    backgroundMusic.play();          // Start the background music immediately
+});
+
+const scene = new SeedScene(camera, hitSound, rrrSound, coffeeSound, gptSound, gradeSound, backgroundMusic);
 
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.setPixelRatio(window.devicePixelRatio);
