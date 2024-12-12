@@ -1,4 +1,4 @@
-import { Group, Vector3, AnimationMixer, Box3, Box3Helper } from 'three';
+import { Group, Vector3, AnimationMixer, Box3} from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODEL from './runnerv2.glb';
 
@@ -83,16 +83,7 @@ class Student extends Group {
                     boundingBoxLength // Max Z
                 )
             );
-
-            // Visualize the bounding box
-            const boundingBoxHelper = new Box3Helper(
-                this.boundingBox,
-                // 0x00ff00
-                (opacity = 0)
-            );
-            this.state.parent.add(boundingBoxHelper);
-            // this.state.boundingBoxHelper.visible = false;
-            this.state.boundingBox.visible = false;
+            // this.state.boundingBox.visible = false;
             this.updateBoundingBox();
         });
     }
@@ -119,9 +110,6 @@ class Student extends Group {
                     position.z + boundingBoxLength // Max Z
                 )
             );
-            if (this.state.boundingBoxHelper) {
-                this.state.boundingBoxHelper.box.copy(this.boundingBox);
-            }
         } else {
             console.log('No model exists');
         }
