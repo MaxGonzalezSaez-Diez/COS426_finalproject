@@ -14,6 +14,7 @@ import Clouds from '../objects/Clouds/Clouds';
 import DAYSKY from './dayv7.png';
 import NIGHTSKY from './night2.png';
 import STORMSKY from './stormv2.png';
+import BETWEENSKY from './dawndusk.png'
 
 import COFFEE from './coffee.png';
 
@@ -103,12 +104,33 @@ class SeedScene extends Scene {
         startScreen.appendChild(title);
 
         // Add instructions (can change to make it more fun later)
-        const instructionText = document.createElement('p');
+        const instructionText = document.createElement('h2');
         instructionText.innerHTML =
-            'Use WASD or arrow keys to avoid the obstacles as you run!';
+            'Avoid the obstacles while trying to keep the highest GPA!';
         instructionText.style.fontFamily = 'Courier New, Courier, monospace';
-        instructionText.style.fontSize = '35px';
+        instructionText.style.fontSize = '50px';
         startScreen.appendChild(instructionText);
+
+        const movementText = document.createElement('p');
+        movementText.innerHTML =
+            'Use A/D or Left/Right Arrows to move and W or Up Arrow to jump. Hitting walls or missing turns will send you to McCosh instantly!';
+        movementText.style.fontFamily = 'Courier New, Courier, monospace';
+        movementText.style.fontSize = '25px';
+        startScreen.appendChild(movementText);
+
+        const specialText = document.createElement('p');
+        specialText.innerHTML =
+            'Use P for a caffeine boost once you drink enough coffee';
+        specialText.style.fontFamily = 'Courier New, Courier, monospace';
+        specialText.style.fontSize = '25px';
+        startScreen.appendChild(specialText);
+
+         const gptText = document.createElement('p');
+        gptText.innerHTML =
+            'Using AI could greatly help you, or get you expelled! And be sure not to violate the Honor Code by running into the Rights, Rules, Responsibilities book!';
+        gptText.style.fontFamily = 'Courier New, Courier, monospace';
+        gptText.style.fontSize = '25px';
+        startScreen.appendChild(gptText);
 
         // Add start button
         const startButton = document.createElement('button');
@@ -688,20 +710,47 @@ class SeedScene extends Scene {
         }
         // calculate time elapsed
         const timeElapsed = (Date.now() - this.state.startTime) / 1000; // time in seconds
-        //  console.log('Time Elapsed (Update method):', timeElapsed);
+        console.log('Time Elapsed (Update method):', timeElapsed);
         this.state.timeElapsed = timeElapsed;
 
-        // Switch the background every 60 seconds (1 minute)
-        if (Math.floor(timeElapsed / 15) % 2 === 0) {
+        // Switch the background every 10 seconds
+        if ((timeElapsed  / 5 % 2) <= 0.01) {
+            console.log((timeElapsed  / 5) % 2);
+            switch(this.state.currentBackground){
+                case 'day':
+                    this.loadBackgroundImage(BETWEENSKY);
+                    this.state.currentBackground = 'dusk';
+                    break;
+                case 'night':
+                    this.loadBackgroundImage(BETWEENSKY);
+                    this.state.currentBackground = 'dawn';
+                    break;
+                case 'dusk':
+                    this.loadBackgroundImage(NIGHTSKY);
+                    this.state.currentBackground = 'night';
+                    break;
+                case 'dawn':
+                    this.loadBackgroundImage(DAYSKY);
+                    this.state.currentBackground = 'day';
+                    break;
+                default:
+                    break;
+            }
+
+
+
+            /*
             if (this.state.currentBackground === 'night') {
-                // Generate a random number to simulate a low chance
+                    this.loadBackgroundImage(BETWEENSKY);
+                    this.state.currentBackground = 'dawn';
+                    
+
                 const randomChance = Math.random(); // Returns a number between 0 and 1
 
                 if (randomChance < 0.5) {
-                    // 10% chance (adjust this value as needed)
                     // Switch to storm background
                     this.loadBackgroundImage(STORMSKY);
-                    this.state.currentBackground = 'storm';
+                    this.state.currentBackground = 'day';
                     //   this.state.lights.updateLighting('storm');
                 } else {
                     // Switch to regular day background
@@ -711,12 +760,18 @@ class SeedScene extends Scene {
                 }
             }
         } else {
-            if (this.state.currentBackground !== 'night') {
+            if (this.state.currentBackground === 'day') {
                 this.loadBackgroundImage(NIGHTSKY);
                 this.state.currentBackground = 'night';
                 //  this.state.lights.updateLighting('night');
             }
-        }
+        } else {
+            if (this.state.currentBackground === 'day') {
+                this.loadBackgroundImage(NIGHTSKY);
+                this.state.currentBackground = 'night';
+                //  this.state.lights.updateLighting('night');
+                */
+            }
 
         // Update the timer display
         this.updateTimerElement(timeElapsed);
