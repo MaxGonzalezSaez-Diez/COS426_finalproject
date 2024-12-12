@@ -10,7 +10,7 @@ class ProceduralRoad extends Group {
             segmentWidth = 25,
             segmentLength = 100,
             startSegments = 3,
-            fracTurns = 0.1,
+            fracTurns = 0.15,
             obstacleSpawnProbability = 1,
             prizeSpawnProbability = 1,
             laneCount = 5,
@@ -148,22 +148,60 @@ class ProceduralRoad extends Group {
 
         let verticalMovement = false;
         let offset = new Vector3();
+
         if (this.state.roadSegments.length > 2) {
             const rand = Math.random();
             if (rand < 0.12) {
-                offset = new Vector3(0, 1, 0).multiplyScalar(
-                    20 * (Math.random() - 1)
-                );
+                let o = Math.min(5, 15 * (Math.random() - 1));
+
+                offset = new Vector3(0, 1, 0).multiplyScalar(o);
                 newCenter.add(offset);
             } else if (
                 rand < 0.2 &&
                 !this.state.parent.state.student.state.powerrun
             ) {
                 verticalMovement = true;
-                offset = new Vector3(0, 1, 0).multiplyScalar(7 * Math.random());
+                let o = Math.max(3, 8 * Math.random());
+                offset = new Vector3(0, 1, 0).multiplyScalar(o);
                 newCenter.add(offset);
             }
         }
+
+        if (segmentType === 'turn-left' || segmentType === 'turn-right') {
+            const lastPiece = this.state.roadSegments[nrCurSeg - 1];
+            const oldDirection = lastPiece.state.direction.clone();
+
+            let moveSign = 0;
+            let angle = 0;
+            if (segmentType === 'turn-left') {
+                angle = Math.PI / 2;
+            } else if (segmentType === 'turn-right') {
+                angle = -Math.PI / 2;
+            }
+
+            const newDirectionCorner = oldDirection
+                .clone()
+                .applyAxisAngle(new Vector3(0, 1, 0), angle)
+                .normalize();
+
+            // this.state.model.rotation.y += angle;
+
+            if (nrCurSeg > 0) {
+                const roadCorner = new RoadCorner(this.state.parent, {
+                    segmentWidth: this.state.segmentWidth,
+                    center: newCorner.clone(),
+                    oldDirection: oldDirection.clone().normalize(),
+                    direction: newDirectionCorner,
+                    turn: segmentType,
+                    initialroadColor: this.parent.state.roadColor,
+                    initialsidewalkColor: this.parent.state.sidewalkColor,
+                });
+
+                this.add(roadCorner);
+                this.state.cornerSegments.push(roadCorner);
+            }
+        }
+
         // Create road segment
         const roadSegment = new RoadChunk(this.state.parent, {
             segmentWidth: this.state.segmentWidth,
@@ -196,41 +234,6 @@ class ProceduralRoad extends Group {
         if (segmentType === 'straight') {
             return;
         }
-
-        const lastPiece = this.state.roadSegments[nrCurSeg - 1];
-        const oldDirection = lastPiece.state.direction.clone();
-
-        let moveSign = 0;
-        let angle = 0;
-        if (segmentType === 'turn-left') {
-            angle = Math.PI / 2;
-        } else if (segmentType === 'turn-right') {
-            angle = -Math.PI / 2;
-        }
-
-        const newDirectionCorner = oldDirection
-            .clone()
-            .applyAxisAngle(new Vector3(0, 1, 0), angle)
-            .normalize();
-
-        // this.state.model.rotation.y += angle;
-
-        if (nrCurSeg > 0) {
-            const roadCorner = new RoadCorner(this.state.parent, {
-                segmentWidth: this.state.segmentWidth,
-                center: newCorner.clone(),
-                oldDirection: oldDirection.clone().normalize(),
-                direction: newDirectionCorner,
-                turn: segmentType,
-                initialroadColor: this.parent.state.roadColor,
-                initialsidewalkColor: this.parent.state.sidewalkColor,
-            });
-
-            this.add(roadCorner);
-            this.state.cornerSegments.push(roadCorner);
-        }
-
-        return;
     }
 
     update(timeStamp, student, timeElapsed) {

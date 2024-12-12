@@ -29,6 +29,7 @@ class RoadCorner extends Group {
         this.state = {
             gui: parent.state.gui,
             parent: parent,
+            type: 'corner',
             segmentWidth: segmentWidth,
             segmentLength: segmentWidth,
             center: center,
@@ -37,6 +38,7 @@ class RoadCorner extends Group {
             direction: direction,
             initialsidewalkColor: initialsidewalkColor,
             initialroadColor: initialroadColor,
+            prev_turn: false,
         };
 
         const currentSideWalkColor = initialsidewalkColor;

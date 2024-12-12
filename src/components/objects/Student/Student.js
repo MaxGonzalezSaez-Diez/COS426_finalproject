@@ -166,24 +166,28 @@ class Student extends Group {
         }
 
         if (roadType === 'corner') {
-            const { newLane, closestCenter } = this.findClosestSubSquareCenter(
-                this.state.position,
-                currentSeg.state.center.clone(),
-                currentSeg.state.segmentWidth,
-                this.state.laneCount,
-                this.state.currentLane,
-                this.state.direction.clone(),
-                turn_direction
-            );
+            if (!currentSeg.state.prev_turn) {
+                currentSeg.state.prev_turn = true;
+                const { newLane, closestCenter } =
+                    this.findClosestSubSquareCenter(
+                        this.state.position,
+                        currentSeg.state.center.clone(),
+                        currentSeg.state.segmentWidth,
+                        this.state.laneCount,
+                        this.state.currentLane,
+                        this.state.direction.clone(),
+                        turn_direction
+                    );
 
-            const newDirection = this.state.direction
-                .clone()
-                .applyAxisAngle(this.state.rotAxis, angle);
-            this.state.direction = newDirection.clone();
-            this.state.model.rotation.y += angle;
+                const newDirection = this.state.direction
+                    .clone()
+                    .applyAxisAngle(this.state.rotAxis, angle);
+                this.state.direction = newDirection.clone();
+                this.state.model.rotation.y += angle;
 
-            this.state.position = closestCenter;
-            this.state.currentLane = newLane;
+                this.state.position = closestCenter;
+                this.state.currentLane = newLane;
+            }
         } else {
             const curDir = this.state.direction;
             const offsetDir = new Vector3(curDir.z, 0, -curDir.x).normalize();

@@ -33,23 +33,27 @@ class RoadChunk extends Group {
             direction = new Vector3(0, 0, 1),
             disableObstacles = false,
             coneProbabilities = [
-                { cones: 0, probability: 50 },
-                { cones: 1, probability: 25 },
+                { cones: 0, probability: 40 },
+                { cones: 1, probability: 20 },
                 { cones: 2, probability: 15 },
                 { cones: 3, probability: 5 },
                 { cones: 4, probability: 5 },
+                { cones: 5, probability: 5 },
+                { cones: 6, probability: 5 },
+                { cones: 7, probability: 2.5 },
+                { cones: 8, probability: 2.5 },
             ],
             bushProbabilities = [
                 { cones: 0, probability: 92 },
                 { cones: 1, probability: 8 },
             ],
             oakProbabilities = [
-                { cones: 0, probability: 96 },
-                { cones: 1, probability: 4 },
+                { cones: 0, probability: 94 },
+                { cones: 1, probability: 6 },
             ],
             signProbabilities = [
-                { cones: 0, probability: 85 },
-                { cones: 1, probability: 10 },
+                { cones: 0, probability: 80 },
+                { cones: 1, probability: 15 },
                 { cones: 2, probability: 5 },
             ],
             coffeeProbabilities = [
@@ -65,8 +69,8 @@ class RoadChunk extends Group {
                 { cones: 3, probability: 1 },
             ],
             tigerProbabilities = [
-                { cones: 0, probability: 95 },
-                { cones: 1, probability: 2 },
+                { cones: 0, probability: 90 },
+                { cones: 1, probability: 7 },
                 { cones: 2, probability: 1 },
                 { cones: 3, probability: 1 },
             ],
@@ -75,12 +79,13 @@ class RoadChunk extends Group {
                 { cones: 1, probability: 10 },
             ],
             rrrponsibilitiesProbabilities = [
-                { cones: 0, probability: 90 },
+                { cones: 0, probability: 80 },
                 { cones: 1, probability: 10 },
+                { cones: 2, probability: 10 },
             ],
             gradesProbabilities = [
-                { cones: 0, probability: 60 },
-                { cones: 1, probability: 20 },
+                { cones: 0, probability: 50 },
+                { cones: 1, probability: 30 },
                 { cones: 2, probability: 10 },
                 { cones: 3, probability: 10 },
             ],
@@ -98,6 +103,7 @@ class RoadChunk extends Group {
             parent: parent,
             segmentWidth: segmentWidth,
             segmentLength: segmentLength,
+            type: 'straight',
             center: center,
             direction: direction.clone().normalize(),
             disableObstacles: disableObstacles,
@@ -319,7 +325,30 @@ class RoadChunk extends Group {
 
         timeElapsed *= 1000;
 
-        const adjustedProbabilities = baseProbabilities;
+        // const adjustedProbabilities = baseProbabilities;
+
+        const adjustedProbabilities = baseProbabilities.map((entry) => {
+            const sp = this.state.parent.state.student.state.speed;
+
+            if (entry.cones === 0) {
+                return {
+                    ...entry,
+                    probability: Math.max(
+                        entry.probability - sp,
+                        entry.probability - 15
+                    ), // Adjust based on distance
+                };
+            } else {
+                return {
+                    ...entry,
+                    probability: Math.min(
+                        entry.probability + sp, // Adjust increment based on distance
+                        entry.probability + 15
+                    ),
+                };
+            }
+        });
+
         // calculates cumulative and normalized probabilities for cone spawning,
         // generates a random value between 0 and 100, and determines the number
         // of cones to spawn based on where the random value falls within the
