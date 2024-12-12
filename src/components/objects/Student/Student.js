@@ -1,4 +1,4 @@
-import { Group, Vector3, AnimationMixer, Box3} from 'three';
+import { Group, Vector3, AnimationMixer, Box3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODEL from './runnerv2.glb';
 
@@ -39,6 +39,7 @@ class Student extends Group {
             currentLane: 0,
             count: 0,
             distance: 0,
+            keydown: null,
         };
 
         this.boundingBox = new Box3();
@@ -46,7 +47,8 @@ class Student extends Group {
         this.name = 'student';
         this.addStudent();
         parent.addToUpdateList(this);
-        window.addEventListener('keydown', this.handleKeyDown.bind(this));
+        this.state.keydown = this.handleKeyDown.bind(this);
+        window.addEventListener('keydown', this.state.keydown);
     }
 
     addStudent() {

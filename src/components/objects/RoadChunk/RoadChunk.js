@@ -33,15 +33,15 @@ class RoadChunk extends Group {
             direction = new Vector3(0, 0, 1),
             disableObstacles = false,
             coneProbabilities = [
-                { cones: 0, probability: 40 },
+                { cones: 0, probability: 60 },
                 { cones: 1, probability: 20 },
                 { cones: 2, probability: 15 },
                 { cones: 3, probability: 5 },
                 { cones: 4, probability: 5 },
                 { cones: 5, probability: 5 },
-                { cones: 6, probability: 5 },
-                { cones: 7, probability: 2.5 },
-                { cones: 8, probability: 2.5 },
+                // { cones: 6, probability: 5 },
+                // { cones: 7, probability: 2.5 },
+                // { cones: 8, probability: 2.5 },
             ],
             bushProbabilities = [
                 { cones: 0, probability: 92 },
@@ -334,16 +334,16 @@ class RoadChunk extends Group {
                 return {
                     ...entry,
                     probability: Math.max(
-                        entry.probability - sp,
-                        entry.probability - 15
+                        entry.probability - sp * 0.4,
+                        entry.probability - 5
                     ), // Adjust based on distance
                 };
             } else {
                 return {
                     ...entry,
                     probability: Math.min(
-                        entry.probability + sp, // Adjust increment based on distance
-                        entry.probability + 15
+                        entry.probability + sp * 0.4, // Adjust increment based on distance
+                        entry.probability + 5
                     ),
                 };
             }

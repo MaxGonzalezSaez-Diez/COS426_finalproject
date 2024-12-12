@@ -8,7 +8,7 @@ import {
     SpriteMaterial,
     AudioLoader,
     AudioListener,
-    Audio
+    Audio,
 } from 'three';
 import { RoadChunk, Student, Cone, Oak, Bush } from 'objects';
 import { BasicLights } from 'lights';
@@ -17,7 +17,7 @@ import Clouds from '../objects/Clouds/Clouds';
 import DAYSKY from './dayv7.png';
 import NIGHTSKY from './night2.png';
 import STORMSKY from './stormv2.png';
-import BETWEENSKY from './dawndusk.png'
+import BETWEENSKY from './dawndusk.png';
 
 import COFFEE from './coffee.png';
 
@@ -67,7 +67,6 @@ class SeedScene extends Scene {
 
         this.camera = camera;
         this.sound = sound;
-
     }
 
     loadBackgroundImage(imagePath) {
@@ -144,7 +143,7 @@ class SeedScene extends Scene {
 
         startScreen.appendChild(specialText);
 
-         const gptText = document.createElement('p');
+        const gptText = document.createElement('p');
         gptText.innerHTML =
             'Using AI could greatly help you, or get you expelled! And be sure not to violate the Honor Code by running into the Rights, Rules, Responsibilities book!';
         gptText.style.fontFamily = 'Courier New, Courier, monospace';
@@ -152,8 +151,8 @@ class SeedScene extends Scene {
         gptText.style.textAlign = 'center'; // Centers the text
         gptText.style.marginBottom = '30px'; // Larger margin before the button
         gptText.style.lineHeight = '1.4'; // Adjust line height
-gptText.style.maxWidth = '80%'; // Limits text width to 80% of the screen width
-    gptText.style.wordWrap = 'break-word';
+        gptText.style.maxWidth = '80%'; // Limits text width to 80% of the screen width
+        gptText.style.wordWrap = 'break-word';
         startScreen.appendChild(gptText);
 
         // Add start button
@@ -188,6 +187,7 @@ gptText.style.maxWidth = '80%'; // Limits text width to 80% of the screen width
     showEndScreen(reason) {
         // end screen overlay like the start screen (does not remove ui elements)
         if (document.getElementById('end-screen')) return;
+        window.removeEventListener('keydown', this.state.student.state.keydown);
 
         // calculate final stats
         const finalCoffees = this.state.tracker || 0;
@@ -739,9 +739,9 @@ gptText.style.maxWidth = '80%'; // Limits text width to 80% of the screen width
         this.state.timeElapsed = timeElapsed;
 
         // Switch the background every 10 seconds
-        if ((timeElapsed  / 5 % 2) <= 0.01) {
-            console.log((timeElapsed  / 5) % 2);
-            switch(this.state.currentBackground){
+        if ((timeElapsed / 5) % 2 <= 0.01) {
+            console.log((timeElapsed / 5) % 2);
+            switch (this.state.currentBackground) {
                 case 'day':
                     this.loadBackgroundImage(BETWEENSKY);
                     this.state.currentBackground = 'dusk';
@@ -761,8 +761,6 @@ gptText.style.maxWidth = '80%'; // Limits text width to 80% of the screen width
                 default:
                     break;
             }
-
-
 
             /*
             if (this.state.currentBackground === 'night') {
@@ -796,7 +794,7 @@ gptText.style.maxWidth = '80%'; // Limits text width to 80% of the screen width
                 this.state.currentBackground = 'night';
                 //  this.state.lights.updateLighting('night');
                 */
-            }
+        }
 
         // Update the timer display
         this.updateTimerElement(timeElapsed);
