@@ -22,7 +22,7 @@ import BETWEENSKY from './dawndusk.png';
 
 import COFFEE from './coffee.png';
 
-// Replace with your Supabase URL and anon key (these are safe to expose in the frontend)
+// supabase url + key for public access
 const supabaseUrl = 'https://mieysrnkneloivlhfhuk.supabase.co';
 const supabaseAnonKey =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pZXlzcm5rbmVsb2l2bGhmaHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQwNjMyNjQsImV4cCI6MjA0OTYzOTI2NH0.YnjEQf3rZF_KccTSlYPvUo-8JuRwHm6aCQnzJT6L874';
@@ -33,7 +33,7 @@ let usernamePlayer = null;
 async function getHighScores() {
     let { data, error } = await supabase
         .from('princeton_run')
-        .select('score, name') // Adjust column names based on your table
+        .select('score, name')
         .order('score', { ascending: false })
         .limit(3);
 
@@ -63,7 +63,7 @@ async function submitScore(username, score1) {
             }
         }
 
-        // Determine the position
+        // Determine the rank
         let position = 5;
         for (let i = 0; i < top3_scores.length; i++) {
             if (roundedScore > top3_scores[i].score) {
@@ -109,7 +109,6 @@ class SeedScene extends Scene {
         jumpSound,
         backgroundMusic
     ) {
-        // Call parent Scene() constructor
         super();
 
         // Init state
@@ -127,10 +126,9 @@ class SeedScene extends Scene {
             lights: null,
             clouds: null,
             roadWidth: 20,
-            // cameraPos: new Vector3(),
             studentPos: new Vector3(),
             obstaclePos: new Vector3(),
-            startTime: Date.now(), // track the game start time
+            startTime: Date.now(),
             timeElapsed: 0,
             roadColor: null,
             sidewalkColor: 0xa0522d,
@@ -144,11 +142,7 @@ class SeedScene extends Scene {
             notgpt: 1,
         };
 
-        // Set background to a nice color
-        //this.background = new Color(0xaaaaee);
         this.loadBackgroundImage(DAYSKY);
-
-        // create start screen
         this.createStartScreen();
 
         this.camera = camera;
@@ -165,12 +159,11 @@ class SeedScene extends Scene {
     loadBackgroundImage(imagePath) {
         const loader = new TextureLoader();
         loader.load(imagePath, (texture) => {
-            this.background = texture; // Set the background to the loaded image
+            this.background = texture;
         });
     }
 
     createStartScreen() {
-        // Create a full-screen overlay for the start screen
         const startScreen = document.createElement('div');
         startScreen.id = 'start-screen';
         startScreen.style.position = 'absolute';
@@ -188,7 +181,7 @@ class SeedScene extends Scene {
         startScreen.style.padding = '0px';
         document.body.appendChild(startScreen);
 
-        // Add title text
+        // title
         const title = document.createElement('h1');
         const welcomeText = document.createElement('span');
         welcomeText.innerHTML =
@@ -201,6 +194,7 @@ class SeedScene extends Scene {
         title.style.marginBottom = '5px';
         startScreen.appendChild(title);
 
+        // instructions
         const instructionText = document.createElement('h2');
         instructionText.innerHTML =
             'Immerse yourself in the wonderful life of a Princeton Student!';
@@ -223,6 +217,7 @@ class SeedScene extends Scene {
         leaderboard.style.width = '100%';
         startScreen.appendChild(leaderboard);
 
+        // leader (there has to be a better way of doing this lol)
         const leader1 = document.getElementById('leader1');
         const leader2 = document.getElementById('leader2');
         const leader3 = document.getElementById('leader3');
@@ -267,9 +262,7 @@ class SeedScene extends Scene {
 
         getHighScores()
             .then((highscores) => {
-                // If we get the data and it's in the expected format (array of objects)
                 if (highscores && highscores.length === 3) {
-                    // Assign each leader element with the name and score
                     leader1.textContent = `${highscores[0].name.slice(
                         0,
                         12
@@ -317,7 +310,7 @@ class SeedScene extends Scene {
 
         startScreen.appendChild(formContainer);
 
-        // Add start button
+        // start game yay
         const startButton = document.createElement('button');
         startButton.innerText = 'CLICK HERE TO START';
         startButton.style.padding = '30px';
@@ -329,7 +322,7 @@ class SeedScene extends Scene {
         startButton.style.cursor = 'pointer';
         startButton.style.marginTop = '40px';
 
-        // name
+        // random name for user
         function generateRandomString(length) {
             const characters =
                 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -374,7 +367,7 @@ class SeedScene extends Scene {
             startButton.style.color = '#000000';
         });
 
-        // Add functionality to restart the game
+        // start game
         startButton.addEventListener('click', () => {
             this.backgroundMusic.play();
 
@@ -385,7 +378,7 @@ class SeedScene extends Scene {
     }
 
     showEndScreen(reason) {
-        // end screen overlay like the start screen (does not remove ui elements)
+        // end screen overlay like the start screen
         if (document.getElementById('end-screen')) return;
         window.removeEventListener('keydown', this.state.student.state.keydown);
 
@@ -495,7 +488,7 @@ class SeedScene extends Scene {
         statsText.style.textAlign = 'center';
         endScreen.appendChild(statsText);
 
-        // add "Try Again" button
+        // "Try Again"
         const tryAgainButton = document.createElement('button');
         tryAgainButton.innerText = 'TRY AGAIN';
         tryAgainButton.style.padding = '30px';
@@ -507,7 +500,6 @@ class SeedScene extends Scene {
         tryAgainButton.style.cursor = 'pointer';
         tryAgainButton.style.marginTop = '40px';
 
-        // add hover effects
         tryAgainButton.addEventListener('mouseover', () => {
             tryAgainButton.style.backgroundColor = '#FF6600';
             tryAgainButton.style.color = '#ffffff';
@@ -517,7 +509,6 @@ class SeedScene extends Scene {
             tryAgainButton.style.color = '#000000';
         });
 
-        // Add functionality to restart the game
         tryAgainButton.addEventListener('click', () => {
             this.resetGame();
         });
@@ -531,7 +522,6 @@ class SeedScene extends Scene {
         this.state.laneWidth =
             this.state.roadWidth / (this.state.laneCount - 1);
 
-        // add meshes to scene
         this.state.roadChunk = new ProceduralRoad(this, {
             laneCount: this.state.laneCount,
             roadWidth: this.state.roadWidth,
@@ -545,7 +535,7 @@ class SeedScene extends Scene {
         });
 
         this.state.clouds = new Clouds(this);
-        this.add(this.state.clouds); // add clouds to the scene
+        this.add(this.state.clouds);
 
         this.state.lights = new BasicLights();
         this.add(this.state.lights, this.state.roadChunk, this.state.student);
@@ -577,7 +567,7 @@ class SeedScene extends Scene {
     updateTimerElement(timeElapsed) {
         const timerElement = document.getElementById('game-timer');
         if (timerElement) {
-            timerElement.innerText = `Time: ${timeElapsed.toFixed(1)}s`; // Show elapsed time with 1 decimal place
+            timerElement.innerText = `Time: ${timeElapsed.toFixed(1)}s`;
         }
     }
 
@@ -590,12 +580,9 @@ class SeedScene extends Scene {
         backgroundBox.style.width = '235px';
         backgroundBox.style.backgroundColor = 'rgba(233, 229, 205, 0.8)';
         backgroundBox.style.borderRadius = '0px';
-        backgroundBox.style.zIndex = '0'; // Ensure it's behind other elements but in front of the game
+        backgroundBox.style.zIndex = '0';
 
-        // Make it tall enough to cover all the elements
         backgroundBox.style.height = '250px';
-
-        // Insert it before other elements are added
         document.body.insertBefore(backgroundBox, document.body.firstChild);
     }
 
@@ -618,7 +605,7 @@ class SeedScene extends Scene {
     updateGPAElement() {
         const gpa = document.getElementById('game-gpa');
         if (gpa) {
-            gpa.innerText = `GPA: ${this.state.gpa.toFixed(2)}`; // Show elapsed time with 1 decimal place
+            gpa.innerText = `GPA: ${this.state.gpa.toFixed(2)}`;
         }
     }
 
@@ -642,7 +629,7 @@ class SeedScene extends Scene {
         const gpa = document.getElementById('game-dis');
         if (gpa) {
             let realDistance = this.state.student.state.distance / 10;
-            gpa.innerText = `Distance: ${realDistance.toFixed(0)}m`; // Show elapsed time with 1 decimal place
+            gpa.innerText = `Distance: ${realDistance.toFixed(0)}m`;
         }
     }
 
@@ -670,14 +657,11 @@ class SeedScene extends Scene {
         const livesElement = document.getElementById('game-lives');
         if (!livesElement) return;
 
-        // Clear existing content
         livesElement.innerHTML = 'Lives: ';
-
-        // Add hearts (red for remaining lives, gray for lost lives)
         for (let i = 0; i < 3; i++) {
             const heart = document.createElement('span');
-            heart.innerHTML = i < this.state.lives ? '❤️' : '🖤'; // Red heart for lives, black heart for lost
-            heart.style.marginRight = '5px'; // Add spacing between hearts
+            heart.innerHTML = i < this.state.lives ? '❤️' : '🖤';
+            heart.style.marginRight = '5px';
             livesElement.appendChild(heart);
         }
     }
@@ -695,10 +679,7 @@ class SeedScene extends Scene {
 
         // check each obstacle for collision
         for (const obstacle of this.state.roadChunk.state.obstacles) {
-            // update obstacle bounding box
             obstacle.updateBoundingBox();
-
-            // check if obstacle and student have bounding boxes
             if (
                 this.state.student &&
                 this.state.student.boundingBox &&
@@ -793,28 +774,23 @@ class SeedScene extends Scene {
                         }
                         return;
                     } else {
-                        // Handle other obstacle collisions (e.g., enemies, hazards)
+                        // Handle other obstacle collisions
                         if (this.state.student.state.powerrun) {
                             obstacle.marked = true;
-                            continue; // Skip to the next obstacle
+                            continue;
                         } else if (obstacle.marked) {
                             this.state.student.state.speed = 0;
                         } else {
-                            // subtract one life
                             this.state.lives -= 1;
-                            this.updateLivesElement(); // update UI
+                            this.updateLivesElement();
                             this.hitSound.play();
-
-                            // mark the obstacle to prevent multiple life deductions
                             obstacle.marked = true;
 
-                            // TODO: trigger additional effects here
-
-                            // Check if lives have run out
+                            // maybe future iteration: trigger additional effects here
                             if (this.state.lives <= 0) {
                                 this.updateLivesElement();
-                                this.showEndScreen(); // Trigger end screen
-                                return; // Exit the collision check to prevent further processing
+                                this.showEndScreen();
+                                return;
                             }
                         }
                     }
@@ -825,10 +801,7 @@ class SeedScene extends Scene {
 
     resetGame() {
         location.reload(true);
-
-        // Reinitialize game components
         this.startGame();
-        // startScreen.style.display = 'none';
     }
 
     /**
@@ -843,10 +816,8 @@ class SeedScene extends Scene {
         }
     }
 
-    // TODO: checkIfOffRoad will trigger the end screen
     checkIfOffRoad() {
         if (!this.state.student || !this.state.student.state) {
-            // if the student isn't initialized yet, we can't check if they're off road.
             return true;
         }
 
@@ -862,7 +833,6 @@ class SeedScene extends Scene {
     }
 
     createProgressBar(iconSrc) {
-        // Create main container for progress bar and icon
         const container = document.createElement('div');
         container.id = 'loading-container';
         container.style.position = 'absolute';
@@ -876,7 +846,7 @@ class SeedScene extends Scene {
         container.style.padding = '8px 12px';
         container.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
 
-        // Create icon (if provided)
+        // Create icon
         if (iconSrc) {
             const icon = document.createElement('img');
             icon.id = 'loading-icon';
@@ -887,7 +857,7 @@ class SeedScene extends Scene {
             container.appendChild(icon);
         }
 
-        // Create progress bar container
+        // progress bar
         const progressBarContainer = document.createElement('div');
         progressBarContainer.id = 'progress-bar-container';
         progressBarContainer.style.width = '150px';
@@ -896,7 +866,7 @@ class SeedScene extends Scene {
         progressBarContainer.style.borderRadius = '5px';
         progressBarContainer.style.overflow = 'hidden';
 
-        // Create the progress bar fill
+        // progress bar fill
         const progressBarFill = document.createElement('div');
         progressBarFill.id = 'progress-bar-fill';
         progressBarFill.style.width = '0%';
@@ -905,12 +875,10 @@ class SeedScene extends Scene {
         progressBarFill.style.transition =
             'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
 
-        // Append elements
         progressBarContainer.appendChild(progressBarFill);
         container.appendChild(progressBarContainer);
         document.body.appendChild(container);
 
-        // Method to update progress
         this.state.progressBar = progressBarContainer;
 
         const style = document.createElement('style');
@@ -940,13 +908,11 @@ class SeedScene extends Scene {
     }
 
     updateProgressBar() {
-        // Calculate the progress percentage (0 to 100%)
         const progressPercentage = Math.min(
             (this.state.tracker / this.state.coffesPerSprint) * 100,
             100
         );
 
-        // Update the progress bar width
         const progressBarFill = document.getElementById('progress-bar-fill');
         if (progressBarFill) {
             progressBarFill.style.width = `${progressPercentage}%`;
@@ -963,10 +929,6 @@ class SeedScene extends Scene {
             progressBarFill.classList.remove('pulse');
             progressBarFill.style.backgroundColor = '#4CAF50';
         }
-
-        // if (this.state.student.state.powerrun) {
-        //     progressBarFill.style.width = `${0}%`;
-        // }
     }
 
     update(timeStamp) {
@@ -987,49 +949,45 @@ class SeedScene extends Scene {
         } else {
             return;
         }
-        // calculate time elapsed
-        const timeElapsed = (Date.now() - this.state.startTime) / 1000; // time in seconds
-        //  console.log('Time Elapsed (Update method):', timeElapsed);
+        const timeElapsed = (Date.now() - this.state.startTime) / 1000;
         this.state.timeElapsed = timeElapsed;
 
-        // Track the time and change background every 10 seconds
-        const cycleDuration = 10; // 10 seconds for each cycle (day -> dusk -> night -> dawn)
-        const cycleCheckInterval = 5; // Check every 1 second
-
-        // Use modulo to find which part of the cycle we are in
+        const cycleDuration = 10;
+        const cycleCheckInterval = 5;
 
         // Track the time of last background change
         if (!this.state.lastBackgroundUpdate) {
-            this.state.lastBackgroundUpdate = 0; // Initialize if not set
+            this.state.lastBackgroundUpdate = 0;
         }
         if (
             timeElapsed - this.state.lastBackgroundUpdate >=
             cycleCheckInterval
         ) {
-            this.state.lastBackgroundUpdate = timeElapsed; // Update the last background update time
-            const cyclePosition = Math.floor((timeElapsed / cycleDuration) % 4); // 4 phases: day, dusk, night, dawn
+            this.state.lastBackgroundUpdate = timeElapsed;
+            // 4 phases: day, dusk, night, dawn
+            const cyclePosition = Math.floor((timeElapsed / cycleDuration) % 4);
 
-            // Switch background based on the cycle phase
+            // Switch background
             switch (cyclePosition) {
-                case 0: // Day
+                case 0:
                     if (this.state.currentBackground !== 'day') {
                         this.loadBackgroundImage(DAYSKY);
                         this.state.currentBackground = 'day';
                     }
                     break;
-                case 1: // Dusk
+                case 1:
                     if (this.state.currentBackground !== 'dusk') {
                         this.loadBackgroundImage(BETWEENSKY);
                         this.state.currentBackground = 'dusk';
                     }
                     break;
-                case 2: // Night
+                case 2:
                     if (this.state.currentBackground !== 'night') {
                         this.loadBackgroundImage(NIGHTSKY);
                         this.state.currentBackground = 'night';
                     }
                     break;
-                case 3: // Dawn
+                case 3:
                     if (this.state.currentBackground !== 'dawn') {
                         this.loadBackgroundImage(BETWEENSKY);
                         this.state.currentBackground = 'dawn';
@@ -1040,18 +998,16 @@ class SeedScene extends Scene {
             }
         }
 
-        // Update the timer display
         this.updateTimerElement(timeElapsed);
         this.updateGPAElement();
         this.updateDistanceElement();
 
-        // check if off road
         if (this.checkIfOffRoad()) {
             this.state.student.state.speed = 0;
             this.state.lives = 0;
             this.updateLivesElement();
             this.showEndScreen();
-            return; // Stop updating once game is over
+            return;
         }
 
         for (const obj of updateList) {
@@ -1063,9 +1019,8 @@ class SeedScene extends Scene {
         }
 
         this.checkCollisions();
-        // Update clouds, if present
         if (this.clouds) {
-            this.clouds.update(timeElapsed); // Call the clouds update function
+            this.clouds.update(timeElapsed);
         }
     }
 }

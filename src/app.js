@@ -11,16 +11,14 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene } from 'scenes';
 import { AxesHelper } from 'three';
 import { AudioListener, Audio, AudioLoader } from 'three';
-import HITHURT from './hitHurt.ogg'
-import RRRHURT from './RRR.ogg'
-import COFFEE from './coffeePowerup.ogg'
-import GPT from './gpt.ogg'
-import GRADE from './pickupGrade.ogg'
-import BGMUSIC from './backgroundMusic.ogg'
-import SPRINT from './coffeesprint3.ogg'
-import JUMP from './jump.ogg'
-
-
+import HITHURT from './hitHurt.ogg';
+import RRRHURT from './RRR.ogg';
+import COFFEE from './coffeePowerup.ogg';
+import GPT from './gpt.ogg';
+import GRADE from './pickupGrade.ogg';
+import BGMUSIC from './backgroundMusic.ogg';
+import SPRINT from './coffeesprint3.ogg';
+import JUMP from './jump.ogg';
 
 // ---------------------------------------------
 // Global Vars
@@ -29,10 +27,7 @@ const cameraOffset = -20;
 const heightOffset = 9;
 // ---------------------------------------------
 
-
-
 // Initialize core ThreeJS components
-// const scene = new SeedScene();
 const camera = new PerspectiveCamera();
 const renderer = new WebGLRenderer({ antialias: true });
 
@@ -41,72 +36,81 @@ camera.position.set(0, 15, -30);
 
 // Set up audio
 const listener = new AudioListener();
-camera.add(listener);  // Attach the listener to the camera
+camera.add(listener); // Attach the listener to the camera
 
 const audioLoader = new AudioLoader();
 const hitSound = new Audio(listener);
 audioLoader.load(HITHURT, (buffer) => {
     hitSound.setBuffer(buffer);
-    hitSound.setVolume(1);  // Adjust volume if needed
-    hitSound.setLoop(false);  // Set to true if you want it to loop
+    hitSound.setVolume(1);
+    hitSound.setLoop(false);
 });
 
 const rrrSound = new Audio(listener);
 audioLoader.load(RRRHURT, (buffer) => {
     rrrSound.setBuffer(buffer);
-    rrrSound.setVolume(1);  // Adjust volume if needed
-    rrrSound.setLoop(false);  // Set to true if you want it to loop
+    rrrSound.setVolume(1);
+    rrrSound.setLoop(false);
 });
 
 const coffeeSound = new Audio(listener);
 audioLoader.load(COFFEE, (buffer) => {
     coffeeSound.setBuffer(buffer);
-    coffeeSound.setVolume(1);  // Adjust volume if needed
-    coffeeSound.setLoop(false);  // Set to true if you want it to loop
+    coffeeSound.setVolume(1);
+    coffeeSound.setLoop(false);
 });
 const gptSound = new Audio(listener);
 audioLoader.load(GPT, (buffer) => {
     gptSound.setBuffer(buffer);
-    gptSound.setVolume(1);  // Adjust volume if needed
-    gptSound.setLoop(false);  // Set to true if you want it to loop
+    gptSound.setVolume(1);
+    gptSound.setLoop(false);
 });
 const gradeSound = new Audio(listener);
 audioLoader.load(GRADE, (buffer) => {
     gradeSound.setBuffer(buffer);
-    gradeSound.setVolume(1);  // Adjust volume if needed
-    gradeSound.setLoop(false);  // Set to true if you want it to loop
+    gradeSound.setVolume(1);
+    gradeSound.setLoop(false);
 });
 
 const sprintSound = new Audio(listener);
 audioLoader.load(SPRINT, (buffer) => {
     sprintSound.setBuffer(buffer);
-    sprintSound.setVolume(1);  // Adjust volume if needed
-    sprintSound.setLoop(true);  // Set to true if you want it to loop
+    sprintSound.setVolume(1);
+    sprintSound.setLoop(true);
 });
 
 const jumpSound = new Audio(listener);
 audioLoader.load(JUMP, (buffer) => {
     jumpSound.setBuffer(buffer);
-    jumpSound.setVolume(1);  // Adjust volume if needed
-    jumpSound.setLoop(false);  // Set to true if you want it to loop
+    jumpSound.setVolume(1);
+    jumpSound.setLoop(false);
 });
-// Load background music (looped indefinitely)
+// Load background music
 const backgroundMusic = new Audio(listener);
 audioLoader.load(BGMUSIC, (buffer) => {
     backgroundMusic.setBuffer(buffer);
-    backgroundMusic.setVolume(0.2);  // Lower the volume for background music
-    backgroundMusic.setLoop(true);   // Set to loop
-    // backgroundMusic.play();          // Start the background music immediately
+    backgroundMusic.setVolume(0.2);
+    backgroundMusic.setLoop(true);
 });
 
-const scene = new SeedScene(camera, hitSound, rrrSound, coffeeSound, gptSound, gradeSound, sprintSound, jumpSound, backgroundMusic);
+const scene = new SeedScene(
+    camera,
+    hitSound,
+    rrrSound,
+    coffeeSound,
+    gptSound,
+    gradeSound,
+    sprintSound,
+    jumpSound,
+    backgroundMusic
+);
 
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.setPixelRatio(window.devicePixelRatio);
 const canvas = renderer.domElement;
-canvas.style.display = 'block'; // Removes padding below canvas
-document.body.style.margin = 0; // Removes margin around page
-document.body.style.overflow = 'hidden'; // Fix scrolling
+canvas.style.display = 'block';
+document.body.style.margin = 0;
+document.body.style.overflow = 'hidden';
 document.body.appendChild(canvas);
 
 // Set up controls
@@ -142,7 +146,6 @@ const onAnimationFrameHandler = (timeStamp) => {
         cameraPosition.y += heightOffset;
 
         // Smooth camera interpolation
-        // TODO: adapt lerp to speed
         const smoothFactor = 0.25;
         controls.object.position.lerp(
             new Vector3(cameraPosition.x, cameraPosition.y, cameraPosition.z),

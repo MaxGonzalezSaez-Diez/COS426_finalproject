@@ -41,9 +41,6 @@ class RoadChunk extends Group {
                 { cones: 3, probability: 5 },
                 { cones: 4, probability: 5 },
                 { cones: 5, probability: 5 },
-                // { cones: 6, probability: 5 },
-                // { cones: 7, probability: 2.5 },
-                // { cones: 8, probability: 2.5 },
             ],
             bushProbabilities = [
                 { cones: 0, probability: 76 },
@@ -95,7 +92,7 @@ class RoadChunk extends Group {
             initialroadColor: initialroadColor,
             verticalMovement: verticalMovement,
             offset: offset,
-            timeElapsed = 0, // Add timeElapsed here with a default value of 0
+            timeElapsed = 0,
         } = {}
     ) {
         super();
@@ -127,8 +124,8 @@ class RoadChunk extends Group {
         };
 
         // Create sidewalks
-        const sidewalkWidth = 2; // Adjust the width of the sidewalk as needed
-        const sidewalkHeight = 1; // Adjust the height of the sidewalk as needed
+        const sidewalkWidth = 2;
+        const sidewalkHeight = 1;
 
         let currentSideWalkColor = initialsidewalkColor;
         const currentRoadColor = initialroadColor;
@@ -178,10 +175,10 @@ class RoadChunk extends Group {
             this.spawnObstacles(center, timeElapsed);
         }
 
-        // Add to the group
+        // Add
         this.add(roadMesh);
 
-        // Load sidewalk texture
+        // sidewalk texture
         const sidewalkTextureLoader = new TextureLoader();
         const sidewalkTextureMap = sidewalkTextureLoader.load(sidewalkTexture);
         const sideTexture = sidewalkTextureLoader.load(sidewalkTexture);
@@ -195,27 +192,27 @@ class RoadChunk extends Group {
             new MeshBasicMaterial({
                 color: currentSideWalkColor,
                 map: sideTexture,
-            }), // Side faces
+            }),
             new MeshBasicMaterial({
                 color: currentSideWalkColor,
                 map: sideTexture,
-            }), // Other side faces
+            }),
             new MeshBasicMaterial({
                 color: currentSideWalkColor,
                 map: sidewalkTextureMap,
-            }), // Top face
+            }),
             new MeshBasicMaterial({
                 color: currentSideWalkColor,
                 map: sidewalkTextureMap,
-            }), // Bottom face
+            }),
             new MeshBasicMaterial({
                 color: currentSideWalkColor,
                 map: sideTexture,
-            }), // Front face
+            }),
             new MeshBasicMaterial({
                 color: currentSideWalkColor,
                 map: sideTexture,
-            }), // Back face
+            }),
         ];
 
         const sidewalkGeometry = new BoxGeometry(
@@ -234,15 +231,13 @@ class RoadChunk extends Group {
 
         leftSidewalk.position.set(
             center.x,
-            center.y + sidewalkHeight / 2, // Raise the sidewalk above the road
+            center.y + sidewalkHeight / 2,
             center.z
         );
 
         leftSidewalk.position.add(
             offsetDir.clone().multiplyScalar(this.state.segmentWidth / 2)
         );
-
-        // - this.state.segmentWidth / 2 - sidewalkWidth / 2
 
         this.add(leftSidewalk);
 
@@ -261,11 +256,10 @@ class RoadChunk extends Group {
         rightSidewalk.position.add(
             offsetDir.clone().multiplyScalar(-this.state.segmentWidth / 2)
         );
-        // + this.state.segmentWidth / 2 + sidewalkWidth / 2
 
         this.add(rightSidewalk);
 
-        // Add self to parent's update list (if needed)
+        // Add self to parent's update list
         parent.addToUpdateList(this);
     }
 
@@ -280,7 +274,6 @@ class RoadChunk extends Group {
         this.state.obstacles.push(object);
     }
 
-    // todo: need to account for turns
     spawnObstacles(roadCenter, timeElapsed = 0) {
         const objectCreations = [
             { name: 'Cone', type: 'bad' },
@@ -308,8 +301,6 @@ class RoadChunk extends Group {
     }
 
     createObject(objectName, roadCenter, timeElapsed = 0, type = 'bad') {
-        // baseProbabilities modified based on the amount of time elapsed
-        // more time = more cones in adjustedProbabilities
         let baseProbabilities = null;
         if (objectName == 'Cone') {
             baseProbabilities = this.state.coneProbabilities;
@@ -335,8 +326,6 @@ class RoadChunk extends Group {
 
         timeElapsed *= 1000;
 
-        // const adjustedProbabilities = baseProbabilities;
-
         const adjustedProbabilities = baseProbabilities.map((entry) => {
             const sp = this.state.parent.state.student.state.speed;
 
@@ -346,23 +335,20 @@ class RoadChunk extends Group {
                     probability: Math.max(
                         entry.probability - sp * 0.4,
                         entry.probability - 5
-                    ), // Adjust based on distance
+                    ),
                 };
             } else {
                 return {
                     ...entry,
                     probability: Math.min(
-                        entry.probability + sp * 0.4, // Adjust increment based on distance
+                        entry.probability + sp * 0.4,
                         entry.probability + 5
                     ),
                 };
             }
         });
 
-        // calculates cumulative and normalized probabilities for cone spawning,
-        // generates a random value between 0 and 100, and determines the number
-        // of cones to spawn based on where the random value falls within the
-        // normalized cumulative probability ranges
+        // calculates cumulative/normalized prob. for spawning
         const cumulativeProbabilities = [];
         adjustedProbabilities.reduce((acc, item) => {
             acc += item.probability;
@@ -380,13 +366,12 @@ class RoadChunk extends Group {
             (_, index) => randomValue < normalizedProbabilities[index]
         ).cones;
 
-        // spawn the cones
-        const minFraction = 0.25; // lower bound (25%)
-        const maxFraction = 0.9; // upper bound (90%)
-        const range = this.state.segmentLength * (maxFraction - minFraction); // adjusted range
-        const baseOffset = this.state.segmentLength * minFraction; // starting point (25%)
+        // spawn (NOTE: not to close to beginning of road for better user experience)
+        const minFraction = 0.25;
+        const maxFraction = 0.9;
+        const range = this.state.segmentLength * (maxFraction - minFraction);
+        const baseOffset = this.state.segmentLength * minFraction;
 
-        // const range = this.state.segmentLength * 0.8;
         const laneDirection = this.state.direction
             .clone()
             .applyAxisAngle(new Vector3(0, 1, 0), -Math.PI / 2);
@@ -474,7 +459,6 @@ class RoadChunk extends Group {
                 });
             }
 
-            // this.add(object)
             this.state.obstacles.push(object);
         }
     }

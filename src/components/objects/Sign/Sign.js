@@ -33,8 +33,6 @@ class Sign extends Group {
 
             const height = Math.random() * 4 + 1;
             this.state.model.scale.set(3, height, 3);
-
-            // Position the obstacle
             this.state.model.position.set(
                 this.state.position.x,
                 this.state.position.y + Math.min(3.5, height),
@@ -47,13 +45,12 @@ class Sign extends Group {
                 0
             );
 
-            // BoxHelper for visualizing the bounding box
             const boundingBoxHelper = new BoxHelper(this.state.model, 0xff0000);
             this.add(boundingBoxHelper);
             this.state.parent.add(boundingBoxHelper);
             this.state.boundingBoxHelper = boundingBoxHelper;
 
-            // add obstacle to parent
+            // Add
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
             this.state.boundingBoxHelper.visible = false;
@@ -63,10 +60,7 @@ class Sign extends Group {
 
     updateBoundingBox() {
         if (this.state.model) {
-            // compute the bounding box based on the model's current state
             this.state.boundingBox.setFromObject(this.state.model);
-
-            // update the BoxHelper to match the bounding box
             if (this.state.boundingBoxHelper) {
                 this.state.boundingBoxHelper.update();
             }

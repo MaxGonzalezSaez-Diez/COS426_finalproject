@@ -1,5 +1,4 @@
 import { Group, Vector3 } from 'three';
-//import * as THREE from 'three';
 import RoadChunk from '../RoadChunk/RoadChunk.js';
 import RoadCorner from '../RoadCorner/RoadCorner.js';
 
@@ -60,10 +59,8 @@ class ProceduralRoad extends Group {
     generateNextRoadSegment({
         forceStraight = false,
         disableObstacles = false,
-        timeElapsed = 0, // Add timeElapsed parameter
+        timeElapsed = 0,
     } = {}) {
-        // console.log('Time Elapsed, generateNextRoadSegement', timeElapsed);
-
         let segmentType = 'straight';
         if (!forceStraight) {
             const shouldTurn = Math.random() < this.state.fracTurns;
@@ -95,7 +92,6 @@ class ProceduralRoad extends Group {
             );
 
             if (segmentType === 'straight') {
-                // newCenter = oldCenter.clone().add(oldDirection.clone().multiplyScalar(this.state.segmentLength/2 + this.state.segmentWidth*1/2).clone());
                 newCenter = oldCenter.clone().add(
                     oldDirection
                         .clone()
@@ -184,8 +180,6 @@ class ProceduralRoad extends Group {
                 .applyAxisAngle(new Vector3(0, 1, 0), angle)
                 .normalize();
 
-            // this.state.model.rotation.y += angle;
-
             if (nrCurSeg > 0) {
                 const roadCorner = new RoadCorner(this.state.parent, {
                     segmentWidth: this.state.segmentWidth,
@@ -211,12 +205,9 @@ class ProceduralRoad extends Group {
             disableObstacles: disableObstacles,
             initialroadColor: this.state.parent.state.roadColor,
             initialsidewalkColor: this.state.parent.state.sidewalkColor,
-            timeElapsed: timeElapsed, // pass timeElapsed to RoadChunk
+            timeElapsed: timeElapsed,
             verticalMovement: verticalMovement,
             offset: offset,
-            // roadWidth: roadWidth,
-            // laneCount: laneCount,
-            // laneWidth: laneWidth,
         });
 
         // Add to scene and tracking
@@ -237,7 +228,6 @@ class ProceduralRoad extends Group {
     }
 
     update(timeStamp, student, timeElapsed) {
-
         const runnerPos = student.state.position;
         let nrCurSeg = this.state.roadSegments.length;
         const lastPieceCenter =
@@ -254,19 +244,18 @@ class ProceduralRoad extends Group {
         }
         let distance = runnerPos.manhattanDistanceTo(lastPieceCenter);
 
-        // TODO: we need something here that updates as a function of number of turns
         if (distance < 300) {
             if (this.parent.state.student.state.powerrun) {
                 this.generateNextRoadSegment({
                     forceStraight: true,
                     disableObstacles: false,
-                    timeElapsed: timeElapsed, // Pass timeElapsed to adjust probabilities
+                    timeElapsed: timeElapsed,
                 });
             } else {
                 this.generateNextRoadSegment({
                     forceStraight: false,
                     disableObstacles: false,
-                    timeElapsed: timeElapsed, // Pass timeElapsed to adjust probabilities
+                    timeElapsed: timeElapsed,
                 });
             }
         }

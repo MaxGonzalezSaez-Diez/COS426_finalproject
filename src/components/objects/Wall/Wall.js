@@ -43,12 +43,11 @@ class Wall extends Group {
 
             this.state.model.traverse((child) => {
                 if (child.isMesh) {
-                    // Option 1: Change color and increase brightness
                     child.material.color.set(0xb38867);
                 }
             });
 
-            // Position the obstacle
+            // Position
             this.state.model.position.set(
                 this.state.position.x -
                     (this.state.orientation.x * this.state.segmentLength) / 2,
@@ -56,12 +55,6 @@ class Wall extends Group {
                 this.state.position.z -
                     (this.state.orientation.z * this.state.segmentLength) / 2
             );
-
-            // this.state.position.add(
-            //     this.state.orientation
-            //         .clone()
-            //         .multiplyScalar(this.state.segmentLength / 2)
-            // );
 
             this.state.model.rotation.set(
                 0,
@@ -71,15 +64,13 @@ class Wall extends Group {
 
             this.state.boundingBox.setFromObject(this.state.model);
 
-            // create and attach a BoxHelper for visualizing the bounding box
+            // create and attach a BoxHelper
             const boundingBoxHelper = new BoxHelper(this.state.model, 0xff0000);
             this.add(boundingBoxHelper);
             this.state.parent.add(boundingBoxHelper);
-
-            // store the BoxHelper for updates
             this.state.boundingBoxHelper = boundingBoxHelper;
 
-            // Add the obstacle to the parent (scene or group)
+            // Add
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
             this.state.boundingBoxHelper.visible = false;
@@ -89,10 +80,7 @@ class Wall extends Group {
 
     updateBoundingBox() {
         if (this.state.model) {
-            // compute the bounding box based on the model's current state
             this.state.boundingBox.setFromObject(this.state.model);
-
-            // update the BoxHelper to match the bounding box
             if (this.state.boundingBoxHelper) {
                 this.state.boundingBoxHelper.update();
             }

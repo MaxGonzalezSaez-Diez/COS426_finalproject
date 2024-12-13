@@ -42,6 +42,7 @@ class Bike extends Group {
 
             this.state.model.scale.set(2, 2, 2);
 
+            // Position
             this.state.model.position.set(
                 this.state.position.x,
                 this.state.position.y,
@@ -53,12 +54,13 @@ class Bike extends Group {
                 (Math.PI / 2) * this.state.orientation.x,
                 0
             );
-            // BoxHelper for visualizing the bounding box
+            // create and attach a BoxHelper
             const boundingBoxHelper = new BoxHelper(this.state.model, 0xff0000);
             this.add(boundingBoxHelper);
             this.state.parent.add(boundingBoxHelper);
             this.state.boundingBoxHelper = boundingBoxHelper;
 
+            // Add 
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
             this.state.boundingBoxHelper.visible = false;
@@ -89,7 +91,6 @@ class Bike extends Group {
 
     updateBoundingBox() {
         if (this.state.model) {
-            // compute the bounding box
             this.state.boundingBox.setFromObject(this.state.model);
 
             if (this.state.boundingBoxHelper) {

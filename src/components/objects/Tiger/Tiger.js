@@ -33,8 +33,6 @@ class Tiger extends Group {
             this.state.model = gltf.scene;
 
             this.state.model.scale.set(0.03, 0.03, 0.03);
-
-            // Position the obstacle
             this.state.model.position.set(
                 this.state.position.x,
                 this.state.position.y + 2.5,
@@ -47,15 +45,12 @@ class Tiger extends Group {
                 0
             );
 
-            // create and attach a BoxHelper for visualizing the bounding box
             const boundingBoxHelper = new BoxHelper(this.state.model, 0xff0000);
             this.add(boundingBoxHelper);
             this.state.parent.add(boundingBoxHelper);
-
-            // store the BoxHelper for updates
             this.state.boundingBoxHelper = boundingBoxHelper;
 
-            // Add the obstacle to the parent (scene or group)
+            // Add
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
             this.state.boundingBoxHelper.visible = false;
@@ -65,10 +60,7 @@ class Tiger extends Group {
 
     updateBoundingBox() {
         if (this.state.model) {
-            // compute the bounding box based on the model's current state
             this.state.boundingBox.setFromObject(this.state.model);
-
-            // update the BoxHelper to match the bounding box
             if (this.state.boundingBoxHelper) {
                 this.state.boundingBoxHelper.update();
             }

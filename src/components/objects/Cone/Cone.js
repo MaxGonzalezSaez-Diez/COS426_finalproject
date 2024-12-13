@@ -29,8 +29,6 @@ class Cone extends Group {
             this.state.model = gltf.scene;
 
             this.state.model.scale.set(3, 3, 3);
-
-            // Position the obstacle
             this.state.model.position.set(
                 this.state.position.x,
                 this.state.position.y,
@@ -38,13 +36,12 @@ class Cone extends Group {
             );
 
             this.state.boundingBox.setFromObject(this.state.model);
-
-            // BoxHelper for visualizing the bounding box
             const boundingBoxHelper = new BoxHelper(this.state.model, 0xff0000);
             this.add(boundingBoxHelper);
             this.state.parent.add(boundingBoxHelper);
             this.state.boundingBoxHelper = boundingBoxHelper;
 
+            // Add
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
             this.state.boundingBoxHelper.visible = false;
@@ -54,10 +51,7 @@ class Cone extends Group {
 
     updateBoundingBox() {
         if (this.state.model) {
-            // compute the bounding box based on the model's current state
             this.state.boundingBox.setFromObject(this.state.model);
-
-            // update the BoxHelper to match the bounding box
             if (this.state.boundingBoxHelper) {
                 this.state.boundingBoxHelper.update();
             }

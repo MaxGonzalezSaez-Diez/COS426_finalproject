@@ -56,7 +56,6 @@ class ChatGPT extends Group {
         const material = new MeshBasicMaterial({ map: roadTexture });
         const roadMesh = new Mesh(geometry, material);
         this.state.model = roadMesh;
-        // roadMesh.rotation.x = -Math.PI / 2;
 
         roadMesh.position.set(
             this.state.position.x,
@@ -71,9 +70,9 @@ class ChatGPT extends Group {
         const boundingBoxHelper = new BoxHelper(roadMesh, 0xff0000);
         this.add(boundingBoxHelper);
         this.state.parent.add(boundingBoxHelper);
-
-        
         this.state.boundingBoxHelper = boundingBoxHelper;
+
+        // Add 
         this.state.parent.add(roadMesh);
         this.state.boundingBoxHelper.visible = false;
         this.updateBoundingBox();
@@ -81,10 +80,9 @@ class ChatGPT extends Group {
 
     updateBoundingBox() {
         if (this.state.model) {
-            // compute the bounding box based on the model's current state
             this.state.boundingBox.setFromObject(this.state.model);
 
-            // update the BoxHelper to match the bounding box
+            // update the BoxHelper 
             if (this.state.boundingBoxHelper) {
                 this.state.boundingBoxHelper.update();
             }
@@ -92,7 +90,6 @@ class ChatGPT extends Group {
     }
 
     collect() {
-        // TODO: add sound here on collection
         this.remove(this.state.model);
         this.state.parent.remove(this.state.model);
     }

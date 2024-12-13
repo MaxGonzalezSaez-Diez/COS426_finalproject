@@ -110,8 +110,6 @@ class Grades extends Group {
             this.state.model = gltf.scene;
 
             this.state.model.scale.set(5, 5, 5);
-
-            // Position the obstacle
             this.state.model.position.set(
                 this.state.position.x,
                 this.state.position.y + 1,
@@ -127,14 +125,12 @@ class Grades extends Group {
             );
 
             this.state.boundingBox.setFromObject(this.state.model);
-
-            // BoxHelper for visualizing the bounding box
             const boundingBoxHelper = new BoxHelper(this.state.model, 0xff0000);
             this.add(boundingBoxHelper);
             this.state.parent.add(boundingBoxHelper);
             this.state.boundingBoxHelper = boundingBoxHelper;
 
-            // Add the obstacle to the parent (scene or group)
+            // Add
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
             this.state.boundingBoxHelper.visible = false;
@@ -145,10 +141,7 @@ class Grades extends Group {
 
     updateBoundingBox() {
         if (this.state.model) {
-            // compute the bounding box based on the model's current state
             this.state.boundingBox.setFromObject(this.state.model);
-
-            // update the BoxHelper to match the bounding box
             if (this.state.boundingBoxHelper) {
                 this.state.boundingBoxHelper.update();
             }
@@ -164,7 +157,6 @@ class Grades extends Group {
     }
 
     collect() {
-        // TODO: add sound here on collection
         this.remove(this.state.model);
         this.state.parent.remove(this.state.model);
     }

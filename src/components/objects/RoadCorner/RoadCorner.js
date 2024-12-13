@@ -46,43 +46,37 @@ class RoadCorner extends Group {
         const currentSideWalkColor = initialsidewalkColor;
         const currentRoadColor = initialroadColor;
 
-        // Create road geometry
+        // Create road
         const geometry = new PlaneGeometry(
             this.state.segmentWidth,
             this.state.segmentWidth
         );
 
-        // Load and configure road texture
+        // texture
         const textureLoader = new TextureLoader();
         const roadTexture = textureLoader.load(texture);
         roadTexture.wrapS = RepeatWrapping;
         roadTexture.wrapT = RepeatWrapping;
         roadTexture.repeat.set(segmentWidth / 10, segmentWidth / 10);
 
-        // Create road material
         const material = new MeshBasicMaterial({
             map: roadTexture,
             color: currentRoadColor,
         });
 
-        // Create road mesh
         const roadMesh = new Mesh(geometry, material);
-
-        // Rotate road to be horizontal
         roadMesh.rotation.x = -Math.PI / 2;
-
-        // Position road based on type
         roadMesh.position.copy(center);
 
-        // Add to the group
+        // Add
         this.add(roadMesh);
 
-        // add corners ]
-        // Create sidewalks
-        const sidewalkWidth = 2; // Adjust the width of the sidewalk as needed
-        const sidewalkHeight = 1; // Adjust the height of the sidewalk as needed
+        // add corners
+        // Create sidewalks (should not appear as magic number twice! fix at some point)
+        const sidewalkWidth = 2;
+        const sidewalkHeight = 1;
 
-        // Load sidewalk texture
+        // sidewalk texture
         const sidewalkTextureLoader = new TextureLoader();
         const sidewalkTextureMap = sidewalkTextureLoader.load(sidewalkTexture);
         const sideTexture = sidewalkTextureLoader.load(sidewalkTexture);
@@ -96,27 +90,27 @@ class RoadCorner extends Group {
             new MeshBasicMaterial({
                 color: currentSideWalkColor,
                 map: sideTexture,
-            }), // Side faces
+            }),
             new MeshBasicMaterial({
                 color: currentSideWalkColor,
                 map: sideTexture,
-            }), // Other side faces
+            }),
             new MeshBasicMaterial({
                 color: currentSideWalkColor,
                 map: sidewalkTextureMap,
-            }), // Top face
+            }),
             new MeshBasicMaterial({
                 color: currentSideWalkColor,
                 map: sidewalkTextureMap,
-            }), // Bottom face
+            }),
             new MeshBasicMaterial({
                 color: currentSideWalkColor,
                 map: sideTexture,
-            }), // Front face
+            }),
             new MeshBasicMaterial({
                 color: currentSideWalkColor,
                 map: sideTexture,
-            }), // Back face
+            }),
         ];
 
         const sidewalkGeometry = new BoxGeometry(
@@ -211,7 +205,6 @@ class RoadCorner extends Group {
 
         this.add(leftSidewalk);
         this.add(rightSidewalk);
-        // Add self to parent's update list (if needed)
         parent.addToUpdateList(this);
     }
 

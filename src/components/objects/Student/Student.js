@@ -6,7 +6,6 @@ import { Audio } from 'three';
 
 class Student extends Group {
     constructor(parent, { laneCount = 5, roadWidth = 20, laneWidth = 4 } = {}) {
-        // Call parent Group() constructor
         super();
         const startSpeed = 1;
 
@@ -76,25 +75,19 @@ class Student extends Group {
             const boundingBoxLength = halfRoadWidth / 16;
 
             this.boundingBox.set(
+                new Vector3(-boundingBoxWidth, 0, -boundingBoxLength),
                 new Vector3(
-                    -boundingBoxWidth, // Min X
-                    0, // Min Y
-                    -boundingBoxLength // Min Z
-                ),
-                new Vector3(
-                    boundingBoxWidth, // Max X
-                    boundingBoxHeight, // Max Y
-                    boundingBoxLength // Max Z
+                    boundingBoxWidth,
+                    boundingBoxHeight,
+                    boundingBoxLength
                 )
             );
-            // this.state.boundingBox.visible = false;
             this.updateBoundingBox();
         });
     }
 
     updateBoundingBox() {
         if (this.state.model) {
-            // Update the bounding box position to follow the model
             const position = this.state.position;
 
             const halfRoadWidth = this.state.roadWidth / 2;
@@ -104,14 +97,14 @@ class Student extends Group {
 
             this.boundingBox.set(
                 new Vector3(
-                    position.x - boundingBoxWidth, // Min X
-                    position.y, // Min Y
-                    position.z - boundingBoxLength // Min Z
+                    position.x - boundingBoxWidth,
+                    position.y,
+                    position.z - boundingBoxLength
                 ),
                 new Vector3(
-                    position.x + boundingBoxWidth, // Max X
-                    position.y + boundingBoxHeight, // Max Y
-                    position.z + boundingBoxLength // Max Z
+                    position.x + boundingBoxWidth,
+                    position.y + boundingBoxHeight,
+                    position.z + boundingBoxLength
                 )
             );
         } else {
@@ -216,7 +209,7 @@ class Student extends Group {
             Math.min(halfLaneCount, zIndex)
         );
 
-        // Calculate the center of the closest small square
+        // Calculate the center
         const closestCenter = center
             .clone()
             .add(
@@ -348,7 +341,6 @@ class Student extends Group {
         this.state.prev = timeStamp;
 
         this.updateBoundingBox();
-        // this.state.action.stop();
         const runningAnimation = this.state.gltf.animations[0];
         this.state.action = this.state.mixer.clipAction(runningAnimation);
         this.state.action.play();
@@ -393,7 +385,6 @@ class Student extends Group {
             this.state.initialY = this.state.position.y;
             this.state.jumpTime = 0;
 
-            // this.state.mixer = new AnimationMixer(this.state.model);
             this.state.action.stop();
             const jumpingAnimation = this.state.gltf.animations[3];
             this.state.action = this.state.mixer.clipAction(jumpingAnimation);
@@ -424,17 +415,12 @@ class Student extends Group {
 
         if (
             this.state.pastSegment != currentSeg &&
-            // this.state.pastSegment != this.state.secondpastSegment &&
             this.state.pastSegment != null
-            // && this.state.secondpastSegment != null
         ) {
             if (this.state.secondpastSegment != null) {
                 const pastObstacles =
                     this.state.secondpastSegment.state.obstacles || [];
                 for (const obstacle of pastObstacles) {
-                    // obstacle.state.model.remove()
-                    // this.parent.remove(obstacle.state.model);
-                    // this.parent.remove(obstacle.state);
                     obstacle.delete();
                 }
 
@@ -483,10 +469,9 @@ class Student extends Group {
             const gravity = 10;
             const fallTimeFactor = deltaTime * 0.001;
 
-            // Quadratic easing function for falling
             this.state.fallTime = (this.state.fallTime || 0) + fallTimeFactor;
 
-            // Update the Y position using inpse parabola
+            // Update the Y position using parabola-ish
             this.state.position.y =
                 currentSeg.state.center.y +
                 Math.max(
@@ -495,22 +480,20 @@ class Student extends Group {
                     0
                 );
 
-            // Reset fall time and position when reaching the ground
             if (this.state.position.y <= currentSeg.state.center.y) {
                 this.state.position.y = currentSeg.state.center.y;
-                this.state.fallTime = 0; // Reset the fall time
+                this.state.fallTime = 0;
             }
         }
 
         if (this.state.isJumping) {
             this.state.jumpTime += deltaTime * 0.001;
             const jumpHeight = this.state.jumpStrength;
-            const jumpDuration = 0.8; // Total jump duration
+            const jumpDuration = 0.8;
 
-            // Normalize jump time (0 to 1 range)
+            // Normalize jump time (
             let normalizedTime = this.state.jumpTime / jumpDuration;
 
-            // Jumping easing function
             let easingFactor =
                 Math.pow(jumpHeight, 1.35) * normalizedTime -
                 14 * Math.pow(normalizedTime, 2);
@@ -520,7 +503,7 @@ class Student extends Group {
             }
 
             if (isNaN(easingFactor)) {
-                easingFactor = 0; //14 * Math.pow(0.8, 2);
+                easingFactor = 0;
                 this.state.jumpTime = 0;
             }
 
@@ -603,18 +586,15 @@ class Student extends Group {
             }
         }
 
-        // If no current segment found, return null
         if (!currentSegment) {
             return {
                 currentSeg: null,
-                // nextSeg: nextSegment,
                 roadType: null,
             };
         }
 
         return {
             currentSeg: currentSegment,
-            // nextSeg: nextSegment,
             roadType: currentSegmentType,
         };
     }
@@ -637,16 +617,13 @@ class Student extends Group {
         let halfLength = 0;
 
         if (Math.abs(curDir.z) === 1) {
-            // Calculate the segment's bounds
             halfWidth = segmentWidth / 2;
             halfLength = segmentLength / 2;
         } else {
-            // Calculate the segment's bounds
             halfWidth = segmentLength / 2;
             halfLength = segmentWidth / 2;
         }
 
-        // Check if student is within the segment's bounds
         const inXBounds = Math.abs(studentPos.x - segmentCenter.x) <= halfWidth;
         const inZBounds =
             Math.abs(studentPos.z - segmentCenter.z) <= halfLength;
