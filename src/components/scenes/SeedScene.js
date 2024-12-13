@@ -10,6 +10,7 @@ import {
     AudioListener,
     Audio,
 } from 'three';
+import { createClient } from '@supabase/supabase-js';
 import { RoadChunk, Student, Cone, Oak, Bush } from 'objects';
 import { BasicLights } from 'lights';
 import ProceduralRoad from '../objects/ProceduralRoad/ProceduralRoad';
@@ -20,6 +21,80 @@ import STORMSKY from './stormv2.png';
 import BETWEENSKY from './dawndusk.png';
 
 import COFFEE from './coffee.png';
+
+// Replace with your Supabase URL and anon key (these are safe to expose in the frontend)
+const supabaseUrl = 'https://mieysrnkneloivlhfhuk.supabase.co';
+const supabaseAnonKey =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1pZXlzcm5rbmVsb2l2bGhmaHVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQwNjMyNjQsImV4cCI6MjA0OTYzOTI2NH0.YnjEQf3rZF_KccTSlYPvUo-8JuRwHm6aCQnzJT6L874';
+
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+let top3_scores = null;
+let usernamePlayer = null;
+async function getHighScores() {
+    let { data, error } = await supabase
+        .from('princeton_run')
+        .select('score, name') // Adjust column names based on your table
+        .order('score', { ascending: false })
+        .limit(3);
+
+    top3_scores = data;
+    if (error) {
+        throw Error('Err');
+    } else {
+        console.log('High scores:', data);
+    }
+
+    return top3_scores;
+}
+
+async function submitScore(username, score1) {
+    try {
+        if (top3_scores == null) {
+            let { data: top3_scores, error: fetchError } = await supabase
+                .from('princeton_run')
+                .select('score')
+                .order('score', { ascending: false })
+                .limit(3);
+
+            if (fetchError) {
+                console.error('Error fetching top scores:', fetchError);
+                return 5;
+            }
+        }
+
+        // Determine the position
+        let position = 5;
+        for (let i = 0; i < top3_scores.length; i++) {
+            if (score1 > top3_scores[i].score) {
+                position = i + 1;
+                break;
+            }
+        }
+
+        if (position == 5 && top3_scores.length < 3) {
+            position = top3_scores.length + 1;
+        }
+
+        if (position <= 3) {
+            const { data, error: submitError } = await supabase
+                .from('princeton_run')
+                .insert([{ name: username, score: score1 }]);
+
+            if (submitError) {
+                console.error('Error submitting score:', submitError);
+                return 5;
+            } else {
+                console.log('Score submitted:', data);
+                return position;
+            }
+        }
+
+        return position;
+    } catch (err) {
+        console.error('Unexpected error:', err);
+        return 5;
+    }
+}
 
 class SeedScene extends Scene {
     constructor(
@@ -115,41 +190,123 @@ class SeedScene extends Scene {
         // Add title text
         const title = document.createElement('h1');
         const welcomeText = document.createElement('span');
-        welcomeText.innerHTML = 'WELCOME TO';
+        welcomeText.innerHTML =
+            'WELCOME TO <span style="color: #FF6600;">PRINCETON</span> <span style="color: #000000;">RUN</span>';
         welcomeText.style.fontFamily = 'Impact, sans-serif';
-        welcomeText.style.fontSize = '50px';
+        welcomeText.style.fontSize = '60px';
         const princetonText = document.createElement('span');
-        princetonText.innerHTML =
-            '<br><span style="font-size: 90px;color: #FF6600;">PRINCETON RUN</span>';
-        princetonText.style.fontFamily = 'Impact, sans-serif';
         title.appendChild(welcomeText);
-        title.appendChild(princetonText);
         title.style.textAlign = 'center';
+        title.style.marginBottom = '5px';
         startScreen.appendChild(title);
 
-        // Add instructions (can change to make it more fun later)
         const instructionText = document.createElement('h2');
         instructionText.innerHTML =
             'Immerse yourself in the wonderful life of a Princeton Student!';
         instructionText.style.fontFamily = 'Courier New, Courier, monospace';
-        instructionText.style.fontSize = '30px';
-        instructionText.style.textAlign = 'left'; // Centers the text
-        instructionText.style.marginBottom = '15px'; // Reduce spacing between instructions
-        instructionText.style.lineHeight = '1.1'; // Adjust line height
+        instructionText.style.fontSize = '25px';
+        instructionText.style.textAlign = 'left';
+        instructionText.style.marginBottom = '10px';
+        instructionText.style.lineHeight = '1.1';
         startScreen.appendChild(instructionText);
+
+        const leaderboard = document.createElement('h2');
+        leaderboard.innerHTML =
+            'Current Leaderboard: 🥇<span id="leader1"></span> 🥈<span id="leader2"></span> 🥉<span id="leader3"></span>';
+        leaderboard.style.fontFamily = 'Courier New, Courier, monospace';
+        leaderboard.style.fontSize = '30px';
+        leaderboard.style.textAlign = 'left';
+        leaderboard.style.marginBottom = '15px';
+        leaderboard.style.lineHeight = '1.1';
+        leaderboard.style.paddingLeft = '175px';
+        leaderboard.style.width = '100%';
+        startScreen.appendChild(leaderboard);
+
+        const leader1 = document.getElementById('leader1');
+        const leader2 = document.getElementById('leader2');
+        const leader3 = document.getElementById('leader3');
+        const spinner1 = document.createElement('div');
+        const spinner2 = document.createElement('div');
+        const spinner3 = document.createElement('div');
+        spinner1.style.border = '4px solid #f3f3f3';
+        spinner1.style.borderTop = '4px solid #FF6600';
+        spinner1.style.borderRadius = '50%';
+        spinner1.style.width = '20px';
+        spinner1.style.height = '20px';
+        spinner1.style.animation = 'spin 1s linear infinite';
+        spinner1.style.display = 'inline-block';
+
+        spinner2.style.border = '4px solid #f3f3f3';
+        spinner2.style.borderTop = '4px solid #FF6600';
+        spinner2.style.borderRadius = '50%';
+        spinner2.style.width = '20px';
+        spinner2.style.height = '20px';
+        spinner2.style.animation = 'spin 1s linear infinite';
+        spinner2.style.display = 'inline-block';
+
+        spinner3.style.border = '4px solid #f3f3f3';
+        spinner3.style.borderTop = '4px solid #FF6600';
+        spinner3.style.borderRadius = '50%';
+        spinner3.style.width = '20px';
+        spinner3.style.height = '20px';
+        spinner3.style.animation = 'spin 1s linear infinite';
+        spinner3.style.display = 'inline-block';
+        leader1.appendChild(spinner1);
+        leader2.appendChild(spinner2);
+        leader3.appendChild(spinner3);
+
+        const style = document.createElement('style');
+        style.innerHTML = `
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+`;
+        document.head.appendChild(style);
+
+        getHighScores()
+            .then((highscores) => {
+                // If we get the data and it's in the expected format (array of objects)
+                if (highscores && highscores.length === 3) {
+                    // Assign each leader element with the name and score
+                    leader1.textContent = `${highscores[0].name}: ${highscores[0].score}`;
+                    leader2.textContent = `${highscores[1].name}: ${highscores[1].score}`;
+                    leader3.textContent = `${highscores[2].name}: ${highscores[2].score}`;
+
+                    // Optionally remove spinners after assigning the scores
+                    leader1.removeChild(spinner1);
+                    leader2.removeChild(spinner2);
+                    leader3.removeChild(spinner3);
+                } else {
+                    console.error(
+                        'Error: High scores data is invalid or incomplete.'
+                    );
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching high scores:', error);
+            });
 
         const movementText = document.createElement('p');
         movementText.innerHTML =
-            '<b>Instructions</b>: Use a/d or ←/→ to move and w/↑ to jump. Be aware: hitting walls, missing turns will send you to McCosh instantly!<br><br><b>Score</b>: Your final score is the distance times your GPA.<br><br><b>Trick</b>: Once you had enough coffee you can click p for a caffeine boost.<br><br><b>Policies on generative AI</b>: Using AI has a 90% chance of getting you a 4.0 GPA and giving you all your lives back. Make sure to not get caught though, it`s an Honor Code Violation! And be sure not to violate the Honor Code by running into the Rights, Rules, Responsibilities book! Both will get you expelled!';
+            '<b>Instructions</b>: Use a/d or ←/→ to move and w/↑ to jump. Be aware: hitting walls,<br> missing turns will send you to McCosh instantly!<br><br><b>Score</b>: Your final score is the distance times your GPA.<br><br><b>Trick</b>: Once you had enough coffee you can click p for a caffeine boost.<br><br><b>Policies on generative AI</b>: Using AI has a 90% chance of getting you a 4.0 GPA<br> and giving you all your lives back. Make sure to not get caught though, it\'s an<br> Honor Code Violation! And be sure not to violate the Honor Code by running into<br> the Rights, Rules, Responsibilities book! Both will get you expelled!';
         movementText.style.fontFamily = 'Courier New, Courier, monospace';
         movementText.style.fontSize = '25px';
-        movementText.style.marginBottom = '15px'; // Reduce spacing between instructions
-        movementText.style.lineHeight = '1.1'; // Adjust line height
-        movementText.style.textAlign = 'left'; // Centers the text
-        movementText.style.paddingLeft = '80px';
-        movementText.style.paddingRight = '80px';
+        movementText.style.marginBottom = '15px';
+        movementText.style.lineHeight = '1.1';
+        movementText.style.paddingLeft = '175px';
+        movementText.style.width = '100%';
 
         startScreen.appendChild(movementText);
+
+        const formContainer = document.createElement('div');
+        formContainer.style.display = 'flex';
+        formContainer.style.alignItems = 'center';
+        formContainer.style.justifyContent = 'center';
+        formContainer.style.marginBottom = '20px';
+        formContainer.style.gap = '50px';
+
+        startScreen.appendChild(formContainer);
 
         // Add start button
         const startButton = document.createElement('button');
@@ -162,7 +319,42 @@ class SeedScene extends Scene {
         startButton.style.border = 'none';
         startButton.style.cursor = 'pointer';
         startButton.style.marginTop = '40px';
-        startScreen.appendChild(startButton);
+
+        // name
+        function generateRandomString(length) {
+            const characters =
+                'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            const charactersLength = characters.length;
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(
+                    Math.floor(Math.random() * charactersLength)
+                );
+            }
+            return result;
+        }
+
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        if (usernamePlayer == null) {
+            nameInput.value = 'Player1_' + generateRandomString(10);
+        } else {
+            nameInput.value = usernamePlayer;
+        }
+        nameInput.placeholder = 'Enter your name';
+        nameInput.style.fontSize = '20px';
+        nameInput.style.fontFamily = 'Courier New, Courier, monospace';
+        nameInput.style.marginBottom = '0px';
+        nameInput.style.marginTop = '40px';
+        nameInput.style.border = '0px solid #ffffff';
+        nameInput.style.backgroundColor = '#000000';
+        nameInput.style.color = '#FF6600';
+        nameInput.style.textAlign = 'center';
+        nameInput.style.width = '270px';
+        nameInput.style.height = '93px';
+
+        formContainer.appendChild(nameInput);
+        formContainer.appendChild(startButton);
 
         startButton.addEventListener('mouseover', () => {
             startButton.style.backgroundColor = '#FF6600';
@@ -179,6 +371,7 @@ class SeedScene extends Scene {
 
             this.startGame();
             startScreen.style.display = 'none';
+            usernamePlayer = nameInput.value;
         });
     }
 
@@ -231,16 +424,63 @@ class SeedScene extends Scene {
         endScreen.appendChild(title);
 
         const finalscore = finalGPA * finalDistance * this.state.notgpt;
-        // final stats
         const statsText = document.createElement('p');
         statsText.innerHTML = `
         <div style="text-align: left;">
         Coffees Collected: ${finalCoffees}<br>
         Final GPA: ${finalGPA}<br>
         Distance Traveled: ${finalDistance}m<br>
-        <b>Final Score: ${finalscore.toFixed(0)}</b> 
+        <b>Final Score: ${finalscore.toFixed(
+            0
+        )} (<span id="medal-placeholder"></span>)</b> 
         </div>
         `;
+        document.body.appendChild(statsText);
+
+        const medalPlaceholder = document.getElementById('medal-placeholder');
+        const spinner = document.createElement('div');
+        spinner.style.border = '4px solid #f3f3f3';
+        spinner.style.borderTop = '4px solid #FF6600';
+        spinner.style.borderRadius = '50%';
+        spinner.style.width = '20px';
+        spinner.style.height = '20px';
+        spinner.style.animation = 'spin 1s linear infinite';
+        spinner.style.display = 'inline-block';
+        medalPlaceholder.appendChild(spinner);
+
+        const style = document.createElement('style');
+        style.innerHTML = `
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+`;
+        document.head.appendChild(style);
+
+        submitScore(usernamePlayer, finalscore)
+            .then((position) => {
+                medalPlaceholder.removeChild(spinner);
+                let medal = '';
+                if (position === 1) {
+                    medal = '🥇';
+                } else if (position === 2) {
+                    medal = '🥈';
+                } else if (position === 3) {
+                    medal = '🥉';
+                } else {
+                    medal = '-';
+                }
+
+                // Display the medal
+                medalPlaceholder.textContent = medal;
+            })
+            .catch((error) => {
+                console.error('Error submitting score:', error);
+
+                medalPlaceholder.removeChild(spinner);
+                medalPlaceholder.textContent = 'Error';
+            });
+
         statsText.style.fontFamily = 'Courier New, Courier, monospace';
         statsText.style.fontSize = '35px';
         statsText.style.textAlign = 'center';
@@ -789,39 +1029,6 @@ class SeedScene extends Scene {
                 default:
                     break;
             }
-
-            /*
-            if (this.state.currentBackground === 'night') {
-                    this.loadBackgroundImage(BETWEENSKY);
-                    this.state.currentBackground = 'dawn';
-                    
-
-                const randomChance = Math.random(); // Returns a number between 0 and 1
-
-                if (randomChance < 0.5) {
-                    // Switch to storm background
-                    this.loadBackgroundImage(STORMSKY);
-                    this.state.currentBackground = 'day';
-                    //   this.state.lights.updateLighting('storm');
-                } else {
-                    // Switch to regular day background
-                    this.loadBackgroundImage(DAYSKY);
-                    this.state.currentBackground = 'day';
-                    //  this.state.lights.updateLighting('day');
-                }
-            }
-        } else {
-            if (this.state.currentBackground === 'day') {
-                this.loadBackgroundImage(NIGHTSKY);
-                this.state.currentBackground = 'night';
-                //  this.state.lights.updateLighting('night');
-            }
-        } else {
-            if (this.state.currentBackground === 'day') {
-                this.loadBackgroundImage(NIGHTSKY);
-                this.state.currentBackground = 'night';
-                //  this.state.lights.updateLighting('night');
-                */
         }
 
         // Update the timer display

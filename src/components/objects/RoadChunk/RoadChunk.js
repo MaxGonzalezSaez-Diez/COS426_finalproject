@@ -44,12 +44,12 @@ class RoadChunk extends Group {
                 // { cones: 8, probability: 2.5 },
             ],
             bushProbabilities = [
-                { cones: 0, probability: 92 },
-                { cones: 1, probability: 8 },
+                { cones: 0, probability: 76 },
+                { cones: 1, probability: 14 },
             ],
             oakProbabilities = [
-                { cones: 0, probability: 94 },
-                { cones: 1, probability: 6 },
+                { cones: 0, probability: 90 },
+                { cones: 1, probability: 10 },
             ],
             signProbabilities = [
                 { cones: 0, probability: 80 },
