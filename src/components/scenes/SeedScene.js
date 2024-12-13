@@ -1011,7 +1011,7 @@ class SeedScene extends Scene {
         }
 
         for (const obj of updateList) {
-            if (obj.constructor.name === 'ProceduralRoad') {
+            if (obj.name === 'ProceduralRoad') {
                 obj.update(timeStamp, this.state.student, timeElapsed);
             } else {
                 obj.update(timeStamp);
