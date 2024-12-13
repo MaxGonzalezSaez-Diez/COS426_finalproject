@@ -1,3 +1,5 @@
+// CREDITS: claude: https://brandfetch.com/claude.ai
+// openai chatgpt: https://media.licdn.com/dms/image/v2/D5612AQGNFfMWKQZSSg/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1688612205621?e=1739404800&v=beta&t=vhy8VMddHkExjJCvSC81ozckiK07Gme003ZsyibfPEc
 import {
     Group,
     Vector3,
