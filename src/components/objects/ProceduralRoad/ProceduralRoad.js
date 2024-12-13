@@ -41,6 +41,7 @@ class ProceduralRoad extends Group {
             maxAllsegments: 25,
         };
 
+        this.name = 'ProceduralRoad';
         this.generateInitialRoad();
         parent.addToUpdateList(this);
     }
