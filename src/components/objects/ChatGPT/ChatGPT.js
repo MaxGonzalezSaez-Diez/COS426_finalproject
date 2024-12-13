@@ -66,13 +66,14 @@ class ChatGPT extends Group {
 
         this.add(roadMesh);
 
+        // BoxHelper for visualizing the bounding box
         this.state.boundingBox.setFromObject(roadMesh);
         const boundingBoxHelper = new BoxHelper(roadMesh, 0xff0000);
         this.add(boundingBoxHelper);
         this.state.parent.add(boundingBoxHelper);
-        // store the BoxHelper for updates
+
+        
         this.state.boundingBoxHelper = boundingBoxHelper;
-        // Add the obstacle to the parent (scene or group)
         this.state.parent.add(roadMesh);
         this.state.boundingBoxHelper.visible = false;
         this.updateBoundingBox();

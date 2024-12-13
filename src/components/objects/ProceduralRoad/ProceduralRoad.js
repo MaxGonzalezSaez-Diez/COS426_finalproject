@@ -237,11 +237,6 @@ class ProceduralRoad extends Group {
     }
 
     update(timeStamp, student, timeElapsed) {
-        // remove passed obstacles
-        // const playerZ = this.state.parent.state.student.state.position.z;
-        // this.state.obstacles = this.state.obstacles.filter((obstacle) => {
-        //     return obstacle.state.position.z > playerZ - 2000; // keep only obstacles within 2000 units behind the player
-        // });
 
         const runnerPos = student.state.position;
         let nrCurSeg = this.state.roadSegments.length;

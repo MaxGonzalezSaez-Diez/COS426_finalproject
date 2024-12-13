@@ -2,7 +2,7 @@ import { Group, SpotLight, AmbientLight, HemisphereLight } from 'three';
 
 class BasicLights extends Group {
     constructor(...args) {
-        // Invoke parent Group() constructor with our args
+
         super(...args);
 
         const dir = new SpotLight(0xffffff, 1.6, 7, 0.8, 1, 1);

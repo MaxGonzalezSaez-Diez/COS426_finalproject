@@ -39,35 +39,18 @@ class Coffee extends Group {
                 this.state.position.z
             );
 
-            // requestAnimationFrame(() => {
-            //     this.state.boundingBox = new BoxHelper(
-            //         this.state.model,
-            //         0xff0000
-            //     );
-
-            //     this.state.boundingBox.material.transparent = true;
-            //     this.state.boundingBox.material.opacity = 0;
-
-            //     this.add(this.state.boundingBox);
-            //     this.state.parent.add(this.state.boundingBox);
-            // });
-
             this.state.boundingBox.setFromObject(this.state.model);
 
-            // create and attach a BoxHelper for visualizing the bounding box
+            // BoxHelper for visualizing the bounding box
             const boundingBoxHelper = new BoxHelper(this.state.model, 0xff0000);
             this.add(boundingBoxHelper);
             this.state.parent.add(boundingBoxHelper);
-
-            // store the BoxHelper for updates
             this.state.boundingBoxHelper = boundingBoxHelper;
 
-            // Add the obstacle to the parent (scene or group)
+            // add BoxHelper to scene
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
-
             this.state.boundingBoxHelper.visible = false;
-
             this.updateBoundingBox();
         });
     }
@@ -108,7 +91,7 @@ class Coffee extends Group {
     }
 
     update(timeStamp) {
-        //
+        // for animations; currently empty
     }
 }
 

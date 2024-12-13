@@ -4,7 +4,7 @@ import MODEL from './land.gltf';
 
 class Land extends Group {
     constructor() {
-        // Call parent Group() constructor
+
         super();
 
         const loader = new GLTFLoader();

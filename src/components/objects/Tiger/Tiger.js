@@ -93,8 +93,7 @@ class Tiger extends Group {
     }
 
     update(timeStamp) {
-        // Optional update method if you want any animations
-        // Currently left empty
+        // for animations; currently empty
     }
 }
 

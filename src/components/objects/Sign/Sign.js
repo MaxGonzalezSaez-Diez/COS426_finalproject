@@ -47,17 +47,13 @@ class Sign extends Group {
                 0
             );
 
-            // this.state.model.rotation.add(this.state.orientation);
-
-            // create and attach a BoxHelper for visualizing the bounding box
+            // BoxHelper for visualizing the bounding box
             const boundingBoxHelper = new BoxHelper(this.state.model, 0xff0000);
             this.add(boundingBoxHelper);
             this.state.parent.add(boundingBoxHelper);
-
-            // store the BoxHelper for updates
             this.state.boundingBoxHelper = boundingBoxHelper;
 
-            // Add the obstacle to the parent (scene or group)
+            // add obstacle to parent
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
             this.state.boundingBoxHelper.visible = false;
@@ -95,8 +91,7 @@ class Sign extends Group {
     }
 
     update(timeStamp) {
-        // Optional update method if you want any animations
-        // Currently left empty
+        // for animations; currently empty
     }
 }
 

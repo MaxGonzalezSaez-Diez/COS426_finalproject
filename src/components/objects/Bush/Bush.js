@@ -38,22 +38,18 @@ class Bush extends Group {
 
             this.state.model.scale.set(0.2, 0.2, 0.2);
 
-            // Position the obstacle
             this.state.model.position.set(
                 this.state.position.x,
                 this.state.position.y,
                 this.state.position.z
             );
 
-            // create and attach a BoxHelper for visualizing the bounding box
+            // BoxHelper for visualizing the bounding box
             const boundingBoxHelper = new BoxHelper(this.state.model, 0xff0000);
             this.add(boundingBoxHelper);
             this.state.parent.add(boundingBoxHelper);
-
-            // store the BoxHelper for updates
             this.state.boundingBoxHelper = boundingBoxHelper;
 
-            // Add the obstacle to the parent (scene or group)
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
             this.state.boundingBoxHelper.visible = false;
@@ -62,8 +58,7 @@ class Bush extends Group {
     }
 
     update(timeStamp) {
-        // Optional update method if you want any animations
-        // Currently left empty
+        // for animations; currently empty
     }
 
     delete() {
@@ -85,10 +80,9 @@ class Bush extends Group {
 
     updateBoundingBox() {
         if (this.state.model) {
-            // compute the bounding box based on the model's current state
+            // compute the bounding box
             this.state.boundingBox.setFromObject(this.state.model);
 
-            // update the BoxHelper to match the bounding box
             if (this.state.boundingBoxHelper) {
                 this.state.boundingBoxHelper.update();
             }
