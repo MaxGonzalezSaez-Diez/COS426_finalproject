@@ -215,7 +215,7 @@ class SeedScene extends Scene {
         leaderboard.innerHTML =
             'Current Leaderboard: 🥇<span id="leader1"></span> 🥈<span id="leader2"></span> 🥉<span id="leader3"></span>';
         leaderboard.style.fontFamily = 'Courier New, Courier, monospace';
-        leaderboard.style.fontSize = '30px';
+        leaderboard.style.fontSize = '25px';
         leaderboard.style.textAlign = 'left';
         leaderboard.style.marginBottom = '15px';
         leaderboard.style.lineHeight = '1.1';
@@ -270,9 +270,22 @@ class SeedScene extends Scene {
                 // If we get the data and it's in the expected format (array of objects)
                 if (highscores && highscores.length === 3) {
                     // Assign each leader element with the name and score
-                    leader1.textContent = `${highscores[0].name}: ${highscores[0].score}`;
-                    leader2.textContent = `${highscores[1].name}: ${highscores[1].score}`;
-                    leader3.textContent = `${highscores[2].name}: ${highscores[2].score}`;
+                    leader1.textContent = `${highscores[0].name.slice(
+                        0,
+                        12
+                    )}: ${highscores[0].score}`;
+                    leader2.textContent = `${highscores[1].name.slice(
+                        0,
+                        12
+                    )}: ${highscores[1].score}`;
+                    leader3.textContent = `${highscores[2].name.slice(
+                        0,
+                        12
+                    )}: ${highscores[2].score}`;
+
+                    leader1.style.fontSize = '25px';
+                    leader2.style.fontSize = '25px';
+                    leader3.style.fontSize = '25px';
                 } else {
                     console.error(
                         'Error: High scores data is invalid or incomplete.'
@@ -333,7 +346,7 @@ class SeedScene extends Scene {
         const nameInput = document.createElement('input');
         nameInput.type = 'text';
         if (usernamePlayer == null) {
-            nameInput.value = 'Player1_' + generateRandomString(10);
+            nameInput.value = 'Player_' + generateRandomString(5);
         } else {
             nameInput.value = usernamePlayer;
         }
