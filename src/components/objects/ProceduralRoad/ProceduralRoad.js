@@ -228,7 +228,11 @@ class ProceduralRoad extends Group {
     }
 
     update(timeStamp, student, timeElapsed) {
-        let runnerPos = student.state.position ?? new Vector3();
+        let runnerPos = new Vector3();
+        if (student != undefined && student != null) {
+            runnerPos = student.state.position;
+        }
+
         let nrCurSeg = this.state.roadSegments.length;
         const lastPieceCenter =
             this.state.roadSegments[nrCurSeg - 1].state.center;
