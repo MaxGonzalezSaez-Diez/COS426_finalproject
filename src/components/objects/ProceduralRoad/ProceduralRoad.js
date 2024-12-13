@@ -161,7 +161,7 @@ class ProceduralRoad extends Group {
                 !this.state.parent.state.student.state.powerrun
             ) {
                 verticalMovement = true;
-                let o = Math.max(3, 8 * Math.random());
+                let o = Math.max(3, 5 * Math.random());
                 offset = new Vector3(0, 1, 0).multiplyScalar(o);
                 newCenter.add(offset);
             }
