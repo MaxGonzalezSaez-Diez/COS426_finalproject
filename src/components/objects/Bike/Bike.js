@@ -1,3 +1,4 @@
+// CREDITS: Bicycle by Poly by Google [CC-BY] via Poly Pizza (https://poly.pizza/m/19VoUuA2pcN)
 import {
     Group,
     Vector3,

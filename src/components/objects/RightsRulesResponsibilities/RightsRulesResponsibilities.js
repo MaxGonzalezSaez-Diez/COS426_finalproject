@@ -1,3 +1,4 @@
+// CREDITS: Book by Quaternius (https://poly.pizza/m/LC0w7VI75u); modified to add title via Blender 4.3
 import { Group, Vector3, AnimationMixer, THREE, Box3, BoxHelper } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODELRRR from './rights_rules_responsibilitiesv2.glb';

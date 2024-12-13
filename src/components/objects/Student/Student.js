@@ -1,3 +1,4 @@
+// CREDITS: Animated Human by Quaternius (https://poly.pizza/m/c3Ibh9I3udk); colors modified via Blender 4.3
 import { Group, Vector3, AnimationMixer, Box3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODEL from './runnerv2.glb';

@@ -1,3 +1,4 @@
+// CREDITS: Tiger by Poly by Google [CC-BY] via Poly Pizza (https://poly.pizza/m/5A3w06FXUup)
 import { Group, Vector3, AnimationMixer, THREE, Box3, BoxHelper } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODELTIGER from './tiger.glb';

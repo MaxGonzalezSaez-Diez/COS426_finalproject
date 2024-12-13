@@ -1,3 +1,4 @@
+// CREDITS: Created via Blender 4.3
 import { Group, Vector3, AnimationMixer, THREE, BoxHelper, Box3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import a from './a_v1.glb';

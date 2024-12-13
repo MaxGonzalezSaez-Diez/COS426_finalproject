@@ -1,3 +1,4 @@
+// CREDITS: Traffic Cone by Quaternius (https://poly.pizza/m/aDIrUbMbW3)
 import { Group, Vector3, AnimationMixer, THREE, BoxHelper, Box3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODELCONE from './cone.glb';

@@ -1,3 +1,5 @@
+// CREDITS Road: https://stock.adobe.com/images/granite-cobblestoned-pavement-background-stone-pavement-texture-abstract-background-of-cobblestone-pavement-close-up-seamless-texture/403115894
+// CREDITS sidewalk: https://www.google.com/imgres?q=sidewalk%20texture%20cobblestone%20dark%20brown&imgurl=http%3A%2F%2Fwww.sketchuptextureclub.com%2Fpublic%2Ftexture%2F0057-street-paving-cobblestone-texture-seamless.jpg&imgrefurl=https%3A%2F%2Fwww.sketchuptextureclub.com%2Ftextures%2Farchitecture%2Froads%2Fpaving-streets%2Fcobblestone%2Fstreet-paving-cobblestone-texture-seamless-07389&docid=On-TF9Uinv7jtM&tbnid=VdW8x694cKQ3zM&vet=12ahUKEwir19iFkKWKAxWHF1kFHS0qKsQQM3oECGMQAA..i&w=1200&h=989&hcb=2&ved=2ahUKEwir19iFkKWKAxWHF1kFHS0qKsQQM3oECGMQAA
 import {
     Group,
     PlaneGeometry,
