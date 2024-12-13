@@ -18,7 +18,7 @@ import DAYSKY from './dayv7.png';
 import NIGHTSKY from './night2.png';
 import STORMSKY from './stormv2.png';
 import BETWEENSKY from './dawndusk.png';
-
+import PRINCETON from './princeton.png'
 import COFFEE from './coffee.png';
 
 class SeedScene extends Scene {
@@ -120,47 +120,109 @@ class SeedScene extends Scene {
         // Add instructions (can change to make it more fun later)
         const instructionText = document.createElement('h2');
         instructionText.innerHTML =
-            'Avoid the obstacles while trying to keep the highest GPA!';
+            'Avoid the obstacles while keeping the highest GPA!';
         instructionText.style.fontFamily = 'Courier New, Courier, monospace';
         instructionText.style.fontSize = '50px';
         instructionText.style.textAlign = 'center'; // Centers the text
-        instructionText.style.marginBottom = '15px'; // Reduce spacing between instructions
+        instructionText.style.marginBottom = '45px'; // Reduce spacing between instructions
+        instructionText.style.marginTop = '0px';
         instructionText.style.lineHeight = '1.2'; // Adjust line height
         startScreen.appendChild(instructionText);
 
-        const movementText = document.createElement('p');
-        movementText.innerHTML =
-            'Use A/D or Left/Right Arrows to move and W or Up Arrow to jump. Hitting walls or missing turns will send you to McCosh instantly!';
-        movementText.style.fontFamily = 'Courier New, Courier, monospace';
-        movementText.style.fontSize = '25px';
-        movementText.style.marginBottom = '15px'; // Reduce spacing between instructions
-        movementText.style.lineHeight = '1.4'; // Adjust line height
-        movementText.style.textAlign = 'center'; // Centers the text
+        // Instruction texts
+        const instructions = [
+            'Use A/D or Left/Right Arrows to move and W or Up Arrow to jump',
+            'Hitting walls or missing turns will send you to McCosh instantly!',
+            'Use P for a caffeine boost once you drink enough coffee',
+            'Using AI could greatly help you, or get you expelled!',
+            'And be sure not to violate the Honor Code by running into the Rights, Rules, Responsibilities book!'
+        ];
 
-        startScreen.appendChild(movementText);
+        // Create a container for your list
+        const instructionList = document.createElement('ul');
+        instructionList.style.listStyle = 'none';       // Remove default bullets
+        instructionList.style.padding = '0';
+        instructionList.style.margin = '0 auto';
+        instructionList.style.textAlign = 'left';
+        instructionList.style.width = '80%';            // Adjust width if needed
+        instructionList.style.fontFamily = 'Courier New, Courier, monospace';
+        instructionList.style.lineHeight = '1.6';
+        instructionList.style.fontSize = '25px';        // Adjust font size as needed
 
-        const specialText = document.createElement('p');
-        specialText.innerHTML =
-            'Use P for a caffeine boost once you drink enough coffee';
-        specialText.style.fontFamily = 'Courier New, Courier, monospace';
-        specialText.style.fontSize = '25px';
-        specialText.style.marginBottom = '15px'; // Reduce spacing between instructions
-        specialText.style.lineHeight = '1.4'; // Adjust line height
-        specialText.style.textAlign = 'center'; // Centers the text
+        instructions.forEach((text) => {
+            const listItem = document.createElement('li');
+            listItem.style.display = 'flex';      
+            listItem.style.alignItems = 'center'; 
+            listItem.style.marginBottom = '15px';
 
-        startScreen.appendChild(specialText);
+            // Create the image bullet
+            const bullet = document.createElement('img');
+            let bulletSrc;
+            if (text === instructions[0]) {
+                bulletSrc = PRINCETON;
+            } else if (text === instructions[1]) {
+                bulletSrc = PRINCETON;
+            } else if (text === instructions[2]) {
+                bulletSrc = PRINCETON;
+            } else if (text === instructions[3]) {
+                bulletSrc = PRINCETON;
+            } else if (text == instructions[4]) {
+                bulletSrc = PRINCETON;
+            }
+            bullet.src = bulletSrc;
+            bullet.alt = 'Princeton Logo';
+            bullet.style.width = '30px';   // Adjust bullet size
+            bullet.style.height = '30px';
+            bullet.style.marginRight = '10px';
 
-        const gptText = document.createElement('p');
-        gptText.innerHTML =
-            'Using AI could greatly help you, or get you expelled! And be sure not to violate the Honor Code by running into the Rights, Rules, Responsibilities book!';
-        gptText.style.fontFamily = 'Courier New, Courier, monospace';
-        gptText.style.fontSize = '25px';
-        gptText.style.textAlign = 'center'; // Centers the text
-        gptText.style.marginBottom = '30px'; // Larger margin before the button
-        gptText.style.lineHeight = '1.4'; // Adjust line height
-        gptText.style.maxWidth = '80%'; // Limits text width to 80% of the screen width
-        gptText.style.wordWrap = 'break-word';
-        startScreen.appendChild(gptText);
+            // Create the text node
+            const textNode = document.createElement('span');
+            textNode.textContent = text;
+
+            // Append bullet and text to the list item
+            listItem.appendChild(bullet);
+            listItem.appendChild(textNode);
+
+            // Append the list item to the instruction list
+            instructionList.appendChild(listItem);
+        });
+
+        // Append the entire list to the start screen
+        startScreen.appendChild(instructionList);
+
+        // const movementText = document.createElement('p');
+        // movementText.innerHTML =
+        //     'Use A/D or Left/Right Arrows to move and W or Up Arrow to jump. Hitting walls or missing turns will send you to McCosh instantly!';
+        // movementText.style.fontFamily = 'Courier New, Courier, monospace';
+        // movementText.style.fontSize = '25px';
+        // movementText.style.marginBottom = '15px'; // Reduce spacing between instructions
+        // movementText.style.lineHeight = '1.4'; // Adjust line height
+        // movementText.style.textAlign = 'center'; // Centers the text
+
+        // startScreen.appendChild(movementText);
+
+        // const specialText = document.createElement('p');
+        // specialText.innerHTML =
+        //     'Use P for a caffeine boost once you drink enough coffee';
+        // specialText.style.fontFamily = 'Courier New, Courier, monospace';
+        // specialText.style.fontSize = '25px';
+        // specialText.style.marginBottom = '15px'; // Reduce spacing between instructions
+        // specialText.style.lineHeight = '1.4'; // Adjust line height
+        // specialText.style.textAlign = 'center'; // Centers the text
+
+        // startScreen.appendChild(specialText);
+
+        // const gptText = document.createElement('p');
+        // gptText.innerHTML =
+        //     'Using AI could greatly help you, or get you expelled! And be sure not to violate the Honor Code by running into the Rights, Rules, Responsibilities book!';
+        // gptText.style.fontFamily = 'Courier New, Courier, monospace';
+        // gptText.style.fontSize = '25px';
+        // gptText.style.textAlign = 'center'; // Centers the text
+        // gptText.style.marginBottom = '30px'; // Larger margin before the button
+        // gptText.style.lineHeight = '1.4'; // Adjust line height
+        // gptText.style.maxWidth = '80%'; // Limits text width to 80% of the screen width
+        // gptText.style.wordWrap = 'break-word';
+        // startScreen.appendChild(gptText);
 
         // Add start button
         const startButton = document.createElement('button');
@@ -233,7 +295,7 @@ class SeedScene extends Scene {
             gameOverText.innerHTML =
                 'You got caught using generative AI during an exam! Bad!';
         } else {
-            gameOverText.innerHTML = 'GAME OVER';
+            gameOverText.innerHTML = 'Try not to fall off the edge...';
         }
         gameOverText.style.fontFamily = 'Impact, sans-serif';
         gameOverText.style.fontSize = '80px';
@@ -242,20 +304,50 @@ class SeedScene extends Scene {
         endScreen.appendChild(title);
 
         const finalscore = finalGPA * finalDistance * this.state.notgpt;
-        // final stats
-        const statsText = document.createElement('p');
-        statsText.innerHTML = `
-        <div style="text-align: left;">
-        Coffees Collected: ${finalCoffees}<br>
-        Final GPA: ${finalGPA}<br>
-        Distance Traveled: ${finalDistance}m<br>
-        <b>Final Score: ${finalscore.toFixed(0)}</b> 
-        </div>
-        `;
-        statsText.style.fontFamily = 'Courier New, Courier, monospace';
-        statsText.style.fontSize = '35px';
-        statsText.style.textAlign = 'center';
-        endScreen.appendChild(statsText);
+        
+        // Create a container for the stats
+const statsContainer = document.createElement('div');
+statsContainer.style.textAlign = 'center'; // Center the entire stats section
+statsContainer.style.fontFamily = 'Courier New, Courier, monospace';
+statsContainer.style.fontSize = '35px';
+
+// Create an array for stats with labels and values
+const stats = [
+    { label: 'Coffees Collected', value: finalCoffees, icon: PRINCETON },
+    { label: 'Final GPA', value: finalGPA, icon: PRINCETON },
+    { label: 'Distance Traveled', value: `${finalDistance}m`, icon: PRINCETON },
+    { label: 'Final Score', value: finalscore.toFixed(0), icon: PRINCETON }
+];
+
+// Loop through each stat and create a list item
+stats.forEach(stat => {
+    const statItem = document.createElement('div');
+    statItem.style.display = 'flex';
+    statItem.style.alignItems = 'center'; // Align icon and text vertically
+    statItem.style.marginBottom = '10px'; // Add spacing between stats
+
+    // Create the bullet icon
+    const bullet = document.createElement('img');
+    bullet.src = stat.icon;
+    bullet.alt = 'Bullet Icon';
+    bullet.style.width = '30px'; // Adjust size of the bullet
+    bullet.style.height = '30px';
+    bullet.style.marginRight = '10px'; // Add spacing between bullet and text
+
+    // Create the text for the stat
+    const text = document.createElement('span');
+    text.innerHTML = `<b>${stat.label}:</b> ${stat.value}`;
+
+    // Append the bullet and text to the stat item
+    statItem.appendChild(bullet);
+    statItem.appendChild(text);
+
+    // Append the stat item to the stats container
+    statsContainer.appendChild(statItem);
+});
+
+// Append the stats container to the end screen
+endScreen.appendChild(statsContainer);
 
         // add "Try Again" button
         const tryAgainButton = document.createElement('button');
