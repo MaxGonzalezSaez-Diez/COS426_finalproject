@@ -1,3 +1,4 @@
+// CREDITS for generator: ​​https://github.com/dgreenheck/ez-tree?tab=readme-ov-file
 import { Group, Vector3, AnimationMixer, THREE, Box3, BoxHelper } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODELOAK from './oak.glb';

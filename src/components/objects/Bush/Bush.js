@@ -1,3 +1,4 @@
+// CREDITS for generator: ​​https://github.com/dgreenheck/ez-tree?tab=readme-ov-file
 import {
     Group,
     Vector3,

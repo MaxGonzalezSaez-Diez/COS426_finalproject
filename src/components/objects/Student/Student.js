@@ -119,18 +119,9 @@ class Student extends Group {
     }
 
     turn(turn_direction) {
-        // if (this.state.isJumping) {
-        //     return
-        // }
         const { currentSeg, roadType } = this.findCurrentSegment(
             this.state.parent.state.roadChunk.state
         );
-
-        // if (currentSeg == null || roadType == null) {
-        //     return;
-        // }
-        // this.state.currentSegment = currentSeg;
-        // this.state.roadType = roadType;
 
         let turnEdge = Math.round((this.state.laneCount - 1) / 2);
         let moveSign = 0;
