@@ -13,7 +13,7 @@ module.exports = {
     target: 'web',
     devtool: 'source-map',
     stats: {
-        warnings: false
+        warnings: false,
     },
     module: {
         rules: [
@@ -43,6 +43,9 @@ module.exports = {
         },
     },
     plugins: [
-        new HtmlWebpackPlugin({ title: pkg.title, favicon: 'src/favicon.ico' }),
+        new HtmlWebpackPlugin({
+            title: pkg.title,
+            favicon: 'src/favicon3.ico',
+        }),
     ],
 };

@@ -22,7 +22,17 @@ import BETWEENSKY from './dawndusk.png';
 import COFFEE from './coffee.png';
 
 class SeedScene extends Scene {
-    constructor(camera, hitSound, rrrSound, coffeeSound, gptSound, gradeSound, sprintSound, jumpSound, backgroundMusic) {
+    constructor(
+        camera,
+        hitSound,
+        rrrSound,
+        coffeeSound,
+        gptSound,
+        gradeSound,
+        sprintSound,
+        jumpSound,
+        backgroundMusic
+    ) {
         // Call parent Scene() constructor
         super();
 
@@ -70,9 +80,9 @@ class SeedScene extends Scene {
         this.rrrSound = rrrSound;
         this.coffeeSound = coffeeSound;
         this.gptSound = gptSound;
-        this.gradeSound = gradeSound; 
-        this.sprintSound = sprintSound; 
-        this.jumpSound = jumpSound; 
+        this.gradeSound = gradeSound;
+        this.sprintSound = sprintSound;
+        this.jumpSound = jumpSound;
         this.backgroundMusic = backgroundMusic;
     }
 
@@ -99,7 +109,7 @@ class SeedScene extends Scene {
         startScreen.style.alignItems = 'center';
         startScreen.style.flexDirection = 'column';
         startScreen.style.zIndex = '10';
-        startScreen.style.padding = '20px';
+        startScreen.style.padding = '0px';
         document.body.appendChild(startScreen);
 
         // Add title text
@@ -107,10 +117,10 @@ class SeedScene extends Scene {
         const welcomeText = document.createElement('span');
         welcomeText.innerHTML = 'WELCOME TO';
         welcomeText.style.fontFamily = 'Impact, sans-serif';
-        welcomeText.style.fontSize = '60px';
+        welcomeText.style.fontSize = '50px';
         const princetonText = document.createElement('span');
         princetonText.innerHTML =
-            '<br><span style="font-size: 120px;color: #FF6600;">PRINCETON RUN</span>';
+            '<br><span style="font-size: 90px;color: #FF6600;">PRINCETON RUN</span>';
         princetonText.style.fontFamily = 'Impact, sans-serif';
         title.appendChild(welcomeText);
         title.appendChild(princetonText);
@@ -120,47 +130,26 @@ class SeedScene extends Scene {
         // Add instructions (can change to make it more fun later)
         const instructionText = document.createElement('h2');
         instructionText.innerHTML =
-            'Avoid the obstacles while trying to keep the highest GPA!';
+            'Immerse yourself in the wonderful life of a Princeton Student!';
         instructionText.style.fontFamily = 'Courier New, Courier, monospace';
-        instructionText.style.fontSize = '50px';
-        instructionText.style.textAlign = 'center'; // Centers the text
+        instructionText.style.fontSize = '30px';
+        instructionText.style.textAlign = 'left'; // Centers the text
         instructionText.style.marginBottom = '15px'; // Reduce spacing between instructions
-        instructionText.style.lineHeight = '1.2'; // Adjust line height
+        instructionText.style.lineHeight = '1.1'; // Adjust line height
         startScreen.appendChild(instructionText);
 
         const movementText = document.createElement('p');
         movementText.innerHTML =
-            'Use A/D or Left/Right Arrows to move and W or Up Arrow to jump. Hitting walls or missing turns will send you to McCosh instantly!';
+            '<b>Instructions</b>: Use a/d or ←/→ to move and w/↑ to jump. Be aware: hitting walls, missing turns will send you to McCosh instantly!<br><br><b>Score</b>: Your final score is the distance times your GPA.<br><br><b>Trick</b>: Once you had enough coffee you can click p for a caffeine boost.<br><br><b>Policies on generative AI</b>: Using AI has a 90% chance of getting you a 4.0 GPA and giving you all your lives back. Make sure to not get caught though, it`s an Honor Code Violation! And be sure not to violate the Honor Code by running into the Rights, Rules, Responsibilities book! Both will get you expelled!';
         movementText.style.fontFamily = 'Courier New, Courier, monospace';
         movementText.style.fontSize = '25px';
         movementText.style.marginBottom = '15px'; // Reduce spacing between instructions
-        movementText.style.lineHeight = '1.4'; // Adjust line height
-        movementText.style.textAlign = 'center'; // Centers the text
+        movementText.style.lineHeight = '1.1'; // Adjust line height
+        movementText.style.textAlign = 'left'; // Centers the text
+        movementText.style.paddingLeft = '80px';
+        movementText.style.paddingRight = '80px';
 
         startScreen.appendChild(movementText);
-
-        const specialText = document.createElement('p');
-        specialText.innerHTML =
-            'Use P for a caffeine boost once you drink enough coffee';
-        specialText.style.fontFamily = 'Courier New, Courier, monospace';
-        specialText.style.fontSize = '25px';
-        specialText.style.marginBottom = '15px'; // Reduce spacing between instructions
-        specialText.style.lineHeight = '1.4'; // Adjust line height
-        specialText.style.textAlign = 'center'; // Centers the text
-
-        startScreen.appendChild(specialText);
-
-        const gptText = document.createElement('p');
-        gptText.innerHTML =
-            'Using AI could greatly help you, or get you expelled! And be sure not to violate the Honor Code by running into the Rights, Rules, Responsibilities book!';
-        gptText.style.fontFamily = 'Courier New, Courier, monospace';
-        gptText.style.fontSize = '25px';
-        gptText.style.textAlign = 'center'; // Centers the text
-        gptText.style.marginBottom = '30px'; // Larger margin before the button
-        gptText.style.lineHeight = '1.4'; // Adjust line height
-        gptText.style.maxWidth = '80%'; // Limits text width to 80% of the screen width
-        gptText.style.wordWrap = 'break-word';
-        startScreen.appendChild(gptText);
 
         // Add start button
         const startButton = document.createElement('button');
@@ -186,7 +175,7 @@ class SeedScene extends Scene {
 
         // Add functionality to restart the game
         startButton.addEventListener('click', () => {
-                    this.backgroundMusic.play();
+            this.backgroundMusic.play();
 
             this.startGame();
             startScreen.style.display = 'none';
@@ -751,52 +740,55 @@ class SeedScene extends Scene {
         }
         // calculate time elapsed
         const timeElapsed = (Date.now() - this.state.startTime) / 1000; // time in seconds
-      //  console.log('Time Elapsed (Update method):', timeElapsed);
+        //  console.log('Time Elapsed (Update method):', timeElapsed);
         this.state.timeElapsed = timeElapsed;
 
         // Track the time and change background every 10 seconds
-    const cycleDuration = 10; // 10 seconds for each cycle (day -> dusk -> night -> dawn)
-    const cycleCheckInterval = 5; // Check every 1 second
+        const cycleDuration = 10; // 10 seconds for each cycle (day -> dusk -> night -> dawn)
+        const cycleCheckInterval = 5; // Check every 1 second
 
-    // Use modulo to find which part of the cycle we are in
+        // Use modulo to find which part of the cycle we are in
 
-    // Track the time of last background change
-    if (!this.state.lastBackgroundUpdate) {
-        this.state.lastBackgroundUpdate = 0;  // Initialize if not set
-    }
-    if (timeElapsed - this.state.lastBackgroundUpdate >= cycleCheckInterval) {
-        this.state.lastBackgroundUpdate = timeElapsed; // Update the last background update time
-    const cyclePosition = Math.floor((timeElapsed / cycleDuration) % 4); // 4 phases: day, dusk, night, dawn
+        // Track the time of last background change
+        if (!this.state.lastBackgroundUpdate) {
+            this.state.lastBackgroundUpdate = 0; // Initialize if not set
+        }
+        if (
+            timeElapsed - this.state.lastBackgroundUpdate >=
+            cycleCheckInterval
+        ) {
+            this.state.lastBackgroundUpdate = timeElapsed; // Update the last background update time
+            const cyclePosition = Math.floor((timeElapsed / cycleDuration) % 4); // 4 phases: day, dusk, night, dawn
 
-    // Switch background based on the cycle phase
-    switch (cyclePosition) {
-        case 0: // Day
-          if (this.state.currentBackground !== 'day') {
-                this.loadBackgroundImage(DAYSKY);
-                this.state.currentBackground = 'day';
+            // Switch background based on the cycle phase
+            switch (cyclePosition) {
+                case 0: // Day
+                    if (this.state.currentBackground !== 'day') {
+                        this.loadBackgroundImage(DAYSKY);
+                        this.state.currentBackground = 'day';
+                    }
+                    break;
+                case 1: // Dusk
+                    if (this.state.currentBackground !== 'dusk') {
+                        this.loadBackgroundImage(BETWEENSKY);
+                        this.state.currentBackground = 'dusk';
+                    }
+                    break;
+                case 2: // Night
+                    if (this.state.currentBackground !== 'night') {
+                        this.loadBackgroundImage(NIGHTSKY);
+                        this.state.currentBackground = 'night';
+                    }
+                    break;
+                case 3: // Dawn
+                    if (this.state.currentBackground !== 'dawn') {
+                        this.loadBackgroundImage(BETWEENSKY);
+                        this.state.currentBackground = 'dawn';
+                    }
+                    break;
+                default:
+                    break;
             }
-            break;
-        case 1: // Dusk
-            if (this.state.currentBackground !== 'dusk') {
-                this.loadBackgroundImage(BETWEENSKY);
-                this.state.currentBackground = 'dusk';
-            }
-            break;
-        case 2: // Night
-            if (this.state.currentBackground !== 'night') {
-                this.loadBackgroundImage(NIGHTSKY);
-                this.state.currentBackground = 'night';
-            }
-            break;
-        case 3: // Dawn
-            if (this.state.currentBackground !== 'dawn') {
-                this.loadBackgroundImage(BETWEENSKY);
-                this.state.currentBackground = 'dawn';
-            }
-            break;
-        default:
-            break;
-    }
 
             /*
             if (this.state.currentBackground === 'night') {
