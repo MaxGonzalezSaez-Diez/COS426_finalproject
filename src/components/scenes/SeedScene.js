@@ -61,7 +61,6 @@ class SeedScene extends Scene {
         // Set background to a nice color
         //this.background = new Color(0xaaaaee);
         this.loadBackgroundImage(DAYSKY);
-
         // create start screen
         this.createStartScreen();
 
