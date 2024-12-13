@@ -151,13 +151,13 @@ class ProceduralRoad extends Group {
 
         if (this.state.roadSegments.length > 2) {
             const rand = Math.random();
-            if (rand < 0.12) {
-                let o = Math.min(5, 15 * (Math.random() - 1));
+            if (rand < 0.16) {
+                let o = Math.min(3, 20 * (Math.random() - 1));
 
                 offset = new Vector3(0, 1, 0).multiplyScalar(o);
                 newCenter.add(offset);
             } else if (
-                rand < 0.2 &&
+                rand < 0.23 &&
                 !this.state.parent.state.student.state.powerrun
             ) {
                 verticalMovement = true;

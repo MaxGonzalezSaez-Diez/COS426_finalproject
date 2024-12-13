@@ -280,21 +280,29 @@ class RoadChunk extends Group {
 
     // todo: need to account for turns
     spawnObstacles(roadCenter, timeElapsed = 0) {
+        const objectCreations = [
+            { name: 'Cone', type: 'bad' },
+            { name: 'Bush', type: 'bad' },
+            { name: 'Oak', type: 'bad' },
+            { name: 'Sign', type: 'bad' },
+            { name: 'Coffee', type: 'good' },
+            { name: 'Bike', type: 'bad' },
+            { name: 'Tiger', type: 'bad' },
+            { name: 'RRR', type: 'bad' },
+            { name: 'ChatGPT', type: 'good' },
+            { name: 'Grades', type: 'good' },
+        ];
+
+        objectCreations.sort(() => Math.random() - 0.5);
+        console.log(this.state.parent.state.student.state.speed);
+
         if (this.state.verticalMovement) {
             this.createWall();
         }
-        this.createObject('Cone', roadCenter, timeElapsed, 'bad');
-        this.createObject('Bush', roadCenter, timeElapsed, 'bad');
-        this.createObject('Oak', roadCenter, timeElapsed, 'bad');
-        this.createObject('Sign', roadCenter, timeElapsed, 'bad');
-        this.createObject('Coffee', roadCenter, timeElapsed, 'good');
-        this.createObject('Bike', roadCenter, timeElapsed, 'bad');
-        this.createObject('Tiger', roadCenter, timeElapsed, 'bad');
-        this.createObject('RRR', roadCenter, timeElapsed, 'bad');
-        this.createObject('ChatGPT', roadCenter, timeElapsed, 'good');
-        this.createObject('Grades', roadCenter, timeElapsed, 'good');
 
-        // TODO: add other stuff here
+        for (const obj of objectCreations) {
+            this.createObject(obj.name, roadCenter, timeElapsed, obj.type);
+        }
     }
 
     createObject(objectName, roadCenter, timeElapsed = 0, type = 'bad') {
@@ -382,6 +390,13 @@ class RoadChunk extends Group {
             .applyAxisAngle(new Vector3(0, 1, 0), -Math.PI / 2);
 
         for (let i = 0; i < numObjects; i++) {
+            if (
+                this.state.obstacles.length >=
+                this.state.parent.state.student.state.speed
+            ) {
+                break;
+            }
+
             const offset =
                 Math.random() * range +
                 baseOffset -
