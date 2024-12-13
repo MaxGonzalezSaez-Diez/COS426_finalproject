@@ -296,14 +296,14 @@ class Student extends Group {
             this.state.powerrun = true;
             this.state.runtime = 0;
             if (!this.state.isSprintSoundPlaying) {
-            this.parent.sprintSound.play();
-            this.state.isSprintSoundPlaying = true;
+                this.parent.sprintSound.play();
+                this.state.isSprintSoundPlaying = true;
             }
         } else {
             this.state.powerrun = false;
             if (this.state.isSprintSoundPlaying) {
-            this.parent.sprintSound.stop();
-            this.state.isSprintSoundPlaying = false; 
+                this.parent.sprintSound.stop();
+                this.state.isSprintSoundPlaying = false;
             }
         }
     }
@@ -363,18 +363,35 @@ class Student extends Group {
         this.state.action.timeScale =
             0.1 * Math.log10(this.state.spf * 100 * this.state.speed + 15);
 
+        // stop run when far enough from all obstacles
+        const obstacles = currentSeg.state.obstacles;
+        let farEnough = true;
+        if (obstacles != undefined || obstacles != null) {
+            for (const o of obstacles) {
+                let dis = this.state.position
+                    .clone()
+                    .distanceTo(o.state.position.clone());
+                if (dis < 45) {
+                    farEnough = false;
+                    break;
+                }
+            }
+        }
+
         if (
             this.state.runtime > this.state.maxRunTime &&
-            roadtype != 'corner'
+            roadtype != 'corner' &&
+            farEnough
         ) {
             this.state.powerrun = false;
             this.state.runtime = 0;
             this.state.parent.state.tracker = 0;
             this.state.readyToStrint = false;
-if (this.state.isSprintSoundPlaying) {
-            this.parent.sprintSound.stop();
-            this.state.isSprintSoundPlaying = false;
-        }        }
+            if (this.state.isSprintSoundPlaying) {
+                this.parent.sprintSound.stop();
+                this.state.isSprintSoundPlaying = false;
+            }
+        }
     }
 
     jump() {

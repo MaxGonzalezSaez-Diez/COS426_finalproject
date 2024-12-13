@@ -135,7 +135,7 @@ class SeedScene extends Scene {
             roadColor: null,
             sidewalkColor: 0xa0522d,
             progressBar: null,
-            coffesPerSprint: 7,
+            coffesPerSprint: 1,
             currentBackground: 'day',
             gpa: 3.0,
             lives: 3,
