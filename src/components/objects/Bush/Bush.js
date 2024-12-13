@@ -38,20 +38,20 @@ class Bush extends Group {
 
             this.state.model.scale.set(0.2, 0.2, 0.2);
 
-            // Position 
+            // Position
             this.state.model.position.set(
                 this.state.position.x,
                 this.state.position.y,
                 this.state.position.z
             );
 
-            // create and attach a BoxHelper 
+            // create and attach a BoxHelper
             const boundingBoxHelper = new BoxHelper(this.state.model, 0xff0000);
             this.add(boundingBoxHelper);
             this.state.parent.add(boundingBoxHelper);
             this.state.boundingBoxHelper = boundingBoxHelper;
 
-            // Add 
+            // Add
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
             this.state.boundingBoxHelper.visible = false;

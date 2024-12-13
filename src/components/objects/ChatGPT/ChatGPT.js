@@ -1,4 +1,4 @@
-// CREDITS for the images: 
+// CREDITS for the images:
 // claude: https://brandfetch.com/claude.ai
 // openai chatgpt: https://media.licdn.com/dms/image/v2/D5612AQGNFfMWKQZSSg/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1688612205621?e=1739404800&v=beta&t=vhy8VMddHkExjJCvSC81ozckiK07Gme003ZsyibfPEc
 import {
@@ -72,7 +72,7 @@ class ChatGPT extends Group {
         this.state.parent.add(boundingBoxHelper);
         this.state.boundingBoxHelper = boundingBoxHelper;
 
-        // Add 
+        // Add
         this.state.parent.add(roadMesh);
         this.state.boundingBoxHelper.visible = false;
         this.updateBoundingBox();
@@ -82,7 +82,7 @@ class ChatGPT extends Group {
         if (this.state.model) {
             this.state.boundingBox.setFromObject(this.state.model);
 
-            // update the BoxHelper 
+            // update the BoxHelper
             if (this.state.boundingBoxHelper) {
                 this.state.boundingBoxHelper.update();
             }

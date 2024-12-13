@@ -60,7 +60,7 @@ class Bike extends Group {
             this.state.parent.add(boundingBoxHelper);
             this.state.boundingBoxHelper = boundingBoxHelper;
 
-            // Add 
+            // Add
             this.add(this.state.model);
             this.state.parent.add(this.state.model);
             this.state.boundingBoxHelper.visible = false;

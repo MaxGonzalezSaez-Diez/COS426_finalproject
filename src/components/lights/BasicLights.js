@@ -2,7 +2,6 @@ import { Group, SpotLight, AmbientLight, HemisphereLight } from 'three';
 
 class BasicLights extends Group {
     constructor(...args) {
-
         super(...args);
 
         const dir = new SpotLight(0xffffff, 1.6, 7, 0.8, 1, 1);
@@ -13,11 +12,7 @@ class BasicLights extends Group {
         dir.target.position.set(0, 0, 0);
 
         this.add(ambi, hemi, dir);
-;
     }
-
-
-
 }
 
 export default BasicLights;
