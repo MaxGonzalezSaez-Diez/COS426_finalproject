@@ -48,6 +48,7 @@ async function getHighScores() {
 }
 
 async function submitScore(username, score1) {
+    let roundedScore = Math.round(score1);
     try {
         if (top3_scores == null) {
             let { data: top3_scores, error: fetchError } = await supabase
@@ -65,7 +66,7 @@ async function submitScore(username, score1) {
         // Determine the position
         let position = 5;
         for (let i = 0; i < top3_scores.length; i++) {
-            if (score1 > top3_scores[i].score) {
+            if (roundedScore > top3_scores[i].score) {
                 position = i + 1;
                 break;
             }
@@ -78,7 +79,7 @@ async function submitScore(username, score1) {
         if (position <= 3) {
             const { data, error: submitError } = await supabase
                 .from('princeton_run')
-                .insert([{ name: username, score: score1 }]);
+                .insert([{ name: username, score: roundedScore }]);
 
             if (submitError) {
                 console.error('Error submitting score:', submitError);
@@ -272,11 +273,6 @@ class SeedScene extends Scene {
                     leader1.textContent = `${highscores[0].name}: ${highscores[0].score}`;
                     leader2.textContent = `${highscores[1].name}: ${highscores[1].score}`;
                     leader3.textContent = `${highscores[2].name}: ${highscores[2].score}`;
-
-                    // Optionally remove spinners after assigning the scores
-                    leader1.removeChild(spinner1);
-                    leader2.removeChild(spinner2);
-                    leader3.removeChild(spinner3);
                 } else {
                     console.error(
                         'Error: High scores data is invalid or incomplete.'
@@ -289,7 +285,7 @@ class SeedScene extends Scene {
 
         const movementText = document.createElement('p');
         movementText.innerHTML =
-            '<b>Instructions</b>: Use a/d or ←/→ to move and w/↑ to jump. Be aware: hitting walls,<br> missing turns will send you to McCosh instantly!<br><br><b>Score</b>: Your final score is the distance times your GPA.<br><br><b>Trick</b>: Once you had enough coffee you can click p for a caffeine boost.<br><br><b>Policies on generative AI</b>: Using AI has a 90% chance of getting you a 4.0 GPA<br> and giving you all your lives back. Make sure to not get caught though, it\'s an<br> Honor Code Violation! And be sure not to violate the Honor Code by running into<br> the Rights, Rules, Responsibilities book! Both will get you expelled!';
+            "<b>Instructions</b>: Use a/d or ←/→ to move and w/↑ to jump. Be aware: hitting walls,<br> missing turns will send you to McCosh instantly!<br><br><b>Score</b>: Your final score is the distance times your GPA.<br><br><b>Trick</b>: Once you had enough coffee you can click p for a caffeine boost.<br><br><b>Policies on generative AI</b>: Using AI has a 90% chance of getting you a 4.0 GPA<br> and giving you all your lives back. Make sure to not get caught though, it's an<br> Honor Code Violation! And be sure not to violate the Honor Code by running into<br> the Rights, Rules, Responsibilities book! Both will get you expelled!";
         movementText.style.fontFamily = 'Courier New, Courier, monospace';
         movementText.style.fontSize = '25px';
         movementText.style.marginBottom = '15px';
