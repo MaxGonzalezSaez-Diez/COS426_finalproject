@@ -1,4 +1,12 @@
 # COS 426 Final Project Template
+
+## Final Project Links
+You provide a link to your Github repository, which should include your code, your writeup (pdf), and a link to your online demo. Link(s) to the writeup and online demo should also appear near the top of the README in you Github repo.
+
+Writeup: https://drive.google.com/file/d/1Rdg8VckGvWgiferci6oBbJF18TBJGo3A/view?usp=share_link
+Online demo: https://maxgonzalezsaez-diez.github.io/COS426_finalproject/
+
+
 This skeleton project will help you get started with a ThreeJS project and provide a strong foundation for extension. It sets up a simple scene, camera, and renderer in a modern JavaScript environment, and is written using some common best-practices that you may want to draw from.
 
 To see it running live on the web, check out the [Online Demo](https://adamfinkelstein.github.io/cos426finalproject/)
