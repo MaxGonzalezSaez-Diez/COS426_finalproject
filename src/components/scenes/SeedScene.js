@@ -134,6 +134,7 @@ class SeedScene extends Scene {
             sidewalkColor: 0xa0522d,
             progressBar: null,
             coffesPerSprint: 7,
+            total_coffees_collects: 0,
             currentBackground: 'day',
             gpa: 3.0,
             lives: 3,
@@ -383,7 +384,7 @@ class SeedScene extends Scene {
         window.removeEventListener('keydown', this.state.student.state.keydown);
 
         // calculate final stats
-        const finalCoffees = this.state.tracker || 0;
+        const finalCoffees = this.state.total_coffees_collects || 0;
         const finalGPA = this.state.gpa.toFixed(2);
         const finalDistance = (this.state.student.state.distance / 10).toFixed(
             0
@@ -701,6 +702,7 @@ class SeedScene extends Scene {
                         } else {
                             obstacle.marked = true;
                             obstacle.collect();
+                            this.state.total_coffees_collects += 1;
                             this.state.tracker += 1;
                             this.updateProgressBar();
                             this.gradeSound.play();
