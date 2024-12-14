@@ -379,8 +379,17 @@ class Student extends Group {
     }
 
     jump() {
+        const { currentSeg, roadType } = this.findCurrentSegment(
+            this.state.parent.state.roadChunk.state
+        );
+
+        let falling =
+            this.state.position.y - currentSeg.state.center.y > 0.1
+                ? true
+                : false;
+
         // Only allow jumping if not already jumping
-        if (!this.state.isJumping && !this.state.powerrun) {
+        if (!this.state.isJumping && !this.state.powerrun && !falling) {
             this.state.isJumping = true;
             this.state.initialY = this.state.position.y;
             this.state.jumpTime = 0;
